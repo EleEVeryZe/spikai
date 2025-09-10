@@ -1,0 +1,58 @@
+<mat-card class="carousel-card">
+  <div style="position: relative;">
+  <a [routerLink]="['/details/', imovel.id]"><img [src]="getCurrentImg()" alt="Slide image" class="carousel-img" onclick=""/>
+    
+</a>
+<button
+    mat-raised-button
+    color="accent"
+    class="btn-finalidade"
+  >
+    {{imovel.capFirstLetterTipoDeNegocio()}}
+  </button>
+  </div>
+  
+    
+  <div class="controls">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="prev()"
+      [disabled]="currentIndex === 0"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="next()"
+      [disabled]="checkIfDisabled()"
+    >
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
+  <div class="descricao">
+    <div class="info-qtds-comodo">
+        <div class="info-qtd-comodo">
+            <mat-icon>bed</mat-icon>
+            <span>{{imovel.quantidadeQuartos}}</span>
+        </div>
+        <div class="info-qtd-comodo">
+            <mat-icon>bathtub</mat-icon>
+            {{imovel.quantidadeBanheiros}}  
+        </div>
+        <div class="info-qtd-comodo">
+            <mat-icon>directions_car</mat-icon>
+            {{imovel.vagasGaragem}}  
+        </div>
+        <div class="info-qtd-comodo">
+            <mat-icon>aspect_ratio</mat-icon>
+            {{imovel.areaTotalM2}}m<sup>2</sup>
+        </div>
+    </div>
+    <p>{{imovel.tipoImovel}}</p>
+    <h3>{{imovel.descricao}}</h3>
+    <p>{{imovel.getValorFormatado()}}</p>
+    <p>{{imovel.endereco.getEnderecoNaoExato()}}</p>
+  </div>
+</mat-card>

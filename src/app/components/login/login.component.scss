@@ -1,0 +1,37 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.login-card {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-card-header {
+  text-align: center;
+}
+
+mat-card-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.nomg {
+    margin: 0 !important;
+    padding-top: 20px;
+}

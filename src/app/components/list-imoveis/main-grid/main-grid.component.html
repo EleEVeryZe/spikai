@@ -1,0 +1,6 @@
+<app-filter (handleFiltrar)="handleFiltrar($event)"/>
+<div class="wrapper">
+    <div class="imovel" *ngFor="let imovel of imoveis">
+       <app-imovel [imovel]="imovel"/>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+.imgContainer {
+  display: flex;
+}
+
+.img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.carousel-card {  
+  padding: 16px;
+}
+
+.carousel-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.controls {
+  position: absolute;
+  bottom: 5px;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.p-relative {
+  position: relative;
+}
+
+.mat-mdc-raised-button > .mat-icon {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.info-qtds-comodo{ 
+    display: flex;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+.info-qtd-comodo{ 
+    align-items: anchor-center;
+    display: flex;
+}
+
+.btn-finalidade {
+  
+}
+
+.width-min {
+  width: min-content;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.descricao {
+  width: 100%
+}
+
+.pl-2 > p {
+  margin-left: 5px;
+}
+
+.carousel-card {
+  margin-bottom: 1vb;
+}
+
+.close-bnt {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}

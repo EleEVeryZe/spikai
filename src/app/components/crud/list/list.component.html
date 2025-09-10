@@ -1,0 +1,51 @@
+<div *ngFor="let imovel of imoveis" class="p-relative">
+  <mat-card class="carousel-card" (click)='edit(imovel.id)'>
+    <div class="d-flex">
+      <div class="width-min">
+        <div class="p-relative d-inline">
+          <a [routerLink]="['/details/', imovel.id]"
+            ><img [src]="getCurrentImg(imovel)" alt="Slide image" class="carousel-img" onclick="" />
+          </a>
+          <div class="controls">
+            <button mat-raised-button color="primary" (click)="prev()" [disabled]="currentIndex === 0">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <button mat-raised-button color="accent" (click)="next(imovel)" [disabled]="checkIfDisabled(imovel)">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="descricao">
+        <div class="info-qtds-comodo">
+          <div class="info-qtd-comodo">
+            <mat-icon>bed</mat-icon>
+            <span>{{ imovel.quantidadeQuartos }}</span>
+          </div>
+          <div class="info-qtd-comodo">
+            <mat-icon>bathtub</mat-icon>
+            {{ imovel.quantidadeBanheiros }}
+          </div>
+          <div class="info-qtd-comodo">
+            <mat-icon>directions_car</mat-icon>
+            {{ imovel.vagasGaragem }}
+          </div>
+          <div class="info-qtd-comodo">
+            <mat-icon>aspect_ratio</mat-icon>
+            {{ imovel.areaTotalM2 }}m<sup>2</sup>
+          </div>
+        </div>
+        <span class="pl-2">
+            <p>{{ imovel.tipoImovel }}</p>
+            <h3>{{ imovel.descricao }}</h3>
+            <p>{{ imovel.getValorFormatado() }}</p>
+            <p>{{ imovel.endereco.getEnderecoNaoExato() }}</p>
+            <p>{{ imovel.capFirstLetterTipoDeNegocio() }}</p>
+        </span>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-icon class="close-icon" (click)="remove(imovel.id)" class="close-bnt">close</mat-icon>
+</div>

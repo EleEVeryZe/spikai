@@ -1,0 +1,43 @@
+<mat-card class="background-white center" appearance="outlined">
+  <mat-card-content>
+    <form [formGroup]="filter" (ngSubmit)="filtrar()">
+      <mat-button-toggle-group
+        name="favoriteColor"
+        aria-label="Favorite Color"
+        formControlName="operacao"
+        class="center"
+      >
+        <mat-button-toggle value="COMPRAR">Comprar</mat-button-toggle>
+        <mat-button-toggle value="ALUGAR">Alugar</mat-button-toggle>
+        <mat-button-toggle value="Imovel Novo">Imóvel Novo</mat-button-toggle>
+      </mat-button-toggle-group>
+      
+      <mat-form-field class="full-width mt-1">
+        <mat-label>Tipo do Imóvel</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option value="">Todos</mat-option>
+          <ng-container *ngIf="tipoImoveis?.length">
+            <mat-option *ngFor="let tipoImovel of tipoImoveis" [value]="tipoImovel">{{tipoImovel}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+
+      
+      <mat-form-field class="full-width">
+        <mat-label>Localização</mat-label>
+        <mat-select formControlName="localizacao">
+          <mat-option value="">Todos</mat-option>
+          <ng-container *ngIf="tipoImoveis?.length">
+            <mat-option *ngFor="let endereco of enderecos" [value]="endereco.bairro + ', ' + endereco.cidade + ' - ' + endereco.estado">{{endereco.bairro}}, {{endereco.cidade}} - {{endereco.estado}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+      
+      <button class="full-width" type="submit" mat-fab extended>
+        <mat-icon>search</mat-icon>
+        Filtrar
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>
+

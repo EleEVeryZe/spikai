@@ -3,7 +3,7 @@ name: Deploy Static Website to S3
 on:
   push:
     branches:
-      - main  # Runs when code is pushed to main
+      - master  # Runs when code is pushed to main
 
 jobs:
   deploy:
@@ -23,7 +23,7 @@ jobs:
       - name: Build App
         run: |
           npm i --legacy-peer-deps
-          npm run build 
+          npm run build
 
       - name: Sync next files to S3
         run: |

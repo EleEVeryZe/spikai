@@ -1,59 +1,39 @@
-# StockMarquetim
+### Documentação do Aplicativo de Aprendizagem de Idiomas
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.7.
+---
 
-## Development server
+### 1. Introdução
 
-To start a local development server, run:
+Este documento descreve a proposta de um aplicativo móvel para **aprendizagem de idiomas**. O sistema foi desenhado para guiar o usuário por uma jornada de estudos personalizada, combinando avaliações, aulas em vídeo e o suporte de inteligência artificial para otimizar o aprendizado de vocabulário e gramática.
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 2. Funcionalidades Principais
 
-## Code scaffolding
+* **Cadastro e Login:** Permite que novos usuários se registrem com informações detalhadas e que usuários existentes façam login facilmente.
+* **Jornadas de Aprendizagem:** O aplicativo é estruturado em diferentes **jornadas temáticas** (ex: "Verbo TO BE", "Simple Present"), acessíveis a partir da tela inicial.
+* **Acompanhamento de Progresso:** Para cada jornada, o usuário pode ver o status de conclusão de cada etapa, resultados de testes, datas e a opção de refazer as avaliações.
+* **Integração com IA:** A inteligência artificial atua como um tutor, fornecendo **explicações detalhadas** sobre as respostas incorretas durante os questionários.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+---
 
-```bash
-ng generate component component-name
-```
+### 3. Jornada de Aprendizagem do Usuário
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+A jornada para cada tópico segue um fluxo predefinido e contínuo:
 
-```bash
-ng generate --help
-```
+1.  **Pré-teste:** Uma avaliação inicial sem auxílio de IA para medir o conhecimento prévio.
+2.  **Aula do Tema:** O usuário assiste a um vídeo explicativo sobre o conteúdo.
+3.  **Questionário Intermediário:** Uma avaliação com o **suporte de IA**. Se o usuário errar, a IA explica automaticamente o motivo, corrigindo o erro.
+4.  **Pós-teste:** Uma avaliação final para mensurar o aprendizado. A tela é idêntica à do pré-teste, mas com a alteração do título para refletir a etapa.
 
-## Building
+---
 
-To build the project run:
+### 4. Interfaces do Usuário (UI)
 
-```bash
-ng build
-```
+A interface é minimalista e intuitiva, ideal para telas de smartphone. As telas principais incluem:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+* **Tela de Cadastro:** Campos para nome, e-mail, idade, sexo, escolaridade e vocabulário de interesse.
+* **Tela de Login:** Campos simples para e-mail e senha.
+* **Dashboard:** Mostra o nome do usuário e o vocabulário de interesse, além de cards para cada jornada de aprendizado disponível.
+* **Telas de Avaliação:** Uma questão por tela com indicador de progresso, opções de resposta e um botão "Próximo". No questionário, há um campo de texto adicional para interação com a IA.
+* **Tela de Jornada:** Uma representação visual das etapas, com indicadores de status de conclusão, resultados e a opção de repetir testes.

@@ -42,7 +42,9 @@ jobs:
             node-version: '18'
 
         - name: Install dependencies
-          run: npm install
+          run: |
+          cd funcoes/cadastro 
+          npm install
 
         - name: Zip Lambda function
           run: zip -r lambda-cadastro.zip ./funcoes/cadastro/index.js ./funcoes/cadastro/node_modules

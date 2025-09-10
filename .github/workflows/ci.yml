@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-upload:
+    if: contains(github.event.head_commit.message, 'website:')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -29,14 +30,14 @@ jobs:
           aws s3 sync ./dist/stock-marquetim/browser s3://spikai/ --delete --exclude "resource/*" --exclude "resource"
 
   deploy-lambda:
-    if: contains(github.event.head_commit.message, 'lambda:')
+    if: contains(github.event.head_commit.message, 'lambda-cadastro:')
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.jss
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
@@ -46,6 +47,7 @@ jobs:
         run: npm install
 
       - name: Zip Lambda function
+        working-directory: funcoes/cadastro
         run: zip -r lambda-cadastro.zip index.js node_modules
 
       - name: Configure AWS credentials
@@ -56,6 +58,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to AWS Lambda
+        working-directory: funcoes/cadastro
         run: |
           aws lambda update-function-code \
             --function-name cadastro \

@@ -1,5 +1,6 @@
 import {
-    S3Client,
+    GetObjectCommand,
+    S3Client
 } from "@aws-sdk/client-s3";
 import jwt from "jsonwebtoken";
 

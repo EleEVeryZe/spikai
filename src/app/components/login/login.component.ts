@@ -8,6 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
@@ -36,7 +37,8 @@ export class LoginComponent {
     private router: Router,
     private fb: FormBuilder,
     private usuarioRepositoryService: UsuarioRepositoryService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {}
 
   loginForm!: FormGroup;
@@ -62,6 +64,15 @@ export class LoginComponent {
       }
     });
   }
+  
+  showMessage(message: string, isError: boolean = false) {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'bottom',
+      panelClass: isError ? ['snackbar-error'] : ['snackbar-success'],
+    });
+  }
 
   onSubmit() {
     if (this.loginForm.valid) {
@@ -69,11 +80,15 @@ export class LoginComponent {
       this.usuarioRepositoryService.onLogin(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: (res: any) => {
           console.log('Login successful:', res);
-          this.auth.login(res.token)
+          this.auth.login(res.token);
+          this.router.navigate(['/principal']);
         },
         error: (err) => {
           console.error(err);
-          alert('Erro ao fazer login.');
+          if (err?.error?.message)
+            this.showMessage(err?.error?.message); 
+          else 
+            this.showMessage('Erro ao fazer login.');
         },
       });
     }

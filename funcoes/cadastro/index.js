@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
 // Define o nome do bucket a partir de uma variável de ambiente
-const BUCKET_NAME = process.env.BUCKET_NAME;
+const BUCKET_NAME = "spikai";
 
 /**
  * Função principal da Lambda para salvar dados de cadastro após validação.
@@ -34,7 +34,7 @@ exports.handler = async (event) => {
 
         // 1. Cria um nome de arquivo único com base apenas no e-mail
         const sanitizedEmail = userEmail.replace(/@/g, '_at_').replace(/\./g, '_dot_');
-        const filename = `cadastros/user_${sanitizedEmail}.json`;
+        const filename = `resource/user_${sanitizedEmail}.json`;
 
         // 2. Verifica se o arquivo já existe no bucket S3
         try {

@@ -7,37 +7,46 @@
 
     <mat-card-content>
       <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nome Completo</mat-label>
           <mat-icon matPrefix>person_outline</mat-icon>
-          <input matInput type="text" formControlName="name" placeholder="Seu nome completo">
-          <mat-error *ngIf="registrationForm.get('name')?.hasError('required')">
-            O nome é obrigatório.
-          </mat-error>
+          <input matInput type="text" formControlName="name" placeholder="Seu nome completo" />
+          <mat-error *ngIf="registrationForm.get('name')?.hasError('required')"> O nome é obrigatório. </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>E-mail</mat-label>
           <mat-icon matPrefix>mail_outline</mat-icon>
-          <input matInput type="email" formControlName="email" placeholder="nome@exemplo.com">
-          <mat-error *ngIf="registrationForm.get('email')?.hasError('required')">
-            O e-mail é obrigatório.
-          </mat-error>
-          <mat-error *ngIf="registrationForm.get('email')?.hasError('email')">
-            Insira um e-mail válido.
-          </mat-error>
+          <input matInput type="email" formControlName="email" placeholder="nome@exemplo.com" />
+          <mat-error *ngIf="registrationForm.get('email')?.hasError('required')"> O e-mail é obrigatório. </mat-error>
+          <mat-error *ngIf="registrationForm.get('email')?.hasError('email')"> Insira um e-mail válido. </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width top-margin">
+          <mat-label>Senha</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="'Mostrar ou ocultar senha'"
+            [attr.aria-pressed]="!hidePassword"
+          >
+            <mat-icon>{{ hidePassword ? "visibility_off" : "visibility" }}</mat-icon>
+          </button>
+          <mat-error *ngIf="registrationForm.get('password')?.hasError('required')"> A senha é obrigatória. </mat-error>
+          <mat-error *ngIf="registrationForm.get('password')?.hasError('minlength')"> A senha deve ter no mínimo 6 caracteres. </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Idade</mat-label>
           <mat-icon matPrefix>cake</mat-icon>
           <mat-select formControlName="age">
-            <mat-option *ngFor="let age of ages" [value]="age">{{age}}</mat-option>
+            <mat-option *ngFor="let age of ages" [value]="age">{{ age }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="registrationForm.get('age')?.hasError('required')">
-            A idade é obrigatória.
-          </mat-error>
+          <mat-error *ngIf="registrationForm.get('age')?.hasError('required')"> A idade é obrigatória. </mat-error>
         </mat-form-field>
 
         <mat-label class="form-label">Sexo</mat-label>
@@ -46,19 +55,15 @@
           <mat-radio-button value="female">Feminino</mat-radio-button>
           <mat-radio-button value="not-disclosed">Não desejo informar</mat-radio-button>
         </mat-radio-group>
-        <mat-error *ngIf="registrationForm.get('gender')?.hasError('required')" class="radio-error">
-          O sexo é obrigatório.
-        </mat-error>
+        <mat-error *ngIf="registrationForm.get('gender')?.hasError('required')" class="radio-error"> O sexo é obrigatório. </mat-error>
 
         <mat-form-field appearance="outline" class="full-width top-margin">
           <mat-label>Escolaridade</mat-label>
           <mat-icon matPrefix>school</mat-icon>
           <mat-select formControlName="education">
-            <mat-option *ngFor="let education of educationLevels" [value]="education">{{education}}</mat-option>
+            <mat-option *ngFor="let education of educationLevels" [value]="education">{{ education }}</mat-option>
           </mat-select>
-          <mat-error *ngIf="registrationForm.get('education')?.hasError('required')">
-            A escolaridade é obrigatória.
-          </mat-error>
+          <mat-error *ngIf="registrationForm.get('education')?.hasError('required')"> A escolaridade é obrigatória. </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -67,10 +72,7 @@
           <textarea matInput formControlName="vocabulary" placeholder="Ex: Tecnologia, Finanças, Saúde..." rows="2"></textarea>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" class="full-width" [disabled]="!registrationForm.valid">
-          Cadastrar
-        </button>
-
+        <button mat-raised-button color="primary" class="full-width" [disabled]="!registrationForm.valid">Cadastrar</button>
       </form>
     </mat-card-content>
   </mat-card>

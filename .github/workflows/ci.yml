@@ -48,7 +48,7 @@ jobs:
 
       - name: Zip Lambda function
         working-directory: funcoes/cadastro
-        run: zip -r lambda-cadastro.zip index.js node_modules
+        run: zip -r lambda-cadastro.zip index.mjs node_modules
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -63,3 +63,38 @@ jobs:
           aws lambda update-function-code \
             --function-name cadastro \
             --zip-file fileb://lambda-cadastro.zip
+
+  deploy-lambda-login:
+      if: contains(github.event.head_commit.message, 'lambda-login:')
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '18'
+
+        - name: Install dependenciesss
+          working-directory: funcoes/login
+          run: npm install
+
+        - name: Zip Lambda function
+          working-directory: funcoes/login
+          run: zip -r lambda-login.zip index.mjs node_modules
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v2
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION }}
+
+        - name: Deploy to AWS Lambda
+          working-directory: funcoes/login
+          run: |
+            aws lambda update-function-code \
+              --function-name login \
+              --zip-file fileb://lambda-login.zip

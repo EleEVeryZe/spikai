@@ -7,7 +7,7 @@ export class AuthService {
 
   constructor() {
     // Optionally read from localStorage/sessionStorage or a token
-    this.isLoggedIn = !!localStorage.getItem('token');
+    this.isLoggedIn = !!localStorage.getItem('authToken');
   }
 
   public isAuthenticated(): boolean {
@@ -16,11 +16,11 @@ export class AuthService {
 
   public login(token: string): void {
     this.isLoggedIn = true;
-    localStorage.setItem('token', token);
+    localStorage.setItem('authToken', token);
   }
 
   public logout(): void {
     this.isLoggedIn = false;
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
   }
 }

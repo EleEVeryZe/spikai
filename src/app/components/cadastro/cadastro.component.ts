@@ -9,6 +9,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
+
 @Component({
   selector: 'app-cadastro',
   imports: [
@@ -21,12 +25,14 @@ import { MatSelectModule } from '@angular/material/select';
     MatIconModule,
     MatSelectModule,
     MatRadioModule,
-    MatButtonModule,
+    MatButtonModule
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
 export class CadastroComponent {
+  usuarioRepositoryService!: UsuarioRepositoryService;
+  hidePassword = true;
   registrationForm: FormGroup;
   ages: number[] = [];
   educationLevels: string[] = [
@@ -38,17 +44,18 @@ export class CadastroComponent {
     'Outro',
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, usuarioRepositoryService: UsuarioRepositoryService, private snackBar: MatSnackBar, private router: Router) {
+    this.usuarioRepositoryService = usuarioRepositoryService;
     this.registrationForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       age: ['', Validators.required],
       gender: ['', Validators.required],
       education: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       vocabulary: [''],
     });
 
-    // Popula o array de idades de 1 a 100
     for (let i = 1; i <= 100; i++) {
       this.ages.push(i);
     }
@@ -56,10 +63,30 @@ export class CadastroComponent {
 
   ngOnInit(): void {}
 
+  showMessage(message: string, isError: boolean = false) {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      panelClass: isError ? ['snackbar-error'] : ['snackbar-success'],
+    });
+  }
+
   onSubmit(): void {
     if (this.registrationForm.valid) {
       console.log('Dados do formulário:', this.registrationForm.value);
-      // Aqui você implementaria a lógica para enviar os dados para a API
+      this.usuarioRepositoryService.postCadastro(this.registrationForm.value).subscribe({
+        next: (res) => {
+          console.log('User registered:', res);
+          this.showMessage('Usuário registrado com sucesso!');
+          this.router.navigate(['/login'], { queryParams: { email: this.registrationForm.value.email } });
+
+        },
+        error: (err) => {
+          console.error(err);
+          this.showMessage('Erro ao registrar usuário.', true);
+        },
+      });
     }
   }
 }

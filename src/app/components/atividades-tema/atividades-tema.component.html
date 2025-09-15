@@ -1,0 +1,43 @@
+<div class="container" *ngIf="tema && temaAnteriorConcluido">
+  <mat-card class="tema-card">
+    <mat-card-header>
+      <mat-card-title class="tema-title">{{ tema.nome }}</mat-card-title>
+    </mat-card-header>
+    <mat-divider></mat-divider>
+    <mat-card-content class="atividades-list">
+      <mat-card class="atividade-card" *ngFor="let atividade of tema.atividades">
+        <div class="atividade-content">
+          <mat-icon
+            [ngClass]="{'concluida': atividade.concluida, 'pendente': !atividade.concluida}"
+          >
+            {{ atividade.concluida ? 'check_circle' : 'radio_button_unchecked' }}
+          </mat-icon>
+          <div class="details">
+            <h2>{{ atividade.nome }}</h2>
+            <p *ngIf="atividade.concluida">Concluído em: {{ atividade.dataConclusao | date: 'dd/MM/yyyy' }}</p>
+          </div>
+        </div>
+      </mat-card>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div class="container" *ngIf="!tema">
+  <mat-card class="info-card">
+    <mat-card-content class="info-content">
+      <mat-icon color="warn">error</mat-icon>
+      <h2>Tema não encontrado.</h2>
+      <p>Verifique o ID do tema na URL.</p>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div class="container" *ngIf="tema && !temaAnteriorConcluido">
+  <mat-card class="info-card">
+    <mat-card-content class="info-content">
+      <mat-icon color="primary">lock</mat-icon>
+      <h2>Tema Bloqueado</h2>
+      <p>Você precisa completar o tema anterior para acessar "{{ tema.nome }}".</p>
+    </mat-card-content>
+  </mat-card>
+</div>

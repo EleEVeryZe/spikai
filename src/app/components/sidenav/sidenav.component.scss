@@ -1,7 +1,12 @@
 .sidenav-container {
-    height: 100vh;
-  }
-  
-  .main-content {
-    
-  }
+  height: 100%;
+}
+
+.toolbar-title {
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}

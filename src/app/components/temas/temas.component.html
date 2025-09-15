@@ -1,0 +1,17 @@
+<div class="tema-container">
+  <mat-card 
+    class="tema-card"
+    *ngFor="let tema of temas"
+    (click)="navegarParaTema(tema.nome)"
+    matRipple
+  >
+    <h2>{{ tema.titulo }}</h2>
+
+    <mat-progress-bar
+      mode="determinate"
+      [value]="tema.concluido"
+    ></mat-progress-bar>
+
+    <p>{{ 100 - tema.concluido }}% restante para concluir</p>
+  </mat-card>
+</div>

@@ -1,31 +1,31 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer mode="over">
-    <mat-nav-list>
-      <a mat-list-item href="#">Home</a>
-      <a mat-list-item href="#">Profile</a>
-      <a mat-list-item href="#">Settings</a>
-      <a mat-list-item href="#">Logout</a>
-    </mat-nav-list>
-  </mat-sidenav>
+  <!-- Drawer removido completamente -->
 
   <mat-sidenav-content>
     <mat-toolbar color="primary">
-      <section *ngIf="icon == 'SANDWISH'; else elseBlock">
-        <button mat-icon-button (click)="drawer.toggle()">
-          <mat-icon>menu</mat-icon>
-        </button>
-      </section>
-      <ng-template #elseBlock>
-        <button mat-icon-button (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </ng-template>
-      <span>Imobiliaria Viver Bem</span>
+      <button mat-icon-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <!-- Nome / Logo -->
+      <span class="toolbar-title">SpkAI</span>
+
+      <!-- Spacer para empurrar ícones para a direita -->
+      <span class="spacer"></span>
+
+      <!-- Ícones de navegação -->
+      <button mat-icon-button matTooltip="Home" (click)="navigateTo('temas')">
+        <mat-icon>home</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="Logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
     </mat-toolbar>
 
-    <!-- Main content here -->
+    <!-- Main content -->
     <div class="main-content">
-      <ng-content></ng-content>      
+      <ng-content></ng-content>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

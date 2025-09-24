@@ -48,7 +48,7 @@ jobs:
 
       - name: Zip Lambda function
         working-directory: funcoes/cadastro
-        run: zip -r lambda-cadastro.zip index.mjs node_modules
+        run: zip -r lambda-cadastro.zip index.mjs node_modules template.curso.js
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2

@@ -88,11 +88,11 @@ export const handler = async (event) => {
     }
     
     const curso = dadosExistentes.cursos.find((curso) => curso.id === idCurso);
-    curso.concluida = true;
-    curso.dataConclusao = new Date().toISOString();
-    
+    curso.concluido = 25;
     respostas.forEach((resposta) => {
       curso.atividades[0].perguntas[resposta.perguntaIndex].opcaoSelecionada = resposta.opcaoSelecionada;
+      curso.atividades[0].concluida = true;
+      curso.atividades[0].dataConclusao = new Date().toISOString();
     });
 
     // 4. Adiciona as novas respostas aos dados existentes

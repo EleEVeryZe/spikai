@@ -1,60 +1,57 @@
 {
-  "name": "Rodolfo Rezende",
-  "email": "rodolfo_eliezer@gmail.com",
-  "age": 1,
+  "name": "Rodofo",
+  "email": "rod@gmail.com",
+  "age": 32,
   "gender": "male",
-  "education": "Ensino Fundamental",
+  "education": "Ensino Superior Completo",
   "password": "123123",
-  "vocabulary": "",
+  "vocabulary": "Anime, rock, violão",
   "cursos": [
     {
       "id": "7cf00315-225c-4217-82e7-7badd5681eee",
       "nome": "to-be",
       "titulo": "To Be",
-      "concluido": 25,
+      "concluido": 0,
       "atividades": [
         {
           "nome": "Pré-teste",
           "perguntas": [
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "My room .... clean.",
+              "descricao": "My room ..........................clean.",
               "opcoes": [
                 "am",
                 "is",
                 "are",
                 "will"
               ],
-              "opcaoCorreta": 1,
-              "opcaoSelecionada": 3
+              "opcaoCorreta": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "The cat .... in the tree.",
+              "descricao": "The cat ......................in the tree.",
               "opcoes": [
                 "is",
                 "am",
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 0,
-              "opcaoSelecionada": 3
+              "opcaoCorreta": 0
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "David and Robert .... boys.",
+              "descricao": "David and Robert ...........................boys.",
               "opcoes": [
                 "is",
                 "am",
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 2,
-              "opcaoSelecionada": 3
+              "opcaoCorreta": 2
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "My grandmother .... sick.",
+              "descricao": "My grandmother ...........................sick.",
               "opcoes": [
                 "am",
                 "are",
@@ -65,7 +62,7 @@
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "Anna .... my sister",
+              "descricao": "Anna ......................my sister",
               "opcoes": [
                 "am",
                 "is",
@@ -76,7 +73,7 @@
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "The chair .... short.",
+              "descricao": "The chair ...............short.",
               "opcoes": [
                 "is",
                 "am",
@@ -87,7 +84,7 @@
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "The dog .... under the table.",
+              "descricao": "The dog .....................under the table.",
               "opcoes": [
                 "is",
                 "am",
@@ -98,7 +95,7 @@
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "I .... under the table.",
+              "descricao": "I ......................under the table.",
               "opcoes": [
                 "is",
                 "am",
@@ -120,7 +117,7 @@
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "I .... from Spain.",
+              "descricao": "I ..........................from Spain.",
               "opcoes": [
                 "is",
                 "am",
@@ -143,7 +140,7 @@
             {
               "titulo": "Escolha a resposta correta:",
               "dica": "Book está no plural",
-              "descricao": "The books .... on the table",
+              "descricao": "The books .................................on the table",
               "opcoes": [
                 "is",
                 "am",
@@ -165,7 +162,7 @@
             },
             {
               "titulo": "Escolha a resposta correta:",
-              "descricao": "Tony and Jake .... a student.",
+              "descricao": "Tony and Jake ....................................a student.",
               "opcoes": [
                 "am",
                 "do",
@@ -197,7 +194,6 @@
               "opcaoCorreta": 0
             }
           ],
-          "dataConclusao": "2025-09-12T13:00:00.000Z",
           "concluida": true
         },
         {
@@ -207,11 +203,11 @@
               "url": "https://www.youtube.com/watch?v=SXuBaxqsinQ"
             }
           ],
-          "concluida": false
+          "concluida": true
         },
         {
           "nome": "Quizz",
-          "concluida": false
+          "concluida": true
         },
         {
           "nome": "Pós-teste",
@@ -229,7 +225,7 @@
         {
           "nome": "Pré-teste",
           "concluida": true,
-          "dataConclusao": "2025-09-10T13:00:00.000Z"
+          "dataConclusao": "2025-09-10T10:00:00.000Z"
         },
         {
           "nome": "Conteúdo",
@@ -255,7 +251,7 @@
         {
           "nome": "Pré-teste",
           "concluida": true,
-          "dataConclusao": "2025-09-10T13:00:00.000Z"
+          "dataConclusao": "2025-09-10T10:00:00.000Z"
         },
         {
           "nome": "Conteúdo",
@@ -272,6 +268,5 @@
       ],
       "completo": false
     }
-  ],
-  "ultimaAtualizacao": "2025-09-24T17:09:50.463Z"
+  ]
 }

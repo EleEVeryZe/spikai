@@ -35,7 +35,11 @@ export class UsuarioRepositoryService {
         userEmail = this.authService.loadUserState().email;
 
     const sanitizedEmail = userEmail?.replace(/@/g, '_at_').replace(/\./g, '_dot_');
-    return `assets/resource/user_${sanitizedEmail}.json`;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost') 
+      return `assets/resource/user_${sanitizedEmail}.json`;
+
+    return `resource/user_${sanitizedEmail}.json`;
   }
 
   getUserState(userEmail?: string) {

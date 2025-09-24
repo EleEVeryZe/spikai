@@ -29,17 +29,18 @@ export class SidenavComponent implements OnInit {
 
   @ViewChild('drawer') drawer!: MatSidenav;
   icon: DRAWER_ICON = 'BACK';
+  navigateToUrl: string = "";
 
   constructor(private readonly sharedService: SharedUiService, private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
-    this.sharedService.trigger$.subscribe((changedIcon) => {
-      this.icon = changedIcon;
+    this.sharedService.trigger$.subscribe((navigateToUrl) => {
+      this.navigateToUrl = navigateToUrl;
     });
   }
 
   goBack() {
-    this.icon = 'SANDWISH';
-    this.router.navigate(['/']);
+    this.router.navigate(['/' + this.navigateToUrl]);
+    this.navigateToUrl = "";
   }
 }

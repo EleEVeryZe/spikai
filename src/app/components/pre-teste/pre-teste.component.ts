@@ -9,6 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Resposta } from '../../model/resposta.model';
+import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
 
 @Component({
@@ -31,11 +32,15 @@ export class PreTesteComponent implements OnInit {
   
   idCurso: string | null = null;
 
-  constructor(private route: ActivatedRoute, private temasService: TemasService, private snackBar: MatSnackBar, private router: Router ) { }
+  constructor(private readonly sharedUi: SharedUiService, private route: ActivatedRoute, private temasService: TemasService, private snackBar: MatSnackBar, private router: Router ) { }
 
   ngOnInit(): void {
+    
+
     this.route.paramMap.subscribe((params) => {
       this.idCurso = params.get('id');
+      this.sharedUi.goBackTo("tema/" + this.idCurso);
+
       this.temasService.getAtividade(this.idCurso + "", "Pré-teste").subscribe(atvd => {
         this.perguntas = atvd?.perguntas.slice(0,3) //TODO: remover esse slice. Somente para teste
         this.carregarProximaPergunta();
@@ -48,8 +53,10 @@ export class PreTesteComponent implements OnInit {
       this.perguntaAtual = this.perguntas[this.indiceAtual];
       
       const respostaAnterior = this.respostasDoUsuario.find(r => r.perguntaIndex === this.indiceAtual);
-      this.opcaoSelecionada = respostaAnterior ? respostaAnterior.opcaoSelecionada : null;
-      
+      if (respostaAnterior) 
+        this.opcaoSelecionada = respostaAnterior.opcaoSelecionada;
+      else 
+        this.opcaoSelecionada = this.perguntaAtual.opcaoSelecionada;
     } else {
       this.quizFinalizado = true;
     }
@@ -119,7 +126,6 @@ export class PreTesteComponent implements OnInit {
           console.log('User registered:', res);
           this.showMessage('Resultado salvo com sucesso!');
           this.router.navigate(['/tema/' + this.idCurso]);
-
         },
         error: (err: any) => {
           console.error(err);

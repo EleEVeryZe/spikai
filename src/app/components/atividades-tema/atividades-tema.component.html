@@ -30,7 +30,7 @@
         <p class="atividade-status" *ngIf="!atividade.concluida">
           <mat-icon class="status-pending">radio_button_unchecked</mat-icon> Pendente
         </p>
-        <button mat-flat-button color="primary" class="action-button" [disabled]="atividade.concluida" (click)="iniciarAtividade(atividade.nome)">
+        <button mat-flat-button color="primary" class="action-button" (click)="iniciarAtividade(atividade.nome)">
           {{ atividade.concluida ? 'Revisar' : 'Iniciar' }}
         </button>
       </mat-card-content>

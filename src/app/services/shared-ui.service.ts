@@ -6,10 +6,14 @@ import { DRAWER_ICON } from '../util/constants';
   providedIn: 'root'
 })
 export class SharedUiService {
-  private readonly trigger = new Subject<DRAWER_ICON>();
+  private readonly trigger = new Subject<string>();
   trigger$ = this.trigger.asObservable();
 
   changeDrawerIconAndFunction(icon: DRAWER_ICON) {
     this.trigger.next(icon);
+  }
+
+  goBackTo(whereURL: string) {
+    this.trigger.next(whereURL);  
   }
 }

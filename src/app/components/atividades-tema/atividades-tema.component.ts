@@ -28,9 +28,7 @@ export class AtividadesTemaComponent {
         this.temasService.getTema(temaId).subscribe((tema: any) => {
           this.tema = tema;
           if (tema.id === 2) {
-            // Exemplo: Simple Present é o tema 2
             this.temasService.getTema('1').subscribe((prevTema) => {
-              // Verifica o tema 1 (Verbo To Be)
               this.temaAnteriorConcluido = prevTema?.completo ?? false;
             });
           } else {
@@ -41,7 +39,6 @@ export class AtividadesTemaComponent {
     });
   }
 
-  // Calcula o progresso do tema em porcentagem
   getTemaProgress(): number {
     if (!this.tema || !this.tema.atividades.length) {
       return 0;
@@ -50,7 +47,6 @@ export class AtividadesTemaComponent {
     return Math.round((atividadesConcluidas / this.tema.atividades.length) * 100);
   }
 
-  // Retorna o ícone apropriado para cada tipo de atividade
   getActivityIcon(activityName: 'Pré-teste' | 'Conteúdo' | 'Quizz' | 'Pós-teste'): string {
     switch (activityName) {
       case 'Pré-teste':

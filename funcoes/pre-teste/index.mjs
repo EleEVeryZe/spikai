@@ -11,22 +11,47 @@ const headers = {
 
 const formatarNomeArquivo = (email) => {
   if (!email) {
-    throw new Error('Email não fornecido.');
+    throw new Error("Email não fornecido.");
   }
 
   const nomeFormatado = email
     .toLowerCase()
-    .replace(/@/g, '_at_')
-    .replace(/\./g, '_dot_')
-    .replace(/[^a-z0-9_]/g, ''); // Remove qualquer outro caractere não-alfanumérico
-  
+    .replace(/@/g, "_at_")
+    .replace(/\./g, "_dot_")
+    .replace(/[^a-z0-9_]/g, ""); // Remove qualquer outro caractere não-alfanumérico
+
   return `resource/user_${nomeFormatado}.json`;
 };
 
 export const handler = async (event) => {
   try {
     // 1. Analisa o corpo da requisição para obter os dados do usuário
-    const body = JSON.parse(event.body);
+    if (event.httpMethod === "OPTIONS") {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ message: "Preflight OK" }),
+      };
+    }
+
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: "Corpo da requisição vazio." }),
+      };
+    }
+
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (err) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: "Body inválido." }),
+      };
+    }
     const { email, idCurso, respostas } = body;
 
     // 2. Formata o email para obter a chave do arquivo no S3
@@ -41,7 +66,7 @@ export const handler = async (event) => {
         Key: s3Key,
       });
       const response = await s3Client.send(getCommand);
-      
+
       const streamToString = (stream) =>
         new Promise((resolve, reject) => {
           const chunks = [];
@@ -52,9 +77,8 @@ export const handler = async (event) => {
 
       const fileContent = await streamToString(response.Body);
       dadosExistentes = JSON.parse(fileContent);
-
     } catch (e) {
-      if (e.name === 'NoSuchKey') {
+      if (e.name === "NoSuchKey") {
         // O arquivo não existe, então vamos criar um novo
         console.log(`Arquivo não encontrado: ${s3Key}. Criando novo...`);
       } else {
@@ -62,16 +86,19 @@ export const handler = async (event) => {
         throw e;
       }
     }
-
-    const curso = dadosExistentes.cursos.find(curso => curso.id === idCurso);
-    respostas.forEach(resposta => {
-      curso.atividades[0].perguntas[resposta.perguntaIndex].opcaoSelecionada = resposta.opcaoSelecionada
-    });
     
+    const curso = dadosExistentes.cursos.find((curso) => curso.id === idCurso);
+    curso.concluida = true;
+    curso.dataConclusao = new Date().toISOString();
+    
+    respostas.forEach((resposta) => {
+      curso.atividades[0].perguntas[resposta.perguntaIndex].opcaoSelecionada = resposta.opcaoSelecionada;
+    });
+
     // 4. Adiciona as novas respostas aos dados existentes
     const dadosParaSalvar = {
       ...dadosExistentes,
-      ultimaAtualizacao: new Date().toISOString()
+      ultimaAtualizacao: new Date().toISOString(),
     };
 
     // 5. Salva o objeto atualizado de volta no S3
@@ -90,7 +117,6 @@ export const handler = async (event) => {
       headers,
       body: JSON.stringify({ message: "Respostas salvas com sucesso!", file: s3Key }),
     };
-
   } catch (error) {
     console.error("Erro:", error);
     return {

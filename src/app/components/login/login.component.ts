@@ -80,8 +80,8 @@ export class LoginComponent {
       this.usuarioRepositoryService.onLogin(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: (res: any) => {
           console.log('Login successful:', res);
-          this.auth.login(res.token);
-          this.router.navigate(['/principal']);
+          this.auth.login(res.token, this.loginForm.value.email);
+          this.router.navigate(['/']);
         },
         error: (err) => {
           console.error(err);

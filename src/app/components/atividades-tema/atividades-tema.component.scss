@@ -1,80 +1,209 @@
-.container {
-  max-width: 800px;
+/* Cores e Fontes Globais */
+:root {
+  --primary-color: #6200ea; /* Roxo vibrante */
+  --secondary-color: #03dac6; /* Ciano para destaque */
+  --text-dark: #333;
+  --text-light: #555;
+  --background-light: #f5f5f5;
+  --card-background: #ffffff;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+}
+
+.main-container {
+  max-width: 960px;
   margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Roboto', sans-serif; /* Use Roboto para Angular Material */
+  color: var(--text-dark);
 }
 
-.tema-card {
-  padding: 20px;
+/* Header do Tema */
+.tema-header {
+  margin-bottom: 30px;
 }
 
-.tema-title {
+.header-card {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #7c4dff 100%);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
-  font-size: 2.5em;
-  margin-bottom: 10px;
 }
 
-.atividades-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  padding: 10px 0;
-}
-
-.atividade-card {
-  transition: transform 0.2s ease-in-out;
-}
-
-.atividade-card:hover {
-  transform: translateY(-5px);
-}
-
-.atividade-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.mat-icon.concluida {
-  color: #4caf50; /* Verde */
-  font-size: 2.5em;
-}
-
-.mat-icon.pendente {
-  color: #9e9e9e; /* Cinza */
-  font-size: 2.5em;
-}
-
-.details h2 {
-  margin: 0;
-  font-size: 1.5em;
-  color: #555;
-}
-
-.details p {
-  margin: 5px 0 0;
-  color: #777;
-  font-size: 0.9em;
-}
-
-.info-card {
-  text-align: center;
-  padding: 50px;
-}
-
-.info-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.info-content mat-icon {
+.tema-title-visual {
   font-size: 3em;
-  height: 3em;
-  width: 3em;
+  margin-bottom: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
-.info-content h2 {
-  margin: 0;
-  color: #d32f2f; /* Vermelho para erro */
+.tema-description {
+  font-size: 1.1em;
+  margin-bottom: 20px;
+  
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+mat-progress-bar {
+  width: 70%;
+  height: 10px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3); /* Fundo claro para a barra */
+}
+
+/* Cor da barra de progresso */
+mat-progress-bar .mat-progress-bar-fill::after {
+  background-color: var(--secondary-color);
+}
+
+.progress-text {
+  font-weight: bold;
+  font-size: 1em;
+}
+
+/* Grid de Atividades */
+.atividades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 ou 3 colunas dependendo do espaço */
+  gap: 25px;
+}
+
+.atividade-card-visual {
+  background-color: var(--card-background);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza conteúdo */
+  text-align: center;
+  padding: 25px;
+}
+
+.atividade-card-visual:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.atividade-icon-wrapper {
+  margin-bottom: 15px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activity-icon {
+  font-size: 3.5em; /* Ícones maiores */
+  width: 1em;
+  height: 1em;
+}
+
+/* Cores dos ícones */
+.activity-icon.concluida {
+  color: var(--success-color);
+  background-color: rgba(76, 175, 80, 0.1); /* Fundo claro para o ícone concluído */
+}
+
+.activity-icon.pendente {
+  color: var(--warning-color);
+  background-color: rgba(255, 152, 0, 0.1); /* Fundo claro para o ícone pendente */
+}
+
+.atividade-title-visual {
+  font-size: 1.8em;
+  margin: 10px 0;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.atividade-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95em;
+  margin-bottom: 15px;
+}
+
+.status-check {
+  color: var(--success-color);
+}
+
+.status-pending {
+  color: var(--warning-color);
+}
+
+.action-button {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+.action-button.mat-flat-button.mat-primary[disabled] {
+  background-color: #bdbdbd !important; /* Cinza para botão desabilitado */
+  color: #616161 !important;
+  cursor: not-allowed;
+}
+
+
+/* Mensagens de Info/Erro/Bloqueado */
+.info-message {
+  margin-top: 50px;
+}
+
+.error-card, .locked-card {
+  text-align: center;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.error-card {
+  background-color: #ffebee; /* Vermelho claro */
+  color: var(--error-color);
+}
+
+.locked-card {
+  background-color: #e3f2fd; /* Azul claro */
+  color: var(--primary-color);
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.message-icon {
+  font-size: 4em;
+  height: 1em;
+  width: 1em;
+}
+
+.message-content h2 {
+  font-size: 2em;
+  margin-bottom: 5px;
+}
+
+.message-content p {
+  font-size: 1.1em;
+  line-height: 1.5;
+  opacity: 0.9;
 }

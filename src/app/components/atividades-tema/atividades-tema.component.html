@@ -1,43 +1,59 @@
-<div class="container" *ngIf="tema && temaAnteriorConcluido">
-  <mat-card class="tema-card">
-    <mat-card-header>
-      <mat-card-title class="tema-title">{{ tema.nome }}</mat-card-title>
-    </mat-card-header>
-    <mat-divider></mat-divider>
-    <mat-card-content class="atividades-list">
-      <mat-card class="atividade-card" *ngFor="let atividade of tema.atividades">
-        <div class="atividade-content">
-          <mat-icon
-            [ngClass]="{'concluida': atividade.concluida, 'pendente': !atividade.concluida}"
-          >
-            {{ atividade.concluida ? 'check_circle' : 'radio_button_unchecked' }}
-          </mat-icon>
-          <div class="details">
-            <h2>{{ atividade.nome }}</h2>
-            <p *ngIf="atividade.concluida">Concluído em: {{ atividade.dataConclusao | date: 'dd/MM/yyyy' }}</p>
-          </div>
+<div class="main-container">
+  <div class="tema-header" *ngIf="tema">
+    <mat-card class="header-card">
+      <mat-card-content>
+        <h1 class="tema-title-visual">{{ tema.nome }}</h1>
+        <p class="tema-description">Explore as atividades abaixo para dominar este tópico.</p>
+        <div class="progress-bar-container">
+          <mat-progress-bar mode="determinate" [value]="getTemaProgress()"></mat-progress-bar>
+          <span class="progress-text">{{ getTemaProgress() }}% Completo</span>
         </div>
-      </mat-card>
-    </mat-card-content>
-  </mat-card>
-</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
-<div class="container" *ngIf="!tema">
-  <mat-card class="info-card">
-    <mat-card-content class="info-content">
-      <mat-icon color="warn">error</mat-icon>
-      <h2>Tema não encontrado.</h2>
-      <p>Verifique o ID do tema na URL.</p>
-    </mat-card-content>
-  </mat-card>
-</div>
+  <div class="atividades-grid" *ngIf="tema && temaAnteriorConcluido">
+    <mat-card class="atividade-card-visual" *ngFor="let atividade of tema.atividades">
+      <div class="atividade-icon-wrapper">
+        <mat-icon
+          class="activity-icon"
+          [ngClass]="{'concluida': atividade.concluida, 'pendente': !atividade.concluida}"
+        >
+          {{ getActivityIcon(atividade.nome) }}
+        </mat-icon>
+      </div>
+      <mat-card-content>
+        <h2 class="atividade-title-visual">{{ atividade.nome }}</h2>
+        <p class="atividade-status" *ngIf="atividade.concluida">
+          <mat-icon class="status-check">check_circle</mat-icon> Concluído em: {{ atividade.dataConclusao | date: 'dd/MM/yyyy' }}
+        </p>
+        <p class="atividade-status" *ngIf="!atividade.concluida">
+          <mat-icon class="status-pending">radio_button_unchecked</mat-icon> Pendente
+        </p>
+        <button mat-flat-button color="primary" class="action-button" [disabled]="atividade.concluida" (click)="iniciarAtividade(atividade.nome)">
+          {{ atividade.concluida ? 'Revisar' : 'Iniciar' }}
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
-<div class="container" *ngIf="tema && !temaAnteriorConcluido">
-  <mat-card class="info-card">
-    <mat-card-content class="info-content">
-      <mat-icon color="primary">lock</mat-icon>
-      <h2>Tema Bloqueado</h2>
-      <p>Você precisa completar o tema anterior para acessar "{{ tema.nome }}".</p>
-    </mat-card-content>
-  </mat-card>
+  <div class="info-message" *ngIf="!tema">
+    <mat-card class="error-card">
+      <mat-card-content class="message-content">
+        <mat-icon color="warn" class="message-icon">sentiment_dissatisfied</mat-icon>
+        <h2>Oops! Tema não encontrado.</h2>
+        <p>Parece que o tema que você está procurando não existe. Verifique o ID na URL.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="info-message" *ngIf="tema && !temaAnteriorConcluido">
+    <mat-card class="locked-card">
+      <mat-card-content class="message-content">
+        <mat-icon color="primary" class="message-icon">lock</mat-icon>
+        <h2>Tema Bloqueado</h2>
+        <p>Você precisa completar o tema anterior para acessar "{{ tema.nome }}". Continue firme nos estudos!</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>

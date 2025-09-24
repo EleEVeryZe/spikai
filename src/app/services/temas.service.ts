@@ -1,46 +1,32 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { Atividade } from '../model/atividade.model';
+import { Resposta } from '../model/resposta.model';
 import { Tema } from '../model/tema.model';
+import { UsuarioRepositoryService } from './usuario.repository.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class TemasService {
-
-  // Simulação de dados
-  private temas: Tema[] = [
-    {
-      id: 1,
-      nome: 'Verbo To Be',
-      atividades: [
-        { nome: 'Pré-teste', concluida: true, dataConclusao: new Date('2025-09-10T10:00:00') },
-        { nome: 'Conteúdo', concluida: true, dataConclusao: new Date('2025-09-10T11:00:00') },
-        { nome: 'Quizz', concluida: true, dataConclusao: new Date('2025-09-10T12:00:00') },
-        { nome: 'Pós-teste', concluida: false }
-      ],
-      completo: false
-    },
-    {
-      id: 2,
-      nome: 'Simple Present',
-      atividades: [
-        { nome: 'Pré-teste', concluida: false },
-        { nome: 'Conteúdo', concluida: false },
-        { nome: 'Quizz', concluida: false },
-        { nome: 'Pós-teste', concluida: false }
-      ],
-      completo: false
-    }
-  ];
+  constructor(private httpClient: HttpClient, private usuarioRepositoryService: UsuarioRepositoryService) {}
 
   getTemas(): Observable<Tema[]> {
-    return of(this.temas);
+     return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos ));
   }
 
-  getTema(id: number): Observable<Tema | undefined> {
-    const tema = this.temas.find(t => t.id === id);
-    return of(tema);
+  getTema(id: string): Observable<Tema | undefined> {
+    return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos.find((cur:any) => cur.id == id)));
   }
 
+  getAtividade(idTema: string, nomeAtividade: string): Observable<Atividade | undefined> {
+    return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos.find((cur:any) => cur.id == idTema).atividades.find((atv:any) => atv.nome == nomeAtividade)));
+  }
+
+  responderAtividade(respostas: Resposta[], idCurso: string | null ) {
+    const email = this.usuarioRepositoryService.getUserEmail();
+    return this.httpClient.post("https://vm6v7qxux3.execute-api.sa-east-1.amazonaws.com/default/pre-teste", { email, respostas, idCurso });
+  }
 }

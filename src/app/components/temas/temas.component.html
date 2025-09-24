@@ -2,7 +2,7 @@
   <mat-card 
     class="tema-card"
     *ngFor="let tema of temas"
-    (click)="navegarParaTema(tema.nome)"
+    (click)="navegarParaTema(tema.id)"
     matRipple
   >
     <h2>{{ tema.titulo }}</h2>

@@ -14,13 +14,23 @@ export class AuthService {
     return this.isLoggedIn;
   }
 
-  public login(token: string): void {
+  public login(token: string, userEmail: string): void {
     this.isLoggedIn = true;
     localStorage.setItem('authToken', token);
+    this.saveUserState({ email: userEmail });
   }
 
   public logout(): void {
     this.isLoggedIn = false;
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userState');
+  }
+
+  public loadUserState() {
+    return JSON.parse(localStorage.getItem('userState') || "");
+  }
+
+  public saveUserState(userState: any) {
+    localStorage.setItem('userState', JSON.stringify(userState));
   }
 }

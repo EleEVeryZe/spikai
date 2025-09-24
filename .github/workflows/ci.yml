@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-upload:
-    if: contains(github.event.head_commit.message, 'website:')
+    if: contains(github.event.head_commit.message, 'website:') || contains(github.event.head_commit.message, 'all:')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -29,8 +29,8 @@ jobs:
         run: |
           aws s3 sync ./dist/stock-marquetim/browser s3://spikai/ --delete --exclude "resource/*" --exclude "resource"
 
-  deploy-lambda:
-    if: contains(github.event.head_commit.message, 'lambda-cadastro:')
+  deploy-lambda-cadastro:
+    if: contains(github.event.head_commit.message, 'lambda-cadastro:') || contains(github.event.head_commit.message, 'all:')
     runs-on: ubuntu-latest
 
     steps:
@@ -65,7 +65,7 @@ jobs:
             --zip-file fileb://lambda-cadastro.zip
 
   deploy-lambda-login:
-      if: contains(github.event.head_commit.message, 'lambda-login:')
+      if: contains(github.event.head_commit.message, 'lambda-login:') || contains(github.event.head_commit.message, 'all:')
       runs-on: ubuntu-latest
 
       steps:
@@ -98,3 +98,38 @@ jobs:
             aws lambda update-function-code \
               --function-name login \
               --zip-file fileb://lambda-login.zip
+  deploy-lambda-pre-teste:
+      if: contains(github.event.head_commit.message, 'lambda-pre-teste:') || contains(github.event.head_commit.message, 'all:')
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '18'
+
+        - name: Install dependenciesss
+          working-directory: funcoes/pre-teste
+          run: npm install
+
+        - name: Zip Lambda function
+          working-directory: funcoes/pre-teste
+          run: zip -r lambda-pre-teste.zip index.mjs node_modules
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v2
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION }}
+      
+        
+        - name: Deploy to AWS Lambda
+          working-directory: funcoes/pre-teste
+          run: |
+            aws lambda update-function-code \
+              --function-name pre-teste \
+              --zip-file fileb://lambda-pre-teste.zip

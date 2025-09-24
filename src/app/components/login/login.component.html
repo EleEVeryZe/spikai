@@ -1,67 +1,78 @@
 <div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <div class="flex flex-col items-center p-6">
-        <svg class="w-20 h-20 mb-4" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M70 20 C 90 20 90 50 70 50 C 50 50 50 80 30 80 C 10 80 10 50 30 50 C 50 50 50 20 70 20 Z"
-            fill="none"
-            stroke="#A855F7"
-            stroke-width="8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M70 20 C 90 20 90 50 70 50 C 50 50 50 80 30 80"
-            fill="none"
-            stroke="url(#gradient)"
-            stroke-width="8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color: #a855f7; stop-opacity: 1" />
-              <stop offset="50%" style="stop-color: #3b82f6; stop-opacity: 1" />
-              <stop offset="100%" style="stop-color: #10b981; stop-opacity: 1" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <h1 class="text-3xl font-extrabold text-center text-teal-600 mb-2 font-inter">SpikAI</h1>
-        <p class="text-gray-500 text-center mb-6">Aprenda idiomas com o poder da IA e pedagogia moderna.</p>
-        <p class="text-gray-500 text-center mb-6">Entre ou crie sua conta para começar</p>
-      </div>
-      <mat-divider></mat-divider>
-    </mat-card-header>
-    <mat-card-content>
-      <form class="login-form">
-        <mat-form-field class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput placeholder="seu-email@exemplo.com" [formControl]="email" required />
-          <mat-error *ngIf="email.invalid && email.touched"> Por favor, insira um email válido. </mat-error>
-        </mat-form-field>
+  <form (ngSubmit)="onSubmit()">
+    <mat-card class="login-card">
+      <mat-card-header>
+        <div class="flex flex-col items-center p-6">
+          <svg class="w-20 h-20 mb-4" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M70 20 C 90 20 90 50 70 50 C 50 50 50 80 30 80 C 10 80 10 50 30 50 C 50 50 50 20 70 20 Z"
+              fill="none"
+              stroke="#A855F7"
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M70 20 C 90 20 90 50 70 50 C 50 50 50 80 30 80"
+              fill="none"
+              stroke="url(#gradient)"
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color: #a855f7; stop-opacity: 1" />
+                <stop offset="50%" style="stop-color: #3b82f6; stop-opacity: 1" />
+                <stop offset="100%" style="stop-color: #10b981; stop-opacity: 1" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <h1 class="text-3xl font-extrabold text-center text-teal-600 mb-2 font-inter">SpikAI</h1>
+          <p class="text-gray-500 text-center mb-6">Aprenda idiomas com o poder da IA e pedagogia moderna.</p>
+          <p class="text-gray-500 text-center mb-6">Entre ou crie sua conta para começar</p>
+        </div>
+        <mat-divider></mat-divider>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="login-form">
+          <mat-form-field class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="seu-email@exemplo.com" [formControl]="email" required />
+            <mat-error *ngIf="email.invalid && email.touched"> Por favor, insira um email válido. </mat-error>
+          </mat-form-field>
 
-        <mat-form-field class="full-width">
-          <mat-label>Senha</mat-label>
-          <input matInput [type]="hide ? 'password' : 'text'" [formControl]="password" required />
-          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-            <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+          <mat-form-field class="full-width">
+            <mat-label>Senha</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" [formControl]="password" required />
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+            </button>
+            <mat-error *ngIf="password.invalid && password.touched"> A senha é obrigatória. </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions class="p-6 pt-0 flex flex-col items-center">
+        <mat-card-actions class="p-6 pt-0 flex flex-col items-center">
+          <button
+            mat-raised-button
+            color="primary"
+            class="w-full h-12 pt-2 rounded-lg font-bold btn-login"
+            [disabled]="!loginForm.valid"
+            type="submit"
+          >
+            Entrar
           </button>
-          <mat-error *ngIf="password.invalid && password.touched"> A senha é obrigatória. </mat-error>
-        </mat-form-field>
-      </form>
-    </mat-card-content>
-    
-    <mat-card-actions class="p-6 pt-0 flex flex-col items-center">
-        <button mat-raised-button color="primary" class="w-full h-12 pt-2 rounded-lg font-bold btn-login" [disabled]="!loginForm.valid" (click)="onSubmit()">
-      Entrar
-    </button>
-      <div class="mt-4 text-center">
-        <p class="text-sm text-gray-600 nomg">Não tem cadastro?</p>
-        <button mat-stroked-button color="accent" class="w-full rounded-lg font-bold" (click)="onRegister()">Criar Conta</button>
-      </div>
-    </mat-card-actions>
+        </mat-card-actions>
 
-    <mat-card-actions> </mat-card-actions>
-  </mat-card>
+        <div class="mt-4 text-center">
+          <p class="text-sm text-gray-600 nomg">Não tem cadastro?</p>
+          <button mat-stroked-button color="accent" class="w-full rounded-lg font-bold" (click)="onRegister()">Criar Conta</button>
+        </div>
+      </mat-card-actions>
+
+      <mat-card-actions> </mat-card-actions>
+    </mat-card>
+  </form>
 </div>

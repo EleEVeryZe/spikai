@@ -6,6 +6,7 @@ import { ImovelDetailsComponent } from "./components/imovel-details/imovel-detai
 import { LoginComponent } from "./components/login/login.component";
 import { MainComponent } from "./components/main/main.component";
 import { NotFoundComponent } from "./components/not-found/not-found.component";
+import { PreTesteComponent } from "./components/pre-teste/pre-teste.component";
 import { TemasComponent } from "./components/temas/temas.component";
 import { AuthGuard } from "./services/auth.guard";
 
@@ -23,7 +24,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: '', component: TemasComponent },
-      { path: 'tema/:id', component: AtividadesTemaComponent }
+      { path: 'tema/:id', component: AtividadesTemaComponent },
+      { path: ':id/Pré-teste', component: PreTesteComponent }
     ],
   },
 

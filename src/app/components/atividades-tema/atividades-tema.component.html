@@ -1,8 +1,26 @@
 <div class="main-container">
   <div class="tema-header" *ngIf="tema">
+    <mat-card *ngIf="isVideoVisible" class="video-player-card">
+      <mat-card-header>
+        <mat-card-title>Conteúdo de Vídeo</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <iframe
+          width="100%"
+          height="400"
+          [src]="videoUrlSafe"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" (click)="fecharVideo()">Voltar para Atividades</button>
+      </mat-card-actions>
+    </mat-card>
     <mat-card class="header-card">
       <mat-card-content>
-        <h1 class="tema-title-visual">{{ tema.nome }}</h1>
+        <h1 class="tema-title-visual">{{ tema.titulo }}</h1>
         <p class="tema-description">Explore as atividades abaixo para dominar este tópico.</p>
         <div class="progress-bar-container">
           <mat-progress-bar mode="determinate" [value]="getTemaProgress()"></mat-progress-bar>
@@ -15,23 +33,20 @@
   <div class="atividades-grid" *ngIf="tema && temaAnteriorConcluido">
     <mat-card class="atividade-card-visual" *ngFor="let atividade of tema.atividades">
       <div class="atividade-icon-wrapper">
-        <mat-icon
-          class="activity-icon"
-          [ngClass]="{'concluida': atividade.concluida, 'pendente': !atividade.concluida}"
-        >
+        <mat-icon class="activity-icon" [ngClass]="{ concluida: atividade.concluida, pendente: !atividade.concluida }">
           {{ getActivityIcon(atividade.nome) }}
         </mat-icon>
       </div>
       <mat-card-content>
         <h2 class="atividade-title-visual">{{ atividade.nome }}</h2>
         <p class="atividade-status" *ngIf="atividade.concluida">
-          <mat-icon class="status-check">check_circle</mat-icon> Concluído em: {{ atividade.dataConclusao | date: 'dd/MM/yyyy' }}
+          <mat-icon class="status-check">check_circle</mat-icon> Concluído em: {{ atividade.dataConclusao | date : "dd/MM/yyyy" }}
         </p>
         <p class="atividade-status" *ngIf="!atividade.concluida">
           <mat-icon class="status-pending">radio_button_unchecked</mat-icon> Pendente
         </p>
         <button mat-flat-button color="primary" class="action-button" (click)="iniciarAtividade(atividade.nome)">
-          {{ atividade.concluida ? 'Revisar' : 'Iniciar' }}
+          {{ atividade.concluida ? "Revisar" : "Iniciar" }}
         </button>
       </mat-card-content>
     </mat-card>

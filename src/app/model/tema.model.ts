@@ -5,4 +5,5 @@ export interface Tema {
   nome: string;
   atividades: Atividade[];
   completo: boolean;
+  titulo: string;
 }

@@ -5,35 +5,50 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { YouTubePlayerModule } from '@angular/youtube-player';
 import { Tema } from '../../model/tema.model';
 import { TemasService } from '../../services/temas.service';
 
 @Component({
   selector: 'app-atividades-tema',
-  imports: [MatProgressBarModule, MatButtonModule, CommonModule, MatCardModule, MatIconModule, MatDividerModule, MatButtonModule],
+  imports: [
+    MatProgressBarModule,
+    MatButtonModule,
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    MatDividerModule,
+    MatButtonModule,
+    YouTubePlayerModule,
+  ],
   templateUrl: './atividades-tema.component.html',
   styleUrl: './atividades-tema.component.scss',
 })
 export class AtividadesTemaComponent {
   tema: Tema | undefined;
   temaAnteriorConcluido = true;
+  isVideoVisible: boolean = false;
 
-  constructor(private route: ActivatedRoute, private temasService: TemasService, private router: Router ) {}
+  videoUrlSafe!: SafeResourceUrl;
+
+  constructor(private sanitizer: DomSanitizer, private route: ActivatedRoute, private temasService: TemasService, private router: Router) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const temaId = params.get('id');
       if (temaId) {
-        this.temasService.getTema(temaId).subscribe((tema: any) => {
-          this.tema = tema;
-          if (tema.id === 2) {
-            this.temasService.getTema('1').subscribe((prevTema) => {
-              this.temaAnteriorConcluido = prevTema?.completo ?? false;
-            });
-          } else {
-            this.temaAnteriorConcluido = true; // Primeiro tema sempre liberado
-          }
+        this.temasService.getTemas().subscribe((temas: any) => {
+          const temaIdx = temas.findIndex((cur: any) => cur.id == temaId);
+          this.tema = temas[temaIdx];
+
+          try {
+            const videoId = temas[temaIdx].atividades[1].videos[0].videoId;
+            this.videoUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`);
+          } catch {}
+
+          if (temaIdx > 0) this.temaAnteriorConcluido = temas[temaIdx - 1]?.completo ?? false;
         });
       }
     });
@@ -63,6 +78,17 @@ export class AtividadesTemaComponent {
   }
 
   iniciarAtividade(nomeAtividade: string) {
-    this.router.navigate(['/' + this.tema?.id + "/" + nomeAtividade]);
+    if (nomeAtividade.toLocaleLowerCase() == 'conteúdo') {
+      this.isVideoVisible = true;
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    } else this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade.toLocaleLowerCase()]);
+  }
+
+  fecharVideo() {
+    this.isVideoVisible = false;
   }
 }

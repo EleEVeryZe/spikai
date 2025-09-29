@@ -185,13 +185,13 @@ export const cursos = [
                 opcaoCorreta: 0
             }
         ],
-        concluida: true },
+        concluida: false },
       { nome: "Conteúdo", videos: [
         {
-            url: "https://www.youtube.com/watch?v=SXuBaxqsinQ" 
+            videoId: "SXuBaxqsinQ" 
         }
-      ], concluida: true },
-      { nome: "Quizz", concluida: true },
+      ], concluida: false },
+      { nome: "Quizz", concluida: false },
       { nome: "Pós-teste", concluida: false },
     ],
     completo: false,

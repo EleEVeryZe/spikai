@@ -194,20 +194,20 @@
               "opcaoCorreta": 0
             }
           ],
-          "concluida": true
+          "concluida": false
         },
         {
           "nome": "Conteúdo",
           "videos": [
             {
-              "url": "https://www.youtube.com/watch?v=SXuBaxqsinQ"
+              "videoId": "SXuBaxqsinQ"
             }
           ],
-          "concluida": true
+          "concluida": false
         },
         {
           "nome": "Quizz",
-          "concluida": true
+          "concluida": false
         },
         {
           "nome": "Pós-teste",

@@ -5,193 +5,204 @@ export const cursos = [
     titulo: "To Be",
     concluido: 0,
     atividades: [
-      { nome: "Pré-teste", 
+      {
+        nome: "Pré-teste",
         perguntas: [
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "My room ..........................clean.",
-                opcoes: [
-                    "am",
-                    "is",
-                    "are",
-                    "will",
-                ],
-                opcaoCorreta: 1
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "The cat ......................in the tree.",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 0
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "David and Robert ...........................boys.",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 2
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "My grandmother ...........................sick.",
-                opcoes: [
-                    "am",
-                    "are",
-                    "do",
-                    "is"
-                ],
-                opcaoCorreta: 3
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "Anna ......................my sister",
-                opcoes: [
-                    "am",
-                    "is",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 1
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "The chair ...............short.",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 0
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "The dog .....................under the table.",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 0
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "I ......................under the table.",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 1
-            },
-            {
-                titulo: "Qual das opções abaixo está NEGANDO a frase abaixo",
-                descricao: "They are in my Office.",
-                opcoes: [
-                    "They are in my Office not.",
-                    "They not are in my Office.",
-                    "They are not in my Office.",
-                    "They are in my not Office.",
-                ],
-                opcaoCorreta: 2
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "I ..........................from Spain.",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 1
-            },
-            {
-                titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
-                descricao: "He is a good teacher.",
-                opcoes: [
-                    "He is a good teacher?",
-                    "is he a good teacher?",
-                    "good teacher He is.",
-                    "good teacher a is he.",
-                ],
-                opcaoCorreta: 1
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                dica: "Book está no plural",
-                descricao: "The books .................................on the table",
-                opcoes: [
-                    "is",
-                    "am",
-                    "are",
-                    "do",
-                ],
-                opcaoCorreta: 2
-            },
-            {
-                titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
-                descricao: "It is my pen.",
-                opcoes: [
-                    "is it my pen?",
-                    "am it my pen?",
-                    "are it my pen?",
-                    "do it my pen?",
-                ],
-                opcaoCorreta: 0
-            },
-            {
-                titulo: "Escolha a resposta correta:",
-                descricao: "Tony and Jake ....................................a student.",
-                opcoes: [
-                    "am",
-                    "do",
-                    "is",
-                    "are",
-                ],
-                opcaoCorreta: 3
-            },
-            {
-                titulo: "Qual das opções abaixo está NEGANDO a frase abaixo",
-                descricao: "They are students.",
-                opcoes: [
-                    "They not are students.",
-                    "They are students not.",
-                    "students They are not.",
-                    "They are not students.",
-                ],
-                opcaoCorreta: 3
-            },
-            {
-                titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
-                descricao: "We are brazillians.",
-                opcoes: [
-                    "Are we brazillians?",
-                    "we are brazillians?",
-                    "do we be brazillians?",
-                    "be we brazillians?",
-                ],
-                opcaoCorreta: 0
-            }
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "My room ..........................clean.",
+            opcoes: ["am", "is", "are", "will"],
+            opcaoCorreta: 1,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "The cat ......................in the tree.",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 0,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "David and Robert ...........................boys.",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 2,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "My grandmother ...........................sick.",
+            opcoes: ["am", "are", "do", "is"],
+            opcaoCorreta: 3,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "Anna ......................my sister",
+            opcoes: ["am", "is", "are", "do"],
+            opcaoCorreta: 1,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "The chair ...............short.",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 0,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "The dog .....................under the table.",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 0,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "I ......................under the table.",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 1,
+          },
+          {
+            titulo: "Qual das opções abaixo está NEGANDO a frase abaixo",
+            descricao: "They are in my Office.",
+            opcoes: [
+              "They are in my Office not.",
+              "They not are in my Office.",
+              "They are not in my Office.",
+              "They are in my not Office.",
+            ],
+            opcaoCorreta: 2,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "I ..........................from Spain.",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 1,
+          },
+          {
+            titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
+            descricao: "He is a good teacher.",
+            opcoes: ["He is a good teacher?", "is he a good teacher?", "good teacher He is.", "good teacher a is he."],
+            opcaoCorreta: 1,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            dica: "Book está no plural",
+            descricao: "The books .................................on the table",
+            opcoes: ["is", "am", "are", "do"],
+            opcaoCorreta: 2,
+          },
+          {
+            titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
+            descricao: "It is my pen.",
+            opcoes: ["is it my pen?", "am it my pen?", "are it my pen?", "do it my pen?"],
+            opcaoCorreta: 0,
+          },
+          {
+            titulo: "Escolha a resposta correta:",
+            descricao: "Tony and Jake ....................................a student.",
+            opcoes: ["am", "do", "is", "are"],
+            opcaoCorreta: 3,
+          },
+          {
+            titulo: "Qual das opções abaixo está NEGANDO a frase abaixo",
+            descricao: "They are students.",
+            opcoes: ["They not are students.", "They are students not.", "students They are not.", "They are not students."],
+            opcaoCorreta: 3,
+          },
+          {
+            titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
+            descricao: "We are brazillians.",
+            opcoes: ["Are we brazillians?", "we are brazillians?", "do we be brazillians?", "be we brazillians?"],
+            opcaoCorreta: 0,
+          },
         ],
-        concluida: false },
-      { nome: "Conteúdo", videos: [
-        {
-            videoId: "SXuBaxqsinQ" 
-        }
-      ], concluida: false },
-      { nome: "Quizz", concluida: false },
+        concluida: false,
+      },
+      {
+        nome: "Conteúdo",
+        videos: [
+          {
+            videoId: "SXuBaxqsinQ",
+          },
+        ],
+        concluida: false,
+      },
+      {
+        nome: "Quizz",
+        perguntas: [
+          {
+            id: 1,
+            sentence: "I ___ happy to help you with your homework.",
+            options: ["is", "are", "am", "be"],
+            correctAnswer: "am",
+            tutoringText: "O pronome 'I' (eu) usa sempre a forma 'am'.",
+          },
+          {
+            id: 2,
+            sentence: "They ___ going to the cinema tonight.",
+            options: ["is", "am", "are", "was"],
+            correctAnswer: "are",
+            tutoringText:
+              "Para sujeitos no plural como 'They' (eles/elas), a forma correta é 'are'. 'Is' é só para singular (he, she, it).",
+          },
+          {
+            id: 3,
+            sentence: "She ___ a great English teacher.",
+            options: ["are", "am", "is", "be"],
+            correctAnswer: "is",
+            tutoringText:
+              "O sujeito 'She' (ela) é singular (terceira pessoa), por isso a forma correta é 'is'. Isso vale para 'he', 'she' e 'it'.",
+          },
+          {
+            id: 4,
+            sentence: "The cat ___ sleeping on the windowsill.",
+            options: ["are", "am", "is", "were"],
+            correctAnswer: "is",
+            tutoringText:
+              "O sujeito 'The cat' (o gato) está no singular (é como 'it'), então use 'is'. Sempre combine o verbo com o número (singular/plural) do sujeito.",
+          },
+          {
+            id: 5,
+            sentence: "We ___ ready for the next lesson.",
+            options: ["is", "am", "are", "been"],
+            correctAnswer: "are",
+            tutoringText: "'We' (nós) é plural, então deve ser usado com 'are'. Lembre-se que 'am' é só para 'I'.",
+          },
+          {
+            id: 6,
+            sentence: "You ___ my best friend.",
+            options: ["is", "am", "are", "be"],
+            correctAnswer: "are",
+            tutoringText:
+              "O pronome 'You' (você ou vocês) usa sempre a forma 'are' no presente, mesmo que esteja falando de uma pessoa só.",
+          },
+          {
+            id: 7,
+            sentence: "It ___ very cold outside today.",
+            options: ["are", "am", "is", "be"],
+            correctAnswer: "is",
+            tutoringText: "O pronome 'It' (ele/ela para coisas, clima e animais) é singular, por isso a forma correta é 'is'.",
+          },
+          {
+            id: 8,
+            sentence: "The books ___ on the table.",
+            options: ["is", "am", "are", "was"],
+            correctAnswer: "are",
+            tutoringText: "O sujeito é 'The books' (os livros), que está no plural. Para sujeitos no plural, usamos 'are' no presente.",
+          },
+          {
+            id: 9,
+            sentence: "He ___ at home, studying for his test.",
+            options: ["are", "am", "is", "be"],
+            correctAnswer: "is",
+            tutoringText: "Para 'He' (ele), que é singular, a conjugação correta do verbo 'to be' é 'is'.",
+          },
+          {
+            id: 10,
+            sentence: "My sister and I ___ playing a board game.",
+            options: ["is", "am", "are", "be"],
+            correctAnswer: "are",
+            tutoringText:
+              "Quando você junta sujeitos com 'and' ('My sister and I' - Minha irmã e eu), o sujeito vira plural, por isso a forma correta é 'are'.",
+          },
+        ],
+        concluida: false,
+      },
       { nome: "Pós-teste", concluida: false },
     ],
     completo: false,

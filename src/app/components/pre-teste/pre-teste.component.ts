@@ -35,14 +35,12 @@ export class PreTesteComponent implements OnInit {
   constructor(private readonly sharedUi: SharedUiService, private route: ActivatedRoute, private temasService: TemasService, private snackBar: MatSnackBar, private router: Router ) { }
 
   ngOnInit(): void {
-    
-
     this.route.paramMap.subscribe((params) => {
       this.idCurso = params.get('id');
       this.sharedUi.goBackTo("tema/" + this.idCurso);
 
       this.temasService.getAtividade(this.idCurso + "", "Pré-teste").subscribe(atvd => {
-        this.perguntas = atvd?.perguntas.slice(0,3) //TODO: remover esse slice. Somente para teste
+        this.perguntas = atvd?.perguntas.slice(0,3)
         this.carregarProximaPergunta();
       })
     });

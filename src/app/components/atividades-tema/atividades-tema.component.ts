@@ -85,7 +85,7 @@ export class AtividadesTemaComponent {
         left: 0,
         behavior: 'smooth',
       });
-    } else this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade.toLocaleLowerCase()]);
+    } else this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade]);
   }
 
   fecharVideo() {

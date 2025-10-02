@@ -1,63 +1,71 @@
+@if (isLoading()) {
+  <div class="app-container loading-container">
+    <mat-card class="quiz-card loading-card">
+      <div class="spinner-wrapper">
+        <mat-spinner diameter="50" color="primary"></mat-spinner>
+        <p class="loading-text">Carregando Quiz...</p>
+      </div>
+    </mat-card>
+  </div>
+} @else {
 <div class="app-container">
-  <!-- Main Quiz Card -->
   <mat-card class="quiz-card">
     <mat-card-header class="quiz-header">
       <mat-card-title class="quiz-title"> Quizz </mat-card-title>
     </mat-card-header>
 
-    <!-- Progress Bar -->
-    <mat-progress-bar mode="determinate" [value]="progressPercent()" class="quiz-progress-bar"> </mat-progress-bar>
-
-    <!-- Progress Text -->
+    <!-- Progress -->
+    <mat-progress-bar mode="determinate" [value]="progressPercent()" class="quiz-progress-bar"></mat-progress-bar>
     <div class="progress-text">
-      <span>Question {{ currentQuestionIndex() + 1 }} / {{ quizData.length }}</span>
+      <span>Question {{ currentQuestionIndex() + 1 }} / {{ quizData().length }}</span>
       <span class="questions-left-text">({{ questionsLeft() }} questions left)</span>
     </div>
 
-    <!-- Quiz Content Area -->
     <mat-card-content class="quiz-content">
+      
       @if (currentQuestion()) {
-      <!-- Current Question -->
-      <div class="question-box">
-        <p class="question-label">Complete the sentence:</p>
-        <p class="question-sentence">"{{ currentQuestion().sentence.replace("___", "______") }}"</p>
-      </div>
+        <div class="question-box">
+          <p class="question-label">Complete the sentence:</p>
+          <p class="question-sentence">"{{ currentQuestion().sentence.replace('___', '______') }}"</p>
+        </div>
 
-      <!-- Tutoring/Feedback Area -->
-      @if (isCorrect() !== null) {
-      <div class="feedback-box" [class.feedback-correct]="isCorrect()" [class.feedback-incorrect]="!isCorrect()">
-        @if (isCorrect()) {
-        <p class="feedback-text-bold feedback-text-green">
-          <mat-icon class="icon-check">check_circle</mat-icon>
-          Correct! Excellent job.
-        </p>
-        } @else {
-        <p class="feedback-text-bold feedback-text-red">
-          <mat-icon class="icon-error">cancel</mat-icon>
-          Incorrect Answer.
-        </p>
-        <p class="feedback-text-italic"><span class="feedback-label">Tutoring:</span> {{ feedbackText() }}</p>
+        <!-- Feedback -->
+        @if (isCorrect() !== null) {
+          <div class="feedback-box" [class.feedback-correct]="isCorrect()" [class.feedback-incorrect]="!isCorrect()">
+            @if (isCorrect()) {
+              <p class="feedback-text-bold feedback-text-green">
+                <mat-icon class="icon-check">check_circle</mat-icon>
+                Correct! Excellent job.
+              </p>
+            } @else {
+              <p class="feedback-text-bold feedback-text-red">
+                <mat-icon class="icon-error">cancel</mat-icon>
+                Incorrect Answer.
+              </p>
+              <p class="feedback-text-italic">
+                <span class="feedback-label">Tutoring:</span> {{ feedbackText() }}
+              </p>
+            }
+          </div>
         }
-      </div>
+
+        <!-- Options -->
+        <mat-radio-group (change)="selectOption($event)" [value]="userSelection()" class="options-group">
+          @for (option of currentQuestion().options; track option) {
+            <mat-radio-button [value]="option" class="custom-radio">
+              <span class="option-text">{{ option }}</span>
+            </mat-radio-button>
+          }
+        </mat-radio-group>
       }
 
-      <!-- 4 Options -->
-      <mat-radio-group (change)="selectOption($event)" [value]="userSelection()" class="options-group">
-        @for (option of currentQuestion().options; track option) {
-        <mat-radio-button [value]="option" class="custom-radio">
-          <span class="option-text">{{ option }}</span>
-        </mat-radio-button>
-        }
-      </mat-radio-group>
-      }
-
-      <!-- Doubt Clarification Input & Gemini Interaction -->
-      <div class="doubts-container">
+      <!-- Doubts & Gemini -->
+      <div class="doubts-container" *ngIf="currentProgress() as progress">
         <mat-form-field class="doubts-input-field" appearance="outline">
           <mat-label>Clarify your doubts here (optional)</mat-label>
           <textarea
             matInput
-            [ngModel]="currentProgress().userDoubts"
+            [ngModel]="progress.userDoubts"
             (ngModelChange)="updateUserDoubts($event)"
             rows="2"
             placeholder="e.g., Why is 'are' wrong for 'I'?"
@@ -65,73 +73,58 @@
           <mat-hint>Ask our AI tutor (Gemini) for an instant explanation.</mat-hint>
         </mat-form-field>
 
-        <button
-          mat-mini-fab
-          color="primary"
-          (click)="askGemini()"
-          [disabled]="isGeminiLoading() || !currentProgress().userDoubts"
-          class="gemini-button"
-        >
+        <button mat-mini-fab color="primary" (click)="askDeepSeekUserQuestion()" [disabled]="isGeminiLoading() || !progress.userDoubts" class="gemini-button">
           @if (isGeminiLoading()) {
-          <mat-spinner diameter="20" color="accent"></mat-spinner>
+            <mat-spinner diameter="20" color="accent"></mat-spinner>
           } @else {
-          <mat-icon class="gemini-icon">send</mat-icon>
+            <mat-icon class="gemini-icon">send</mat-icon>
           }
         </button>
       </div>
 
-      <!-- Gemini Response Area -->
       @if (geminiResponse()) {
-      <mat-card class="gemini-response-card">
-        <mat-card-content>
-          <div class="response-header">
-            <mat-icon class="response-icon">auto_fix_high</mat-icon>
-            <span class="response-title">AI Tutor Response</span>
-          </div>
-          <p class="response-text">{{ geminiResponse() }}</p>
-        </mat-card-content>
-      </mat-card>
+        <mat-card class="gemini-response-card">
+          <mat-card-content>
+            <div class="response-header">
+              <mat-icon class="response-icon">auto_fix_high</mat-icon>
+              <span class="response-title">AI Tutor Response</span>
+            </div>
+            <p class="response-text">{{ geminiResponse() }}</p>
+          </mat-card-content>
+        </mat-card>
       }
     </mat-card-content>
 
-    <!-- Action Buttons -->
+    <!-- Actions -->
+    @if (currentQuestionIndex() !== quizData().length) {
     <mat-card-actions class="quiz-actions">
-      <!-- Previous Button -->
       <button mat-stroked-button (click)="previousQuestion()" [disabled]="currentQuestionIndex() === 0" class="action-button-prev">
-        <ng-container>
-          <mat-icon>arrow_back</mat-icon>
-        </ng-container>
-        Previous
+        <mat-icon>arrow_back</mat-icon> Previous
       </button>
-
-      <!-- Next Button -->
       <button
         mat-flat-button
         color="primary"
         (click)="nextQuestion()"
-        [disabled]="userSelection() === null && currentQuestionIndex() < quizData.length"
+        [disabled]="userSelection() === null && currentQuestionIndex() < quizData().length"
         class="action-button-next"
       >
-        @if (isLastQuestion()) { Finish Quiz
-        <ng-container>
-          <mat-icon>done_all</mat-icon>
-        </ng-container>
-        } @else { Next Question
-        <ng-container>
-          <mat-icon>arrow_forward</mat-icon>
-        </ng-container>
+        @if (isLastQuestion()) {
+          Finish Quiz <mat-icon>done_all</mat-icon>
+        } @else {
+          Next Question <mat-icon>arrow_forward</mat-icon>
         }
       </button>
     </mat-card-actions>
+    }
 
-    <!-- Quiz Completion Message -->
-    @if (currentQuestionIndex() === quizData.length) {
-    <div class="quiz-complete-message">
-      <p class="completion-title">🎉 Quiz Complete! 🎉</p>
-      <p class="completion-subtitle">
-        You have navigated through all {{ quizData.length }} questions. Review your progress or ask for clarifications!
-      </p>
-    </div>
+    @if (currentQuestionIndex() === quizData().length) {
+      <div class="quiz-complete-message">
+        <p class="completion-title">🎉 Quiz Finalizado! 🎉</p>
+        <p class="completion-subtitle">
+          Você concluiu todas as {{ quizData().length }} perguntas. Revise o seu progresso!
+        </p>
+      </div>
     }
   </mat-card>
 </div>
+}

@@ -27,7 +27,8 @@ export const routes: Routes = [
       { path: '', component: TemasComponent },
       { path: 'tema/:id', component: AtividadesTemaComponent },
       { path: ':id/Pré-teste', component: PreTesteComponent },
-      { path: ':id/Quizz', component: QuizzIaComponent }
+      { path: ':id/Quizz', component: QuizzIaComponent },
+      { path: ':id/Pós-teste/:ehPos', component: PreTesteComponent },
     ],
   },
 

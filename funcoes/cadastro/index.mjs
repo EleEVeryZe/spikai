@@ -1,5 +1,6 @@
-import { HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { cursos } from "./template.curso";
+import { GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+
+import { cursos } from "./template.curso.mjs";
 const s3 = new S3Client({ region: "sa-east-1" });
 
 const BUCKET_NAME = "spikai";
@@ -8,6 +9,15 @@ const headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+};
+
+const streamToString = async (stream) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+    stream.on('error', reject);
+  });
 };
 
 export const handler = async (event) => {
@@ -67,11 +77,32 @@ export const handler = async (event) => {
       // Continua normalmente se não encontrado
     }
 
-    // 2. Grava novo usuário no S3
+    // 2. Recupera lista de usuários
+     const getObjectCmd = new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: "resource/usuarios.json",
+        });
+
+    const response = await s3.send(getObjectCmd);
+    const userFileContent = await streamToString(response.Body);
+    const userList = JSON.parse(userFileContent);
+    userList.push({ ...userData, ehGrupoControle: userList.length % 2 === 0 });
+
+    //3. Guarda dados do usuário no S3
+    const putUsuarioCommand = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: "resource/usuarios.json",
+      Body: JSON.stringify(userList, null, 2),
+      ContentType: "application/json",
+    });
+
+    await s3.send(putUsuarioCommand);
+
+    // 4. Grava novo usuário no S3
     const putCommand = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: filename,
-      Body: JSON.stringify({ ...userData, cursos }, null, 2),
+      Body: JSON.stringify({ ...userData, password: "", ehGrupoControle: userList.length % 2 === 0, cursos }, null, 2),
       ContentType: "application/json",
     });
 

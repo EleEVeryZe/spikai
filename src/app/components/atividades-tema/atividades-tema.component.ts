@@ -78,6 +78,11 @@ export class AtividadesTemaComponent {
   }
 
   iniciarAtividade(nomeAtividade: string) {
+    if (nomeAtividade.toLocaleLowerCase() == "pós-teste"){
+      this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade + '/true']);
+      return;
+    }
+
     if (nomeAtividade.toLocaleLowerCase() == 'conteúdo') {
       this.isVideoVisible = true;
       window.scrollTo({

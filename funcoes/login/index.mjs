@@ -1,36 +1,33 @@
-import {
-    GetObjectCommand,
-    S3Client
-} from "@aws-sdk/client-s3";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import jwt from "jsonwebtoken";
 
-const s3 = new S3Client({ region: 'sa-east-1' });
+const s3 = new S3Client({ region: "sa-east-1" });
 
 const JWT_SECRET = "SECRET_TO_BE_MODEFIEDTODO";
 
-const BUCKET_NAME = 'spikai';
+const BUCKET_NAME = "spikai";
 
 const streamToString = async (stream) => {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
-    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
-    stream.on('error', reject);
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
+    stream.on("error", reject);
   });
 };
 
 export const handler = async (event) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ message: 'Preflight OK' })
+      body: JSON.stringify({ message: "Preflight OK" }),
     };
   }
 
@@ -38,7 +35,7 @@ export const handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Corpo da requisição vazio.' })
+      body: JSON.stringify({ message: "Corpo da requisição vazio." }),
     };
   }
 
@@ -49,7 +46,7 @@ export const handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Body inválido.' })
+      body: JSON.stringify({ message: "Body inválido." }),
     };
   }
 
@@ -59,13 +56,13 @@ export const handler = async (event) => {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ message: 'Email e senha são obrigatórios.' })
+      body: JSON.stringify({ message: "Email e senha são obrigatórios." }),
     };
   }
 
   // Monta o nome do arquivo com base no e-mail
-  const sanitizedEmail = email.replace(/@/g, '_at_').replace(/\./g, '_dot_');
-  const filename = `resource/user_${sanitizedEmail}.json`;
+  const sanitizedEmail = email.replace(/@/g, "_at_").replace(/\./g, "_dot_");
+  const filename = `resource/usuarios.json`;
 
   try {
     const getObjectCmd = new GetObjectCommand({
@@ -75,13 +72,22 @@ export const handler = async (event) => {
 
     const response = await s3.send(getObjectCmd);
     const userFileContent = await streamToString(response.Body);
-    const userData = JSON.parse(userFileContent);
+    const usuarios = JSON.parse(userFileContent);
+    const userData = usuarios.find((usr) => usr.email === email);
+
+    if (!userData) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: "Usuário ou senha incorreto." }),
+      };
+    }
 
     if (userData.password !== password) {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ message: 'Senha incorreta.' })
+        body: JSON.stringify({ message: "Senha incorreta." }),
       };
     }
 
@@ -89,11 +95,11 @@ export const handler = async (event) => {
     const token = jwt.sign(
       {
         email: userData.email,
-        name: userData.name || 'Usuário'
+        name: userData.name || "Usuário",
       },
       JWT_SECRET,
       {
-        expiresIn: '1h'
+        expiresIn: "1h",
       }
     );
 
@@ -101,25 +107,25 @@ export const handler = async (event) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Login bem-sucedido',
-        token
-      })
+        message: "Login bem-sucedido",
+        token,
+      }),
     };
   } catch (err) {
-    console.error('Erro ao buscar usuário no S3:', err);
+    console.error("Erro ao buscar usuário no S3:", err);
 
-    if (err.name === 'NoSuchKey') {
+    if (err.name === "NoSuchKey") {
       return {
         statusCode: 404,
         headers,
-        body: JSON.stringify({ message: 'Usuário não encontrado.' })
+        body: JSON.stringify({ message: "Usuário não encontrado." }),
       };
     }
 
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Erro interno.', error: err.message })
+      body: JSON.stringify({ message: "Erro interno.", error: err.message }),
     };
   }
 };

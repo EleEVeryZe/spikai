@@ -32,14 +32,17 @@ export class PreTesteComponent implements OnInit {
   
   idCurso: string | null = null;
 
+  ehPos: boolean | null = false;
+
   constructor(private readonly sharedUi: SharedUiService, private route: ActivatedRoute, private temasService: TemasService, private snackBar: MatSnackBar, private router: Router ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.idCurso = params.get('id');
+      this.ehPos = !!params.get('ehPos');
       this.sharedUi.goBackTo("tema/" + this.idCurso);
 
-      this.temasService.getAtividade(this.idCurso + "", "Pré-teste").subscribe(atvd => {
+      this.temasService.getAtividade(this.idCurso + "", this.ehPos ? "Pós-teste" : "Pré-teste").subscribe(atvd => {
         this.perguntas = atvd?.perguntas.slice(0,3)
         this.carregarProximaPergunta();
       })
@@ -118,7 +121,7 @@ export class PreTesteComponent implements OnInit {
   }
 
   concluirPreTeste() {
-    this.temasService.responderAtividade(this.respostasDoUsuario, this.idCurso).subscribe(
+    this.temasService.responderAtividade(this.respostasDoUsuario, this.idCurso, this.ehPos).subscribe(
       {
         next: (res: any) => {
           console.log('User registered:', res);

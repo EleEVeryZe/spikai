@@ -44,6 +44,6 @@ export class UsuarioRepositoryService {
 
   getUserState(userEmail?: string) {
     const filename = this.getUserBucketName(userEmail);
-    return this.httpClient.get(filename);
+    return this.httpClient.get(filename.toLocaleLowerCase());
   }
 }

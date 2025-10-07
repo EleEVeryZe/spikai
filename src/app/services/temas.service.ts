@@ -29,8 +29,13 @@ export class TemasService {
     return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos.find((cur:any) => cur.id == idTema).atividades.find((atv:any) => atv.nome == nomeAtividade)));
   }
 
-  responderAtividade(respostas: Resposta[], idCurso: string | null ) {
+  responderAtividade(respostas: Resposta[], idCurso: string | null, ehPos: boolean | null ) {
     const email = this.usuarioRepositoryService.getUserEmail();
-    return this.httpClient.post("https://vm6v7qxux3.execute-api.sa-east-1.amazonaws.com/default/pre-teste", { email, respostas, idCurso });
+    return this.httpClient.post("https://vm6v7qxux3.execute-api.sa-east-1.amazonaws.com/default/pre-teste", { email, respostas, idCurso, ehPos });
+  }
+
+  responderQuizz(respostas: Resposta[], idCurso: string | null ) {
+    const email = this.usuarioRepositoryService.getUserEmail();
+    return this.httpClient.post("https://5ijvp6uva8.execute-api.sa-east-1.amazonaws.com/default/quizz", { email, respostas, idCurso });
   }
 }

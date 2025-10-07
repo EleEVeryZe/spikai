@@ -52,7 +52,7 @@ export const handler = async (event) => {
         body: JSON.stringify({ message: "Body inválido." }),
       };
     }
-    const { email, idCurso, respostas } = body;
+    const { email, idCurso, respostas, ehPos } = body;
 
     // 2. Formata o email para obter a chave do arquivo no S3
     const s3Key = formatarNomeArquivo(email);
@@ -88,11 +88,12 @@ export const handler = async (event) => {
     }
     
     const curso = dadosExistentes.cursos.find((curso) => curso.id === idCurso);
-    curso.concluido = 25;
+    curso.concluido = ehPos ? 100 : 25;
     respostas.forEach((resposta) => {
-      curso.atividades[0].perguntas[resposta.perguntaIndex].opcaoSelecionada = resposta.opcaoSelecionada;
-      curso.atividades[0].concluida = true;
-      curso.atividades[0].dataConclusao = new Date().toISOString();
+      const idx = ehPos ? 3 : 0;
+      curso.atividades[idx].perguntas[resposta.perguntaIndex].opcaoSelecionada = resposta.opcaoSelecionada;
+      curso.atividades[idx].concluida = true;
+      curso.atividades[idx].dataConclusao = new Date().toISOString();
     });
 
     // 4. Adiciona as novas respostas aos dados existentes

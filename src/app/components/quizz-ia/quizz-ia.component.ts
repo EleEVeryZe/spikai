@@ -9,11 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
-import { ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
-
 
 interface Question {
   id: number;
@@ -21,13 +21,15 @@ interface Question {
   options: string[];
   correctAnswer: string;
   tutoringText: string;
+  selectedAnswer: string;
+  userDoubts: string;
 }
 
 interface QuestionProgress {
   selectedAnswer: string | null;
   isCorrect: boolean | null;
   userDoubts: string;
-  qtdQuestionMade?: number
+  qtdQuestionMade?: number;
 }
 
 @Component({
@@ -48,7 +50,7 @@ interface QuestionProgress {
   styleUrl: './quizz-ia.component.scss',
 })
 export class QuizzIaComponent {
-  idCurso: string = "";
+  idCurso: string = '';
   quizData = signal<Question[]>([]);
   currentQuestionIndex = signal(0);
 
@@ -65,6 +67,8 @@ export class QuizzIaComponent {
   geminiResponse = signal<string | null>(null);
 
   constructor(
+    private router: Router,
+    private snackBar: MatSnackBar,
     private readonly sharedUi: SharedUiService,
     private readonly route: ActivatedRoute,
     private readonly temasService: TemasService,
@@ -75,7 +79,7 @@ export class QuizzIaComponent {
     this.route.paramMap.subscribe((params) => {
       const idCurso = params.get('id');
       this.sharedUi.goBackTo('tema/' + idCurso);
-      this.idCurso = idCurso || "";
+      this.idCurso = idCurso || '';
 
       this.temasService.getAtividade(idCurso + '', 'Quizz').subscribe((atvd) => {
         const perguntas = (atvd?.perguntas.slice(0, 3) as Question[]) ?? [];
@@ -84,10 +88,10 @@ export class QuizzIaComponent {
         this.temasService.getUserVocabularyOfInterest().subscribe((vocabulary) => {
           this.userVocabulary = vocabulary;
           this.quizProgress.set(
-            perguntas.map(() => ({
-              selectedAnswer: null,
+            perguntas.map(({ selectedAnswer, userDoubts }) => ({
+              selectedAnswer,
               isCorrect: null,
-              userDoubts: '',
+              userDoubts,
             }))
           );
           // As soon as we load, adapt the first question
@@ -144,7 +148,7 @@ export class QuizzIaComponent {
     this.quizProgress.update((progress) => {
       const updatedItem: QuestionProgress = {
         ...progress[index],
-        qtdQuestionMade: progress[index]?.qtdQuestionMade ? progress[index]?.qtdQuestionMade + 1 : 1
+        qtdQuestionMade: progress[index]?.qtdQuestionMade ? progress[index]?.qtdQuestionMade + 1 : 1,
       };
       return progress.map((p, i) => (i === index ? updatedItem : p));
     });
@@ -164,7 +168,7 @@ export class QuizzIaComponent {
   }
 
   nextQuestion(): void {
-    if (this.currentQuestionIndex() < this.quizData().length -1) {
+    if (this.currentQuestionIndex() < this.quizData().length - 1) {
       this.currentQuestionIndex.update((i) => i + 1);
       if (this.userVocabulary.length) this.adaptQuestionToVocabulary(this.currentQuestionIndex());
     } else {
@@ -174,7 +178,7 @@ export class QuizzIaComponent {
     this.geminiResponse.set(null);
   }
 
-  guardarRespostas() : void {
+  guardarRespostas(): void {
     const perguntas = this.quizData();
 
     if (perguntas) {
@@ -182,13 +186,35 @@ export class QuizzIaComponent {
       const respostas = perguntas.map((pergunta: any) => {
         return {
           ...pergunta,
-          ...this.quizProgress()[currentIndex++]
-        }
-      })
+          ...this.quizProgress()[currentIndex++],
+        };
+      });
       const userEmail = this.usuarioRepositoryService.getUserEmail();
-      console.log("Atividade", respostas, userEmail, this.idCurso);
+      console.log('Atividade', respostas, userEmail, this.idCurso);
+      this.temasService.responderQuizz(respostas, this.idCurso).subscribe({
+        next: (res: any) => {
+          console.log('Quizz respondido:', res);
+          this.showMessage('Resultado salvo com sucesso!');
+          
+          setTimeout(() => {
+            this.router.navigate(['/tema/' + this.idCurso]);
+          }, 5000);
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.showMessage('Erro ao guardar resultado.', true);
+        },
+      });
     }
+  }
 
+  showMessage(message: string, isError: boolean = false) {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      panelClass: isError ? ['snackbar-error'] : ['snackbar-success'],
+    });
   }
 
   previousQuestion(): void {
@@ -214,7 +240,7 @@ export class QuizzIaComponent {
       "Você é um tutor de IA especializado em **Gramática Inglesa** e, especificamente, no **Verbo 'TO BE'**. Sua missão é fornecer uma explicação extremamente clara, concisa e motivadora (limite estrito de 100 palavras) sobre **o ponto gramatical** que gerou a dúvida do usuário, **ignorando e descartando** quaisquer referências ao conteúdo temático (ex: história, química, biologia) da frase. **Foque unicamente na aplicação correta da gramática.**";
 
     const totalPrompt = `${systemPrompt} | ${questionContext} | ${userQuery}`;
-    //this.askDeepSeek(totalPrompt);
+    this.askDeepSeek(totalPrompt);
     this.isGeminiLoading.set(false);
     this.updateQtdQuestionsMade();
   }
@@ -255,7 +281,7 @@ export class QuizzIaComponent {
     };
 
     try {
-      /*const response = await fetch(apiUrl, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${deepseekAPIKey}`,
@@ -268,9 +294,7 @@ export class QuizzIaComponent {
       const result = await response.json();
       console.log('Adaptation response:', result);
       const raw = result.choices?.[0]?.message?.content;
-      */
-     const raw = `json { "sentence": "I ___ a big fan of Lady Gaga.", "tutoringText": "O pronome 'I' (eu) usa sempre a forma 'am'." } `;
-
+      
       if (raw) {
         const adapted = JSON.parse(raw.replaceAll('```', '').replaceAll('json', '')); // expect JSON response
         // update quizData immutably

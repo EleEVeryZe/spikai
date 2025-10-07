@@ -1,17 +1,9 @@
-{
-  "name": "Rod",
-  "email": "rod1@gmail.com",
-  "age": 3,
-  "gender": "male",
-  "education": "Ensino Superior Completo",
-  "password": "123123",
-  "vocabulary": "Xadrex, dama, peteca, esporte",
-  "cursos": [
-    {
+export const cursos = [
+  {
       "id": "7cf00315-225c-4217-82e7-7badd5681eee",
       "nome": "to-be",
       "titulo": "To Be",
-      "concluido": 100,
+      "concluido": 0,
       "atividades": [
         {
           "nome": "Pré-teste",
@@ -26,7 +18,6 @@
                 "will"
               ],
               "opcaoCorreta": 1,
-              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -38,7 +29,6 @@
                 "do"
               ],
               "opcaoCorreta": 0,
-              "opcaoSelecionada": 0
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -50,7 +40,6 @@
                 "do"
               ],
               "opcaoCorreta": 2,
-              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -197,8 +186,8 @@
               "opcaoCorreta": 0
             }
           ],
-          "concluida": true,
-          "dataConclusao": "2025-10-07T21:24:50.889Z"
+          "concluida": false,
+          "dataConclusao": ""
         },
         {
           "nome": "Conteúdo",
@@ -207,11 +196,11 @@
               "url": "https://www.youtube.com/watch?v=SXuBaxqsinQ"
             }
           ],
-          "concluida": true
+          "concluida": false
         },
         {
           "nome": "Quizz",
-          "concluida": true,
+          "concluida": false,
           "perguntas": [
             {
               "id": 1,
@@ -223,11 +212,7 @@
                 "be"
               ],
               "correctAnswer": "am",
-              "tutoringText": "O pronome 'I' (eu) usa sempre a forma 'am'.",
-              "selectedAnswer": "are",
-              "isCorrect": null,
-              "userDoubts": "Por que eu tenho que escrever are e não re",
-              "qtdQuestionMade": 1
+              "tutoringText": "O pronome 'I' (eu) usa sempre a forma 'am'."
             },
             {
               "id": 2,
@@ -238,11 +223,7 @@
                 "are",
                 "was"
               ],
-              "correctAnswer": "are",
-              "tutoringText": "O pronome 'I' (eu) usa sempre a forma 'am'.",
-              "selectedAnswer": "was",
-              "isCorrect": null,
-              "userDoubts": ""
+              "correctAnswer": "are"
             },
             {
               "id": 3,
@@ -253,18 +234,14 @@
                 "is",
                 "be"
               ],
-              "correctAnswer": "is",
-              "tutoringText": "O pronome 'I' (eu) usa sempre a forma 'am'.",
-              "selectedAnswer": "are",
-              "isCorrect": null,
-              "userDoubts": ""
+              "correctAnswer": "is"
             }
           ],
-          "dataConclusao": "2025-10-07T21:20:17.065Z"
+          "dataConclusao": ""
         },
         {
           "nome": "Pós-teste",
-          "concluida": true,
+          "concluida": false,
           "perguntas": [
             {
               "titulo": "Escolha a resposta correta:",
@@ -275,8 +252,7 @@
                 "are",
                 "will"
               ],
-              "opcaoCorreta": 1,
-              "opcaoSelecionada": 0
+              "opcaoCorreta": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -287,8 +263,7 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 0,
-              "opcaoSelecionada": 1
+              "opcaoCorreta": 0
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -299,8 +274,7 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 2,
-              "opcaoSelecionada": 2
+              "opcaoCorreta": 2
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -452,58 +426,30 @@
       ],
       "completo": false
     },
-    {
-      "id": "7cf00315-225c-4217-82e7-7badd5682eee",
-      "nome": "present-continuous",
-      "titulo": "Present Continuous",
-      "concluido": 5,
-      "atividades": [
-        {
-          "nome": "Pré-teste",
-          "concluida": true,
-          "dataConclusao": "2025-09-10T10:00:00.000Z"
-        },
-        {
-          "nome": "Conteúdo",
-          "concluida": true
-        },
-        {
-          "nome": "Quizz",
-          "concluida": true
-        },
-        {
-          "nome": "Pós-teste",
-          "concluida": false
-        }
-      ],
-      "completo": false
-    },
-    {
-      "id": "7cf00315-225c-4217-82e7-7badd5683eee",
-      "nome": "simple-past",
-      "titulo": "Simple Past",
-      "concluido": 0,
-      "atividades": [
-        {
-          "nome": "Pré-teste",
-          "concluida": true,
-          "dataConclusao": "2025-09-10T10:00:00.000Z"
-        },
-        {
-          "nome": "Conteúdo",
-          "concluida": true
-        },
-        {
-          "nome": "Quizz",
-          "concluida": true
-        },
-        {
-          "nome": "Pós-teste",
-          "concluida": false
-        }
-      ],
-      "completo": false
-    }
-  ],
-  "ultimaAtualizacao": "2025-10-07T21:45:49.278Z"
-}
+  {
+    id: "7cf00315-225c-4217-82e7-7badd5682eee",
+    nome: "present-continuous",
+    titulo: "Present Continuous",
+    concluido: 5,
+    atividades: [
+      { nome: "Pré-teste", concluida: true, dataConclusao: new Date("2025-09-10T10:00:00") },
+      { nome: "Conteúdo", concluida: true },
+      { nome: "Quizz", concluida: true },
+      { nome: "Pós-teste", concluida: false },
+    ],
+    completo: false,
+  },
+  {
+    id: "7cf00315-225c-4217-82e7-7badd5683eee",
+    nome: "simple-past",
+    titulo: "Simple Past",
+    concluido: 0,
+    atividades: [
+      { nome: "Pré-teste", concluida: true, dataConclusao: new Date("2025-09-10T10:00:00") },
+      { nome: "Conteúdo", concluida: true },
+      { nome: "Quizz", concluida: true },
+      { nome: "Pós-teste", concluida: false },
+    ],
+    completo: false,
+  },
+];

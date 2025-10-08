@@ -48,7 +48,7 @@ export const handler = async (event) => {
       };
     }
 
-    const sanitizedEmail = userEmail.replace(/@/g, "_at_").replace(/\./g, "_dot_");
+    const sanitizedEmail = userEmail.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_dot_");
     const filename = `resource/user_${sanitizedEmail}.json`;
 
     // Verifica se o arquivo existe

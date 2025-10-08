@@ -73,7 +73,7 @@ export const handler = async (event) => {
     const response = await s3.send(getObjectCmd);
     const userFileContent = await streamToString(response.Body);
     const usuarios = JSON.parse(userFileContent);
-    const userData = usuarios.find((usr) => usr.email === email);
+    const userData = usuarios.find((usr) => usr.email.toLowerCase() === email.toLowerCase());
 
     if (!userData) {
       return {

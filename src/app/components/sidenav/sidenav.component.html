@@ -3,7 +3,7 @@
 
   <mat-sidenav-content>
     <mat-toolbar color="primary">
-      <button mat-icon-button (click)="goBack()">
+      <button *ngIf="!arrowBackHidden" mat-icon-button (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
       </button>
 
@@ -15,7 +15,7 @@
       <!-- Version display -->
       <button mat-button matTooltip="Application Version" class="version-display">
         <mat-icon>info</mat-icon>
-        <span class="version-text">v0.0.101</span>
+        <span class="version-text">v1</span>
       </button>
 
       <!-- Ícones de navegação -->

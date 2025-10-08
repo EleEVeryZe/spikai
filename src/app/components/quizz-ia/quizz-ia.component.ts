@@ -82,6 +82,8 @@ export class QuizzIaComponent {
     this.route.paramMap.subscribe((params) => {
       const idCurso = params.get('id');
       this.sharedUi.goBackTo('tema/' + idCurso);
+      this.sharedUi.hideArrowBackToolbar(false);
+      this.sharedUi.scrollPageToTop();
       this.idCurso = idCurso || '';
 
       this.temasService.getAtividade(idCurso + '', 'Quizz').subscribe((atvd) => {

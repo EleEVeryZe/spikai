@@ -3,17 +3,32 @@ import { Subject } from 'rxjs';
 import { DRAWER_ICON } from '../util/constants';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SharedUiService {
-  private readonly trigger = new Subject<string>();
-  trigger$ = this.trigger.asObservable();
+  private readonly triggerBackUrl = new Subject<string>();
+  triggerBackUrl$ = this.triggerBackUrl.asObservable();
+
+  private readonly triggerHideArrowBackToolbar = new Subject<boolean>();
+  triggerHideArrowBackToolbar$ = this.triggerHideArrowBackToolbar.asObservable();
+
+  scrollPageToTop() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  }
+
+  hideArrowBackToolbar(vlr: boolean) {
+    this.triggerHideArrowBackToolbar.next(vlr);
+  }
 
   changeDrawerIconAndFunction(icon: DRAWER_ICON) {
-    this.trigger.next(icon);
+    this.triggerBackUrl.next(icon);
   }
 
   goBackTo(whereURL: string) {
-    this.trigger.next(whereURL);  
+    this.triggerBackUrl.next(whereURL);
   }
 }

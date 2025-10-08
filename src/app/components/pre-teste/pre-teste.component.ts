@@ -37,10 +37,14 @@ export class PreTesteComponent implements OnInit {
   constructor(private readonly sharedUi: SharedUiService, private route: ActivatedRoute, private temasService: TemasService, private snackBar: MatSnackBar, private router: Router ) { }
 
   ngOnInit(): void {
+
+    
     this.route.paramMap.subscribe((params) => {
       this.idCurso = params.get('id');
       this.ehPos = !!params.get('ehPos');
       this.sharedUi.goBackTo("tema/" + this.idCurso);
+      this.sharedUi.hideArrowBackToolbar(false);
+      this.sharedUi.scrollPageToTop();
 
       this.temasService.getAtividade(this.idCurso + "", this.ehPos ? "Pós-teste" : "Pré-teste").subscribe(atvd => {
         this.perguntas = atvd?.perguntas.slice(0,3)

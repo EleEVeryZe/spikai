@@ -9,6 +9,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { YouTubePlayerModule } from '@angular/youtube-player';
 import { Tema } from '../../model/tema.model';
+import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
 
 @Component({
@@ -33,9 +34,11 @@ export class AtividadesTemaComponent {
 
   videoUrlSafe!: SafeResourceUrl;
 
-  constructor(private sanitizer: DomSanitizer, private route: ActivatedRoute, private temasService: TemasService, private router: Router) {}
+  constructor(private readonly sharedService: SharedUiService, private sanitizer: DomSanitizer, private route: ActivatedRoute, private temasService: TemasService, private router: Router) {}
 
   ngOnInit(): void {
+    this.sharedService.hideArrowBackToolbar(false);
+
     this.route.paramMap.subscribe((params) => {
       const temaId = params.get('id');
       if (temaId) {

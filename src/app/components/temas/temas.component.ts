@@ -6,6 +6,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import { Curso } from '../../model/user.model';
+import { SharedUiService } from '../../services/shared-ui.service';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 
 @Component({
@@ -23,13 +24,15 @@ import { UsuarioRepositoryService } from '../../services/usuario.repository.serv
 export class TemasComponent implements OnInit {
   temas!: Curso[];
 
-  constructor(private router: Router, private usuarioRepositoryService: UsuarioRepositoryService) {
+  constructor(private readonly sharedService: SharedUiService, private router: Router, private usuarioRepositoryService: UsuarioRepositoryService) {
 
   }
   ngOnInit(): void {
     this.usuarioRepositoryService.getUserState().subscribe(((usr: any) => {
       this.temas = usr.cursos;
     }));
+
+    this.sharedService.hideArrowBackToolbar(true);
   }
 
   navegarParaTema(temaId: string) {

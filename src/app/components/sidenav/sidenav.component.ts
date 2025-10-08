@@ -35,13 +35,18 @@ export class SidenavComponent implements OnInit {
   @ViewChild('drawer') drawer!: MatSidenav;
   icon: DRAWER_ICON = 'BACK';
   navigateToUrl: string = "";
+  arrowBackHidden = false;
 
   constructor(private readonly sharedService: SharedUiService, private router: Router, private authService: AuthService, private userRepository: UsuarioRepositoryService) {}
 
   ngOnInit() {
-    this.sharedService.trigger$.subscribe((navigateToUrl) => {
+    this.sharedService.triggerBackUrl$.subscribe((navigateToUrl) => {
       this.navigateToUrl = navigateToUrl;
     });
+
+    this.sharedService.triggerHideArrowBackToolbar$.subscribe((vlr) => {
+      this.arrowBackHidden = vlr;
+    })
   }
 
   goBack() {

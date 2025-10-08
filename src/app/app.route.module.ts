@@ -29,6 +29,7 @@ export const routes: Routes = [
       { path: ':id/Pré-teste', component: PreTesteComponent },
       { path: ':id/Quizz', component: QuizzIaComponent },
       { path: ':id/Pós-teste/:ehPos', component: PreTesteComponent },
+      { path: 'edit/:userId', component: CadastroComponent },
     ],
   },
 

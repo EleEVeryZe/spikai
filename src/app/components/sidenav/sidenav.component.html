@@ -19,8 +19,12 @@
       </button>
 
       <!-- Ícones de navegação -->
-      <button mat-icon-button matTooltip="Home" (click)="navigateTo('temas')">
+      <button mat-icon-button matTooltip="Home" (click)="navigateTo('')">
         <mat-icon>home</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="Editar Perfil" (click)="navigateToUserEditPage()">
+        <mat-icon>account_circle</mat-icon>
       </button>
 
       <button mat-icon-button matTooltip="Logout" (click)="logout()">

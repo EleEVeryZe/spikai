@@ -1,8 +1,7 @@
 import { GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-
 import { cursos } from "./template.curso.mjs";
-const s3 = new S3Client({ region: "sa-east-1" });
 
+const s3 = new S3Client({ region: "sa-east-1" });
 const BUCKET_NAME = "spikai";
 
 const headers = {
@@ -14,9 +13,9 @@ const headers = {
 const streamToString = async (stream) => {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
-    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
-    stream.on('error', reject);
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
+    stream.on("error", reject);
   });
 };
 
@@ -29,10 +28,8 @@ export const handler = async (event) => {
         body: JSON.stringify({ message: "Preflight OK" }),
       };
     }
-    console.log("Evento recebido:", JSON.stringify(event, null, 2));
 
     if (!event.body) {
-      console.log("Corpo da requisição vazio.");
       return {
         statusCode: 400,
         headers,
@@ -44,7 +41,6 @@ export const handler = async (event) => {
     const userEmail = userData.email;
 
     if (!userEmail) {
-      console.log("E-mail não fornecido.");
       return {
         statusCode: 400,
         headers,
@@ -55,58 +51,116 @@ export const handler = async (event) => {
     const sanitizedEmail = userEmail.replace(/@/g, "_at_").replace(/\./g, "_dot_");
     const filename = `resource/user_${sanitizedEmail}.json`;
 
-    // 1. Verifica se o arquivo já existe
+    // Verifica se o arquivo existe
+    let userExists = false;
     try {
-      const headCommand = new HeadObjectCommand({
+      await s3.send(new HeadObjectCommand({ Bucket: BUCKET_NAME, Key: filename }));
+      userExists = true;
+    } catch (error) {
+      if (error.name !== "NotFound" && error.$metadata?.httpStatusCode !== 404) {
+        throw error;
+      }
+    }
+
+    // Busca lista de usuários atual
+    const getUsersCmd = new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: "resource/usuarios.json",
+    });
+    const usersResponse = await s3.send(getUsersCmd);
+    const userFileContent = await streamToString(usersResponse.Body);
+    const userList = JSON.parse(userFileContent);
+
+    // Se é modo de edição
+    if (userData.isEdit) {
+      if (!userExists) {
+        return {
+          statusCode: 404,
+          headers,
+          body: JSON.stringify({ message: "Usuário não encontrado para edição." }),
+        };
+      }
+
+      // Atualiza o arquivo individual
+      const getExistingCmd = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: filename,
       });
-      await s3.send(headCommand);
+      const existingResponse = await s3.send(getExistingCmd);
+      const existingUserContent = await streamToString(existingResponse.Body);
+      const existingUser = JSON.parse(existingUserContent);
 
-      // Se não lançar erro, o arquivo existe
-      console.log(`Usuário com e-mail ${userEmail} já existe.`);
+      const updatedUser = {
+        ...existingUser,
+        ...userData,
+        password: "", // não sobrescreve senha
+      };
+
+      // Atualiza no usuários.json
+      const index = userList.findIndex((u) => u.email === userEmail);
+      if (index !== -1) {
+        userList[index] = { ...userList[index], ...userData };
+      }
+
+      // Salva alterações
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: "resource/usuarios.json",
+          Body: JSON.stringify(userList, null, 2),
+          ContentType: "application/json",
+        })
+      );
+
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: filename,
+          Body: JSON.stringify(updatedUser, null, 2),
+          ContentType: "application/json",
+        })
+      );
+
+      console.log(`Usuário ${userEmail} atualizado com sucesso.`);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          message: "Usuário atualizado com sucesso.",
+          key: filename,
+        }),
+      };
+    }
+
+    // Caso seja novo cadastro
+    if (userExists) {
       return {
         statusCode: 409,
         headers,
         body: JSON.stringify({ message: `O usuário com o e-mail '${userEmail}' já está cadastrado.` }),
       };
-    } catch (error) {
-      if (error.name !== "NotFound" && error.$metadata?.httpStatusCode !== 404) {
-        throw error; // Erro diferente de "Not Found"
-      }
-      // Continua normalmente se não encontrado
     }
 
-    // 2. Recupera lista de usuários
-     const getObjectCmd = new GetObjectCommand({
-          Bucket: BUCKET_NAME,
-          Key: "resource/usuarios.json",
-        });
-
-    const response = await s3.send(getObjectCmd);
-    const userFileContent = await streamToString(response.Body);
-    const userList = JSON.parse(userFileContent);
+    // Criação de novo usuário
     userList.push({ ...userData, ehGrupoControle: userList.length % 2 === 0 });
 
-    //3. Guarda dados do usuário no S3
-    const putUsuarioCommand = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: "resource/usuarios.json",
-      Body: JSON.stringify(userList, null, 2),
-      ContentType: "application/json",
-    });
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: "resource/usuarios.json",
+        Body: JSON.stringify(userList, null, 2),
+        ContentType: "application/json",
+      })
+    );
 
-    await s3.send(putUsuarioCommand);
-
-    // 4. Grava novo usuário no S3
-    const putCommand = new PutObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: filename,
-      Body: JSON.stringify({ ...userData, password: "", ehGrupoControle: userList.length % 2 === 0, cursos }, null, 2),
-      ContentType: "application/json",
-    });
-
-    await s3.send(putCommand);
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: filename,
+        Body: JSON.stringify({ ...userData, password: "", ehGrupoControle: userList.length % 2 === 0, cursos }, null, 2),
+        ContentType: "application/json",
+      })
+    );
 
     console.log(`Novo cadastro salvo com sucesso em: s3://${BUCKET_NAME}/${filename}`);
 

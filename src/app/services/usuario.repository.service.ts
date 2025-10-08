@@ -1,9 +1,21 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
  const headers = new HttpHeaders({
     'Content-Type': 'application/json',
   });
+
+export interface Usuario {
+  name: string;
+  email: string;
+  age: number;
+  gender: string;
+  education: string;
+  password: string;
+  vocabulary: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +33,15 @@ export class UsuarioRepositoryService {
       JSON.stringify(userInfo),
       { headers }
     );
-    
+  }
+
+  updateUser(userInfo: any) {
+    return this.httpClient
+   .post(
+      'https://tjikhik5sh.execute-api.sa-east-1.amazonaws.com/default/cadastro',
+      JSON.stringify({ ...userInfo, isEdit: true }),
+      { headers }
+    );
   }
 
   onLogin(email: string, password: string) {
@@ -42,8 +62,8 @@ export class UsuarioRepositoryService {
     return `resource/user_${sanitizedEmail}.json`;
   }
 
-  getUserState(userEmail?: string) {
+  getUserState(userEmail?: string) : Observable<Usuario> {
     const filename = this.getUserBucketName(userEmail);
-    return this.httpClient.get(filename.toLocaleLowerCase());
+    return this.httpClient.get<Usuario>(filename.toLocaleLowerCase());
   }
 }

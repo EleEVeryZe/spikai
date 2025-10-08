@@ -8,6 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { SharedUiService } from '../../services/shared-ui.service';
+import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 import { DRAWER_ICON } from '../../util/constants';
 @Component({
   selector: 'app-sidenav',
@@ -20,8 +21,12 @@ export class SidenavComponent implements OnInit {
     this.router.navigate([`/${path}`]);
   }
 
+  navigateToUserEditPage() {
+    const userEmail = this.userRepository.getUserEmail();
+    this.router.navigate([`/edit/${userEmail}`]);
+  }
+
   logout() {
-    // Faça logout real aqui
     console.log('Logging out...');
     this.authService.logout();
     this.router.navigate(['/login']);
@@ -31,7 +36,7 @@ export class SidenavComponent implements OnInit {
   icon: DRAWER_ICON = 'BACK';
   navigateToUrl: string = "";
 
-  constructor(private readonly sharedService: SharedUiService, private router: Router, private authService: AuthService) {}
+  constructor(private readonly sharedService: SharedUiService, private router: Router, private authService: AuthService, private userRepository: UsuarioRepositoryService) {}
 
   ngOnInit() {
     this.sharedService.trigger$.subscribe((navigateToUrl) => {

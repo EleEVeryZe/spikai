@@ -57,6 +57,12 @@ export class CadastroComponent {
   ages: number[] = [];
   isEditMode = false;
 
+  hasVocabularyChanged = false;
+
+  setVocabularyAsChanged() {
+    this.hasVocabularyChanged = true;
+  }
+
   educationLevels: string[] = [
     'Ensino Fundamental',
     'Ensino Médio',
@@ -84,7 +90,7 @@ export class CadastroComponent {
       vocabulary: [''],
     });
 
-    for (let i = 1; i <= 100; i++) this.ages.push(i);
+    for (let i = 5; i <= 100; i++) this.ages.push(i);
   }
 
   ngOnInit(): void {
@@ -222,9 +228,17 @@ Output:`;
     this.isLoading = true;
 
     try {
+
+      let userData;
+      if (this.hasVocabularyChanged) {
+        const IAVocabulary = await this.improveVocabularyOfInterest(formData);
+        userData = { ...formData, IAVocabulary };
+      } else 
+        userData = formData;
+      
       if (this.isEditMode) {
         // Update existing user
-        this.usuarioRepositoryService.updateUser(formData).subscribe({
+        this.usuarioRepositoryService.updateUser(userData).subscribe({
           next: () => {
             this.showMessage('Usuário atualizado com sucesso!');
             setTimeout(() => this.router.navigate(['/']), 2000);
@@ -237,8 +251,6 @@ Output:`;
         });
       } else {
         // Register new user
-        const improvedVocabulary = await this.improveVocabularyOfInterest(formData);
-        const userData = { ...formData, vocabulary: improvedVocabulary };
 
         this.usuarioRepositoryService.postCadastro(userData).subscribe({
           next: () => {

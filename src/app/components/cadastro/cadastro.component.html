@@ -74,7 +74,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Vocabulário de Interesse</mat-label>
           <mat-icon matPrefix>extension</mat-icon>
-          <textarea matInput formControlName="vocabulary" placeholder="Ex: Tecnologia, Finanças, Saúde..." rows="2"></textarea>
+          <textarea matInput formControlName="vocabulary"   (change)="setVocabularyAsChanged()" placeholder="Ex: Tecnologia, Finanças, Saúde..." rows="2"></textarea>
         </mat-form-field>
 
         <!-- Botão dinâmico -->

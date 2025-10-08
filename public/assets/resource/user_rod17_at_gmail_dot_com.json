@@ -1,12 +1,13 @@
 {
-  "name": "rod15",
-  "email": "rod15@gmail.com",
-  "age": 5,
+  "name": "rod17",
+  "email": "rod17@gmail.com",
+  "age": 7,
   "gender": "male",
-  "education": "Ensino Fundamental",
+  "education": "Ensino Superior Completo",
   "password": "",
-  "vocabulary": "Religious songs; Person who fixes wires and power; Planning how things get from one place to another",
-  "ehGrupoControle": true,
+  "vocabulary": "moda, politica, filosofia",
+  "IAVocabulary": "Clothing styles; How countries are run; Thinking about life",
+  "ehGrupoControle": false,
   "cursos": [
     {
       "id": "7cf00315-225c-4217-82e7-7badd5681eee",

@@ -62,9 +62,12 @@ export class QuizzIaComponent {
   userVocabulary: string = '';
   indexVocabulary: number = 0;
 
-  // Gemini State
+  // Deepseek State
   isGeminiLoading = signal(false);
   geminiResponse = signal<string | null>(null);
+
+  // Statistics
+  ehGrupoControle!: boolean;
 
   constructor(
     private router: Router,
@@ -85,8 +88,10 @@ export class QuizzIaComponent {
         const perguntas = (atvd?.perguntas.slice(0, 3) as Question[]) ?? [];
         this.quizData.set(perguntas);
 
-        this.temasService.getUserVocabularyOfInterest().subscribe((vocabulary) => {
+        this.temasService.getUserProperties().subscribe(({ vocabulary, ehGrupoControle }) => {
           this.userVocabulary = vocabulary;
+          this.ehGrupoControle = ehGrupoControle;
+
           this.quizProgress.set(
             perguntas.map(({ selectedAnswer, userDoubts }) => ({
               selectedAnswer,
@@ -94,10 +99,8 @@ export class QuizzIaComponent {
               userDoubts,
             }))
           );
-          // As soon as we load, adapt the first question
-          if (perguntas.length > 0 && this.userVocabulary.length) {
-            this.adaptQuestionToVocabulary(0);
-          }
+
+          if (perguntas.length > 0 && this.userVocabulary.length) this.adaptQuestionToVocabulary(0);
         });
       });
     });
@@ -195,7 +198,7 @@ export class QuizzIaComponent {
         next: (res: any) => {
           console.log('Quizz respondido:', res);
           this.showMessage('Resultado salvo com sucesso!');
-          
+
           setTimeout(() => {
             this.router.navigate(['/tema/' + this.idCurso]);
           }, 5000);
@@ -246,6 +249,11 @@ export class QuizzIaComponent {
   }
 
   async adaptQuestionToVocabulary(index: number) {
+    if (this.ehGrupoControle) {
+      this.isLoading.set(false);
+      return;
+    }
+
     this.isLoading.set(true);
     const question = this.quizData()[index];
     if (!question || !this.userVocabulary.length) return;
@@ -290,11 +298,10 @@ export class QuizzIaComponent {
         body: JSON.stringify(payload),
       });
 
-      
       const result = await response.json();
       console.log('Adaptation response:', result);
       const raw = result.choices?.[0]?.message?.content;
-      
+
       if (raw) {
         const adapted = JSON.parse(raw.replaceAll('```', '').replaceAll('json', '')); // expect JSON response
         // update quizData immutably

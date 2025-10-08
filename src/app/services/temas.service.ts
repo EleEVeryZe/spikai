@@ -13,8 +13,8 @@ import { UsuarioRepositoryService } from './usuario.repository.service';
 export class TemasService {
   constructor(private httpClient: HttpClient, private usuarioRepositoryService: UsuarioRepositoryService) {}
 
-  getUserVocabularyOfInterest() : Observable<string> {
-    return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.vocabulary))
+  getUserProperties() : Observable<any> {
+    return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => ({ vocabulary: usr.vocabulary, ehGrupoControle: usr.ehGrupoControle }) ));
   } 
   
   getTemas(): Observable<Tema[]> {

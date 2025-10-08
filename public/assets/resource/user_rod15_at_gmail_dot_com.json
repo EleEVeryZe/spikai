@@ -6,7 +6,7 @@
   "education": "Ensino Fundamental",
   "password": "",
   "vocabulary": "Religious songs; Person who fixes wires and power; Planning how things get from one place to another",
-  "ehGrupoControle": false,
+  "ehGrupoControle": true,
   "cursos": [
     {
       "id": "7cf00315-225c-4217-82e7-7badd5681eee",

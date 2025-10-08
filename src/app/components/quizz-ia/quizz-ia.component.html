@@ -42,7 +42,7 @@
                 <mat-icon class="icon-error">cancel</mat-icon>
                 Incorrect Answer.
               </p>
-              <p class="feedback-text-italic">
+              <p *ngIf="!ehGrupoControle" class="feedback-text-italic">
                 <span class="feedback-label">Tutoring:</span> {{ feedbackText() }}
               </p>
             }
@@ -59,8 +59,8 @@
         </mat-radio-group>
       }
 
-      <!-- Doubts & Gemini -->
-      <div class="doubts-container" *ngIf="currentProgress() as progress">
+      <!-- Doubts & IA -->
+      <div class="doubts-container" *ngIf="!ehGrupoControle && currentProgress() as progress">
         <mat-form-field class="doubts-input-field" appearance="outline">
           <mat-label>Clarify your doubts here (optional)</mat-label>
           <textarea

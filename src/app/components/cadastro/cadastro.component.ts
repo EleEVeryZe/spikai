@@ -11,8 +11,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
-
 
 interface VocabularyRequest {
   vocabulary: string;
@@ -48,7 +48,7 @@ export const environment = {
     MatSelectModule,
     MatRadioModule,
     MatButtonModule,
-    MatProgressSpinner
+    MatProgressSpinner,
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
@@ -105,6 +105,9 @@ export class CadastroComponent {
         // Remove password requirement in edit mode
         this.registrationForm.get('password')?.clearValidators();
         this.registrationForm.get('password')?.updateValueAndValidity();
+
+        // ✅ Disable email field in edit mode
+        this.registrationForm.get('email')?.disable();
 
         this.usuarioRepositoryService.getUserState(userId).subscribe({
           next: (user) => {
@@ -231,43 +234,47 @@ Output:`;
     this.isLoading = true;
 
     try {
-
       let userData;
       if (this.hasVocabularyChanged) {
         const IAVocabulary = await this.improveVocabularyOfInterest(formData);
         userData = { ...formData, IAVocabulary };
-      } else 
-        userData = formData;
-      
+      } else userData = formData;
+
       if (this.isEditMode) {
         // Update existing user
-        this.usuarioRepositoryService.updateUser(userData).subscribe({
-          next: () => {
-            this.showMessage('Usuário atualizado com sucesso!');
-            this.router.navigate(['/'])
-          },
-          error: (err) => {
-            console.error('Erro ao atualizar usuário:', err);
-            this.showMessage('Erro ao atualizar usuário.', true);
-          },
-          complete: () => (this.isLoading = false),
-        });
+        this.usuarioRepositoryService
+          .updateUser(userData)
+          .pipe(finalize(() => (this.isLoading = false)))
+          .subscribe({
+            next: () => {
+              this.showMessage('Usuário atualizado com sucesso!');
+              this.router.navigate(['/']);
+            },
+            error: (err) => {
+              console.error('Erro ao atualizar usuário:', err);
+              if (err?.error) this.showMessage(err?.error.message, true);
+              else this.showMessage('Erro ao atualizar usuário.', true);
+            }
+          });
       } else {
         // Register new user
 
-        this.usuarioRepositoryService.postCadastro(userData).subscribe({
-          next: () => {
-            this.showMessage('Usuário registrado com sucesso!');
-            this.router.navigate(['/login'], {
-              queryParams: { email: formData.email },
-            });
-          },
-          error: (err) => {
-            console.error('Erro ao registrar usuário:', err);
-            this.showMessage('Erro ao registrar usuário.', true);
-          },
-          complete: () => (this.isLoading = false),
-        });
+        this.usuarioRepositoryService
+          .postCadastro(userData)
+          .pipe(finalize(() => (this.isLoading = false)))
+          .subscribe({
+            next: () => {
+              this.showMessage('Usuário registrado com sucesso!');
+              this.router.navigate(['/login'], {
+                queryParams: { email: formData.email },
+              });
+            },
+            error: (err) => {
+              console.error('Erro ao registrar usuário:', err);
+              if (err?.error) this.showMessage(err?.error.message, true);
+              else this.showMessage('Erro ao registrar usuário.', true);
+            }
+          });
       }
     } catch (error) {
       console.error('Vocabulary generation failed:', error);
@@ -286,11 +293,7 @@ Output:`;
 
     submitMethod.subscribe({
       next: () => {
-        this.showMessage(
-          this.isEditMode
-            ? 'Usuário atualizado (vocabulário original).'
-            : 'Usuário registrado (vocabulário original).'
-        );
+        this.showMessage(this.isEditMode ? 'Usuário atualizado (vocabulário original).' : 'Usuário registrado (vocabulário original).');
         this.router.navigate(this.isEditMode ? ['/temas'] : ['/login']);
       },
       error: (err) => {
@@ -301,8 +304,6 @@ Output:`;
   }
 
   private markFormGroupTouched(): void {
-    Object.keys(this.registrationForm.controls).forEach((key) =>
-      this.registrationForm.get(key)?.markAsTouched()
-    );
+    Object.keys(this.registrationForm.controls).forEach((key) => this.registrationForm.get(key)?.markAsTouched());
   }
 }

@@ -1,12 +1,12 @@
 {
-  "name": "rod17",
-  "email": "rod17@gmail.com",
-  "age": 7,
+  "name": "rod30",
+  "email": "Rod30@gmail.com",
+  "age": 6,
   "gender": "male",
-  "education": "Ensino Superior Completo",
+  "education": "Ensino Médio",
   "password": "",
-  "vocabulary": "moda, politica, filosofia",
-  "IAVocabulary": "Clothing styles; How countries are run; Thinking about life",
+  "vocabulary": "tecnologia, religião, filosofia",
+  "IAVocabulary": "Tools and machines; Beliefs about gods and life; Thinking about big questions",
   "ehGrupoControle": false,
   "cursos": [
     {
@@ -214,7 +214,7 @@
           "perguntas": [
             {
               "id": 1,
-              "sentence": "I ___ a big fan of Lady Gaga.",
+              "sentence": "I ___ a student.",
               "options": [
                 "is",
                 "are",
@@ -222,29 +222,175 @@
                 "be"
               ],
               "correctAnswer": "am",
-              "tutoringText": "O pronome 'I' (eu) usa sempre a forma 'am'."
+              "tutoringText": "O pronome 'I' usa sempre a forma 'am' no presente do verbo 'to be'."
             },
             {
               "id": 2,
-              "sentence": "I ___ a big fan of Lady Gaga.",
+              "sentence": "She ___ not at home.",
               "options": [
                 "is",
-                "am",
                 "are",
-                "was"
+                "am",
+                "be"
               ],
-              "correctAnswer": "are"
+              "correctAnswer": "is",
+              "tutoringText": "Na forma negativa, 'she' usa 'is not' ou 'isn't'."
             },
             {
               "id": 3,
-              "sentence": "I ___ a big fan of Lady Gaga.",
+              "sentence": "___ you happy?",
               "options": [
+                "Is",
+                "Are",
+                "Am",
+                "Be"
+              ],
+              "correctAnswer": "Are",
+              "tutoringText": "Na forma interrogativa, 'you' usa 'Are'."
+            },
+            {
+              "id": 4,
+              "sentence": "They ___ teachers.",
+              "options": [
+                "is",
                 "are",
                 "am",
-                "is",
                 "be"
               ],
-              "correctAnswer": "is"
+              "correctAnswer": "are",
+              "tutoringText": "'They' usa 'are' no presente afirmativo."
+            },
+            {
+              "id": 5,
+              "sentence": "We ___ not tired.",
+              "options": [
+                "is",
+                "are",
+                "am",
+                "be"
+              ],
+              "correctAnswer": "are",
+              "tutoringText": "Na negativa, 'we' usa 'are not' ou 'aren't'."
+            },
+            {
+              "id": 6,
+              "sentence": "___ he your brother?",
+              "options": [
+                "Is",
+                "Are",
+                "Am",
+                "Be"
+              ],
+              "correctAnswer": "Is",
+              "tutoringText": "'He' usa 'Is' na forma interrogativa."
+            },
+            {
+              "id": 7,
+              "sentence": "I ___ not hungry.",
+              "options": [
+                "is",
+                "am",
+                "are",
+                "be"
+              ],
+              "correctAnswer": "am",
+              "tutoringText": "'I' na negativa usa 'am not'."
+            },
+            {
+              "id": 8,
+              "sentence": "You ___ very kind.",
+              "options": [
+                "is",
+                "are",
+                "am",
+                "be"
+              ],
+              "correctAnswer": "are",
+              "tutoringText": "'You' no presente afirmativo usa 'are'."
+            },
+            {
+              "id": 9,
+              "sentence": "___ they at school?",
+              "options": [
+                "Is",
+                "Are",
+                "Am",
+                "Be"
+              ],
+              "correctAnswer": "Are",
+              "tutoringText": "Na forma interrogativa, 'they' usa 'Are'."
+            },
+            {
+              "id": 10,
+              "sentence": "He ___ not a doctor.",
+              "options": [
+                "is",
+                "are",
+                "am",
+                "be"
+              ],
+              "correctAnswer": "is",
+              "tutoringText": "Na negativa, 'he' usa 'is not' ou 'isn't'."
+            },
+            {
+              "id": 11,
+              "sentence": "We ___ ready for the test.",
+              "options": [
+                "is",
+                "are",
+                "am",
+                "be"
+              ],
+              "correctAnswer": "are",
+              "tutoringText": "'We' usa 'are' no presente afirmativo."
+            },
+            {
+              "id": 12,
+              "sentence": "___ I late?",
+              "options": [
+                "Is",
+                "Are",
+                "Am",
+                "Be"
+              ],
+              "correctAnswer": "Am",
+              "tutoringText": "Na forma interrogativa, 'I' usa 'Am'."
+            },
+            {
+              "id": 13,
+              "sentence": "She ___ very busy today.",
+              "options": [
+                "is",
+                "are",
+                "am",
+                "be"
+              ],
+              "correctAnswer": "is",
+              "tutoringText": "'She' no afirmativo usa 'is'."
+            },
+            {
+              "id": 14,
+              "sentence": "You ___ not my friend.",
+              "options": [
+                "is",
+                "are",
+                "am",
+                "be"
+              ],
+              "correctAnswer": "are",
+              "tutoringText": "'You' na forma negativa usa 'are not' ou 'aren't'."
+            },
+            {
+              "id": 15,
+              "sentence": "___ he at the party?",
+              "options": [
+                "Is",
+                "Are",
+                "Am",
+                "Be"
+              ],
+              "correctAnswer": "Is",
+              "tutoringText": "Na forma interrogativa, 'he' usa 'Is'."
             }
           ],
           "dataConclusao": ""

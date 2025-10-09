@@ -6,11 +6,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
+
 
 interface VocabularyRequest {
   vocabulary: string;
@@ -46,6 +48,7 @@ export const environment = {
     MatSelectModule,
     MatRadioModule,
     MatButtonModule,
+    MatProgressSpinner
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
@@ -129,7 +132,7 @@ export class CadastroComponent {
     this.snackBar.open(message, 'Fechar', {
       duration: 3000,
       horizontalPosition: 'right',
-      verticalPosition: 'top',
+      verticalPosition: 'bottom',
       panelClass: isError ? ['snackbar-error'] : ['snackbar-success'],
     });
   }
@@ -241,7 +244,7 @@ Output:`;
         this.usuarioRepositoryService.updateUser(userData).subscribe({
           next: () => {
             this.showMessage('Usuário atualizado com sucesso!');
-            setTimeout(() => this.router.navigate(['/']), 2000);
+            this.router.navigate(['/'])
           },
           error: (err) => {
             console.error('Erro ao atualizar usuário:', err);

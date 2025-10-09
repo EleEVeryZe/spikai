@@ -74,12 +74,20 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Vocabulário de Interesse</mat-label>
           <mat-icon matPrefix>extension</mat-icon>
-          <textarea matInput formControlName="vocabulary"   (change)="setVocabularyAsChanged()" placeholder="Ex: Tecnologia, Finanças, Saúde..." rows="2"></textarea>
+          <textarea
+            matInput
+            formControlName="vocabulary"
+            (change)="setVocabularyAsChanged()"
+            placeholder="Ex: Tecnologia, Finanças, Saúde..."
+            rows="2"
+          ></textarea>
         </mat-form-field>
 
-        <!-- Botão dinâmico -->
-        <button mat-raised-button color="primary" class="full-width" [disabled]="!registrationForm.valid">
-          {{ isEditMode ? "Atualizar" : "Cadastrar" }}
+        <button mat-raised-button color="primary" class="full-width" [disabled]="!registrationForm.valid || isLoading" >
+          <mat-progress-spinner *ngIf="isLoading" diameter="20" mode="indeterminate" color="accent" class="spinner"></mat-progress-spinner>
+          <span *ngIf="!isLoading">
+            {{ isEditMode ? "Atualizar" : "Cadastrar" }}
+          </span>
         </button>
       </form>
     </mat-card-content>

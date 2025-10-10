@@ -118,7 +118,7 @@ export const cursos = [
         nome: "Conteúdo",
         videos: [
           {
-            url: "https://www.youtube.com/watch?v=SXuBaxqsinQ",
+            videoId: "verbotobe",
           },
         ],
         concluida: false,

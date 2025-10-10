@@ -30,11 +30,50 @@ import { TemasService } from '../../services/temas.service';
 export class AtividadesTemaComponent {
   tema: Tema | undefined;
   temaAnteriorConcluido = true;
-  isVideoVisible: boolean = false;
 
   videoUrlSafe!: SafeResourceUrl;
+  videoUrl: string | null = null;
+  videoKey: string | null = null;
+
 
   constructor(private readonly sharedService: SharedUiService, private sanitizer: DomSanitizer, private route: ActivatedRoute, private temasService: TemasService, private router: Router) {}
+
+hasReached75 = false; // flag para disparar apenas uma vez
+
+  onTimeUpdate(video: HTMLVideoElement) {
+    const currentTime = video.currentTime;
+    const duration = video.duration;
+
+    if (!this.videoKey)
+      return;
+
+    // salva progresso
+    localStorage.setItem(this.videoKey || "", currentTime.toString());
+
+    // verifica 75%
+    if (!this.hasReached75 && duration && currentTime / duration >= 0.75) {
+      this.hasReached75 = true;
+      this.onVideo75Percent();
+    }
+  }
+
+  onMetadataLoaded(video: HTMLVideoElement) {
+    if (!this.videoKey)
+      return;
+
+    const savedTime = localStorage.getItem(this.videoKey);
+    if (savedTime) {
+      video.currentTime = parseFloat(savedTime);
+    }
+  }
+
+  onVideo75Percent() {
+    console.log('Usuário assistiu 75% do vídeo!');
+    // Aqui você pode:
+    // - enviar um evento para o backend
+    // - desbloquear conteúdo
+    // - mostrar notificação, etc.
+  }
 
   ngOnInit(): void {
     this.sharedService.hideArrowBackToolbar(false);
@@ -47,8 +86,13 @@ export class AtividadesTemaComponent {
           this.tema = temas[temaIdx];
 
           try {
-            const videoId = temas[temaIdx].atividades[1].videos[0].videoId;
-            this.videoUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`);
+            this.videoKey = temas[temaIdx].atividades[1].videos[0].videoId;  
+            const hostname = window.location.hostname;
+            if (hostname === 'localhost') 
+              this.videoUrl = "assets/resource/" + this.videoKey;    
+            else 
+              this.videoUrl = "resource/" + this.videoKey;    
+              
           } catch {}
 
           if (temaIdx > 0) this.temaAnteriorConcluido = temas[temaIdx - 1]?.completo ?? false;
@@ -87,16 +131,11 @@ export class AtividadesTemaComponent {
     }
 
     if (nomeAtividade.toLocaleLowerCase() == 'conteúdo') {
-      this.isVideoVisible = true;
       window.scrollTo({
         top: 0,
         left: 0,
         behavior: 'smooth',
       });
     } else this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade]);
-  }
-
-  fecharVideo() {
-    this.isVideoVisible = false;
   }
 }

@@ -6,8 +6,8 @@
   "education": "Ensino Médio",
   "password": "",
   "vocabulary": "tecnologia, religião, filosofia",
-  "IAVocabulary": "Tools and machines; Beliefs about gods and life; Thinking about big questions",
-  "ehGrupoControle": false,
+  "IAVocabulary": "Tools and machines; Thinking about life; How things move and work",
+  "ehGrupoControle": true,
   "cursos": [
     {
       "id": "7cf00315-225c-4217-82e7-7badd5681eee",
@@ -203,7 +203,7 @@
           "nome": "Conteúdo",
           "videos": [
             {
-              "url": "https://www.youtube.com/watch?v=SXuBaxqsinQ"
+              "videoId": "verbotobe.mp4"
             }
           ],
           "concluida": false
@@ -634,5 +634,6 @@
       ],
       "completo": false
     }
-  ]
+  ],
+  "isEdit": true
 }

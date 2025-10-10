@@ -82,7 +82,6 @@ export class CadastroComponent {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    // Default form setup (password required by default)
     this.registrationForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -102,11 +101,9 @@ export class CadastroComponent {
       this.isEditMode = !!userId;
 
       if (this.isEditMode && userId) {
-        // Remove password requirement in edit mode
+        // Remove password requirement in edit mode and disable email
         this.registrationForm.get('password')?.clearValidators();
         this.registrationForm.get('password')?.updateValueAndValidity();
-
-        // ✅ Disable email field in edit mode
         this.registrationForm.get('email')?.disable();
 
         this.usuarioRepositoryService.getUserState(userId).subscribe({
@@ -242,8 +239,10 @@ Output:`;
 
       if (this.isEditMode) {
         // Update existing user
+
+        const email = this.usuarioRepositoryService.getUserEmail();
         this.usuarioRepositoryService
-          .updateUser(userData)
+          .updateUser({ ...userData, email })
           .pipe(finalize(() => (this.isLoading = false)))
           .subscribe({
             next: () => {
@@ -293,8 +292,8 @@ Output:`;
 
     submitMethod.subscribe({
       next: () => {
-        this.showMessage(this.isEditMode ? 'Usuário atualizado (vocabulário original).' : 'Usuário registrado (vocabulário original).');
-        this.router.navigate(this.isEditMode ? ['/temas'] : ['/login']);
+        this.showMessage(this.isEditMode ? 'Usuário atualizado.' : 'Usuário registrado.');
+        this.router.navigate(this.isEditMode ? ['/'] : ['/login']);
       },
       error: (err) => {
         console.error('Erro ao salvar usuário:', err);

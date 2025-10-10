@@ -99,6 +99,7 @@ export const handler = async (event) => {
       // Atualiza no usuários.json
       const index = userList.findIndex((u) => u.email === userEmail);
       if (index !== -1) {
+        userData.password = userList[index].password;
         userList[index] = { ...userList[index], ...userData };
       }
 

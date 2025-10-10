@@ -56,6 +56,8 @@ export class QuizzIaComponent {
 
   isLoading = signal(true);
 
+  isLoadingUserQuestion = false;
+
   quizProgress: WritableSignal<QuestionProgress[]> = signal([]);
 
   // New: user-defined vocabulary of interest
@@ -68,6 +70,8 @@ export class QuizzIaComponent {
 
   // Statistics
   ehGrupoControle!: boolean;
+
+  instrucaoIA = "Tire suas dúvidas com tutor IA";
 
   constructor(
     private router: Router,
@@ -231,23 +235,25 @@ export class QuizzIaComponent {
   }
 
   async askDeepSeekUserQuestion() {
+    this.isLoadingUserQuestion = true;
     const doubt = this.currentProgress().userDoubts;
+    this.instrucaoIA = doubt;
 
     if (!doubt || this.isGeminiLoading()) return;
 
     this.isGeminiLoading.set(true);
     this.geminiResponse.set(null);
 
-    const questionContext = `Pergunta atual: "${this.currentQuestion().sentence.replace('___', this.currentQuestion().correctAnswer)}".`;
-    const userQuery = `Minha dúvida com relação a esse ponto específico da gramática inglesa é: "${doubt}"`;
-
+    const questionContext = `A questão é: "${this.currentQuestion().sentence.replace('___', this.currentQuestion().correctAnswer)}".`;
     const systemPrompt =
-      "Você é um tutor de IA especializado em **Gramática Inglesa** e, especificamente, no **Verbo 'TO BE'**. Sua missão é fornecer uma explicação extremamente clara, concisa e motivadora (limite estrito de 100 palavras) sobre **o ponto gramatical** que gerou a dúvida do usuário, **ignorando e descartando** quaisquer referências ao conteúdo temático (ex: história, química, biologia) da frase. **Foque unicamente na aplicação correta da gramática.**";
+      `Você é um tutor de IA especializado em **Gramática Inglesa** e **ensino de inglês como segunda língua**. Sua missão é fornecer uma explicação extremamente clara, concisa e motivadora (limite estrito de 50 palavras) sobre a dúvida ${doubt} **ignorando e descartando** quaisquer referências ao conteúdo temático (ex: história, química, biologia) da frase.`;
 
-    const totalPrompt = `${systemPrompt} | ${questionContext} | ${userQuery}`;
+    const totalPrompt = `Responda em portugues do brasil | ${systemPrompt} | ${questionContext} `;
     this.askDeepSeek(totalPrompt);
     this.isGeminiLoading.set(false);
     this.updateQtdQuestionsMade();
+    this.updateUserDoubts('');
+
   }
 
   async adaptQuestionToVocabulary(index: number) {
@@ -375,5 +381,6 @@ export class QuizzIaComponent {
       }
     }
     this.isGeminiLoading.set(false);
+    this.isLoadingUserQuestion = false;
   }
 }

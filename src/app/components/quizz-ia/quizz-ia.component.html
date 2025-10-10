@@ -49,6 +49,21 @@
           </div>
         }
 
+        @if (geminiResponse() || isLoadingUserQuestion) {
+        <mat-card class="gemini-response-card">
+          <mat-card-content>
+            <div class="response-header">
+              <mat-icon class="response-icon">auto_fix_high</mat-icon>
+              <span class="response-title">Tutor inteligente</span>
+            </div>
+            @if (geminiResponse()) {
+              <p class="response-text">{{ geminiResponse() }}</p>
+            }
+            <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent" class="spinner"></mat-progress-spinner>
+          </mat-card-content>
+        </mat-card>
+      }
+
         <!-- Options -->
         <mat-radio-group (change)="selectOption($event)" [value]="userSelection()" class="options-group">
           @for (option of currentQuestion().options; track option) {
@@ -61,38 +76,24 @@
 
       <!-- Doubts & IA -->
       <div class="doubts-container" *ngIf="!ehGrupoControle && currentProgress() as progress">
+        
         <mat-form-field class="doubts-input-field" appearance="outline">
-          <mat-label>Clarify your doubts here (optional)</mat-label>
+          
+          <mat-label>{{instrucaoIA}}</mat-label>
           <textarea
             matInput
             [ngModel]="progress.userDoubts"
             (ngModelChange)="updateUserDoubts($event)"
             rows="2"
-            placeholder="e.g., Why is 'are' wrong for 'I'?"
+            
           ></textarea>
-          <mat-hint>Ask our AI tutor (Gemini) for an instant explanation.</mat-hint>
         </mat-form-field>
 
         <button mat-mini-fab color="primary" (click)="askDeepSeekUserQuestion()" [disabled]="isGeminiLoading() || !progress.userDoubts" class="gemini-button">
-          @if (isGeminiLoading()) {
-            <mat-spinner diameter="20" color="accent"></mat-spinner>
-          } @else {
-            <mat-icon class="gemini-icon">send</mat-icon>
-          }
+          <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent" class="spinner"></mat-progress-spinner>
+          <mat-icon class="gemini-icon" *ngIf="!isLoadingUserQuestion">send</mat-icon>
         </button>
       </div>
-
-      @if (geminiResponse()) {
-        <mat-card class="gemini-response-card">
-          <mat-card-content>
-            <div class="response-header">
-              <mat-icon class="response-icon">auto_fix_high</mat-icon>
-              <span class="response-title">AI Tutor Response</span>
-            </div>
-            <p class="response-text">{{ geminiResponse() }}</p>
-          </mat-card-content>
-        </mat-card>
-      }
     </mat-card-content>
 
     <!-- Actions -->

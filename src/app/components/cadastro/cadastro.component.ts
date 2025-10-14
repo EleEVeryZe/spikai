@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChip } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +11,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
@@ -49,6 +51,7 @@ export const environment = {
     MatRadioModule,
     MatButtonModule,
     MatProgressSpinner,
+    MatChip
   ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',

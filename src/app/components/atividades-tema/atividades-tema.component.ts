@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { YouTubePlayerModule } from '@angular/youtube-player';
@@ -35,20 +36,29 @@ export class AtividadesTemaComponent {
   videoUrl: string | null = null;
   videoKey: string | null = null;
 
+  tituloVideo: string | null = '';
 
-  constructor(private readonly sharedService: SharedUiService, private sanitizer: DomSanitizer, private route: ActivatedRoute, private temasService: TemasService, private router: Router) {}
+  ehExibirVideo: boolean = false;
 
-hasReached75 = false; // flag para disparar apenas uma vez
+  constructor(
+    private readonly sharedService: SharedUiService,
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
+    private temasService: TemasService,
+    private router: Router,
+    private snackBar: MatSnackBar
+  ) {}
+
+  hasReached75 = false; // flag para disparar apenas uma vez
 
   onTimeUpdate(video: HTMLVideoElement) {
     const currentTime = video.currentTime;
     const duration = video.duration;
 
-    if (!this.videoKey)
-      return;
+    if (!this.videoKey) return;
 
     // salva progresso
-    localStorage.setItem(this.videoKey || "", currentTime.toString());
+    localStorage.setItem(this.videoKey || '', currentTime.toString());
 
     // verifica 75%
     if (!this.hasReached75 && duration && currentTime / duration >= 0.75) {
@@ -57,9 +67,14 @@ hasReached75 = false; // flag para disparar apenas uma vez
     }
   }
 
+  getCardBtnTxt(activityName: 'Pré-teste' | 'Conteúdo' | 'Quizz' | 'Pós-teste', ehAtvdConcluida: boolean) {
+    if (activityName === 'Conteúdo') return !ehAtvdConcluida ? '' : 'Rever';
+
+    return ehAtvdConcluida ? 'Revisar' : 'Iniciar';
+  }
+
   onMetadataLoaded(video: HTMLVideoElement) {
-    if (!this.videoKey)
-      return;
+    if (!this.videoKey) return;
 
     const savedTime = localStorage.getItem(this.videoKey);
     if (savedTime) {
@@ -68,11 +83,28 @@ hasReached75 = false; // flag para disparar apenas uma vez
   }
 
   onVideo75Percent() {
-    console.log('Usuário assistiu 75% do vídeo!');
-    // Aqui você pode:
-    // - enviar um evento para o backend
-    // - desbloquear conteúdo
-    // - mostrar notificação, etc.
+    if (!this.tema?.atividades[1].concluida) {
+      console.log('Usuário assistiu 75% do vídeo!');
+      this.temasService.registrarVideoAssistido(this.tema?.id + '').subscribe({
+        next: (res: any) => {
+          console.log('Quizz respondido:', res);
+          this.showMessage('Resultado salvo com sucesso!');
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.showMessage('Erro ao guardar resultado.', true);
+        },
+      });
+    }
+  }
+
+  showMessage(message: string, isError: boolean = false) {
+    this.snackBar.open(message, 'Fechar', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+      panelClass: isError ? ['snackbar-error'] : ['snackbar-success'],
+    });
   }
 
   ngOnInit(): void {
@@ -86,19 +118,30 @@ hasReached75 = false; // flag para disparar apenas uma vez
           this.tema = temas[temaIdx];
 
           try {
-            this.videoKey = temas[temaIdx].atividades[1].videos[0].videoId;  
-            const hostname = window.location.hostname;
-            if (hostname === 'localhost') 
-              this.videoUrl = "assets/resource/" + this.videoKey;    
-            else 
-              this.videoUrl = "resource/" + this.videoKey;    
-              
+            this.ehExibirVideo = temas[temaIdx].atividades[0].concluida && !temas[temaIdx].atividades[1].concluida;
+            if (this.ehExibirVideo) {
+              this.videoKey = temas[temaIdx].atividades[1].videos[0].videoId;
+              this.tituloVideo = temas[temaIdx].atividades[1].videos[0].tituloVideo;
+              const hostname = window.location.hostname;
+
+              let suffix = "";
+
+              if (this.videoKey?.indexOf(".mp4") == -1)
+                suffix = ".mp4";
+              if (hostname === 'localhost') this.videoUrl = 'assets/resource/' + this.videoKey + suffix;
+              else this.videoUrl = 'resource/' + this.videoKey + suffix;
+            }
           } catch {}
 
           if (temaIdx > 0) this.temaAnteriorConcluido = temas[temaIdx - 1]?.completo ?? false;
         });
       }
     });
+  }
+
+  ehAtividadeAnteriorConcluida(i: number) {
+    if (i === 0) return false;
+    return !this.tema?.atividades[i - 1].concluida;
   }
 
   getTemaProgress(): number {
@@ -124,18 +167,39 @@ hasReached75 = false; // flag para disparar apenas uma vez
     }
   }
 
+  getActivityDescription(activityName: 'Pré-teste' | 'Conteúdo' | 'Quizz' | 'Pós-teste'): string {
+    switch (activityName) {
+      case 'Pré-teste':
+        return ''; // Ícone de formulário/tarefa
+      case 'Conteúdo':
+        return ''; // Ícone de livro
+      case 'Quizz':
+        return 'Assista o vídeo para desbloquear Quizz'; // Ícone de questionário (se disponível, senão 'help_outline')
+      case 'Pós-teste':
+        return ''; // Ícone de avaliação/teste
+      default:
+        return '';
+    }
+  }
+
   iniciarAtividade(nomeAtividade: string) {
-    if (nomeAtividade.toLocaleLowerCase() == "pós-teste"){
+    if (nomeAtividade.toLocaleLowerCase() == 'pós-teste') {
       this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade + '/true']);
       return;
     }
 
+    if (nomeAtividade.toLocaleLowerCase() == 'memorização') {
+      this.router.navigate(['/Memorização']);
+      return;
+    }
+
     if (nomeAtividade.toLocaleLowerCase() == 'conteúdo') {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'smooth',
-      });
+      this.ehExibirVideo = true;
+      this.videoKey = this.tema?.atividades[1].videos[0].videoId;
+      this.tituloVideo = this.tema?.atividades[1].videos[0].tituloVideo;
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost') this.videoUrl = 'assets/resource/' + this.videoKey;
+      else this.videoUrl = 'resource/' + this.videoKey;
     } else this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade]);
   }
 }

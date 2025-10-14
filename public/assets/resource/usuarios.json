@@ -1,0 +1,14 @@
+[
+  {
+    "name": "rod31",
+    "email": "Rod31@gmail.com",
+    "age": 6,
+    "gender": "male",
+    "education": "Ensino Médio",
+    "password": "123123",
+    "vocabulary": "tecnologia, religião, filosofia",
+    "IAVocabulary": "Tools and machines; Thinking about life; How things move and work",
+    "ehGrupoControle": false,
+    "isEdit": true
+  }
+]

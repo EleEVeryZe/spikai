@@ -1,20 +1,4 @@
 <div class="main-container">
-
-  <!-- Video Card -->
-  <mat-card class="video-card" *ngIf="videoUrl">
-    <mat-card-title>Conteúdo de Vídeo</mat-card-title>
-    <div class="video-container">
-      <video
-        #videoPlayer
-        controls
-        (timeupdate)="onTimeUpdate(videoPlayer)"
-        (loadedmetadata)="onMetadataLoaded(videoPlayer)"
-      >
-        <source [src]="videoUrl" type="video/mp4" />
-      </video>
-    </div>
-  </mat-card>
-
   <!-- Header Card -->
   <div class="tema-header" *ngIf="tema">
     <mat-card class="header-card">
@@ -31,22 +15,41 @@
 
   <!-- Activities Grid -->
   <div class="atividades-grid" *ngIf="tema && temaAnteriorConcluido">
-    <mat-card class="atividade-card-visual" *ngFor="let atividade of tema.atividades">
-      <div class="atividade-icon-wrapper">
+    <mat-card class="atividade-card-visual" *ngFor="let atividade of tema.atividades; let i = index">
+      <div *ngIf="!videoUrl || !ehExibirVideo" class="atividade-icon-wrapper">
         <mat-icon class="activity-icon" [ngClass]="{ concluida: atividade.concluida, pendente: !atividade.concluida }">
           {{ getActivityIcon(atividade.nome) }}
         </mat-icon>
       </div>
+
+      <!-- Video Card -->
+      <div class="video-card" *ngIf="videoUrl && ehExibirVideo && atividade.nome === 'Conteúdo'">
+        <mat-card-title class="video-card-title">{{ tituloVideo || "Conteúdo de Vídeo" }}</mat-card-title>
+        <div class="video-container">
+          <video #videoPlayer controls (timeupdate)="onTimeUpdate(videoPlayer)" (loadedmetadata)="onMetadataLoaded(videoPlayer)">
+            <source [src]="videoUrl" type="video/mp4" />
+          </video>
+        </div>
+      </div>
       <mat-card-content>
         <h2 class="atividade-title-visual">{{ atividade.nome }}</h2>
+        <p class="tema-description" *ngIf="ehAtividadeAnteriorConcluida(i)">{{ getActivityDescription(atividade.nome) }}</p>
         <p class="atividade-status" *ngIf="atividade.concluida">
           <mat-icon class="status-check">check_circle</mat-icon> Concluído em: {{ atividade.dataConclusao | date : "dd/MM/yyyy" }}
         </p>
         <p class="atividade-status" *ngIf="!atividade.concluida">
           <mat-icon class="status-pending">radio_button_unchecked</mat-icon> Pendente
         </p>
-        <button mat-flat-button color="primary" class="action-button" (click)="iniciarAtividade(atividade.nome)">
-          {{ atividade.concluida ? "Revisar" : "Iniciar" }}
+
+        <button
+          *ngIf="!(!atividade.concluida && atividade.nome == 'Conteúdo')"
+          [disabled]="ehAtividadeAnteriorConcluida(i)"
+          mat-flat-button
+          color="primary"
+          class="action-button"
+          (click)="iniciarAtividade(atividade.nome)"
+        >
+          {{ getCardBtnTxt(atividade.nome, atividade.concluida) }}
         </button>
       </mat-card-content>
     </mat-card>
@@ -72,5 +75,4 @@
       </mat-card-content>
     </mat-card>
   </div>
-
 </div>

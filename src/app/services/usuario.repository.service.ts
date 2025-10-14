@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Tema } from '../model/tema.model';
 import { AuthService } from './auth.service';
  const headers = new HttpHeaders({
     'Content-Type': 'application/json',
@@ -14,6 +15,7 @@ export interface Usuario {
   education: string;
   password: string;
   vocabulary: string;
+  cursos: Tema[]
 }
 
 @Injectable({
@@ -65,5 +67,16 @@ export class UsuarioRepositoryService {
   getUserState(userEmail?: string) : Observable<Usuario> {
     const filename = this.getUserBucketName(userEmail);
     return this.httpClient.get<Usuario>(filename.toLocaleLowerCase());
+  }
+
+  getAllUser() {
+    let path = "";
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost') 
+      path = `assets/resource/usuarios.json`;
+    else 
+      path = `resource/usuarios.json`;
+
+    return this.httpClient.get<any[]>(path);
   }
 }

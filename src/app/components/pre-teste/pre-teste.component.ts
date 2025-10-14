@@ -47,7 +47,7 @@ export class PreTesteComponent implements OnInit {
       this.sharedUi.scrollPageToTop();
 
       this.temasService.getAtividade(this.idCurso + "", this.ehPos ? "Pós-teste" : "Pré-teste").subscribe(atvd => {
-        this.perguntas = atvd?.perguntas.slice(0,3)
+        this.perguntas = atvd?.perguntas/*.slice(0,3)*/
         this.carregarProximaPergunta();
       })
     });

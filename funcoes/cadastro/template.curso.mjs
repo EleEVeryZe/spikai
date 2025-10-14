@@ -118,7 +118,7 @@ export const cursos = [
         nome: "Conteúdo",
         videos: [
           {
-            videoId: "verbotobe",
+            videoId: "verbotobe.mp4",
           },
         ],
         concluida: false,
@@ -344,6 +344,10 @@ export const cursos = [
         ],
         dataConclusao: "2025-10-07T21:45:49.278Z",
       },
+      {
+        nome: "Memorização",
+        concluida: false
+      }
     ],
     completo: false,
   },

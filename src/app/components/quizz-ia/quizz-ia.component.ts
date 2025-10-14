@@ -26,6 +26,7 @@ interface Question {
 }
 
 interface QuestionProgress {
+  sentence?: string | null;
   selectedAnswer: string | null;
   isCorrect: boolean | null;
   userDoubts: string;
@@ -91,7 +92,7 @@ export class QuizzIaComponent {
       this.idCurso = idCurso || '';
 
       this.temasService.getAtividade(idCurso + '', 'Quizz').subscribe((atvd) => {
-        const perguntas = (atvd?.perguntas.slice(0, 3) as Question[]) ?? [];
+        const perguntas = (atvd?.perguntas/*.slice(0, 3)*/ as Question[]) ?? [];
         this.quizData.set(perguntas);
 
         this.temasService.getUserProperties().subscribe(({ vocabulary, ehGrupoControle }) => {
@@ -131,6 +132,25 @@ export class QuizzIaComponent {
   isLastQuestion = computed(() => this.currentQuestionIndex() === this.quizData().length - 1);
   progressPercent = computed(() => Math.min(100, ((this.currentQuestionIndex() + 1) / this.quizData().length) * 100));
 
+
+  obterContextoPalavra(word: string, frase: string) {
+    console.log(word);
+
+    this.isLoadingUserQuestion = true;
+
+    if (this.isGeminiLoading()) return;
+
+    this.isGeminiLoading.set(true);
+    this.geminiResponse.set(null);
+
+    const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 50 palavras) da palavra '${word}' na frase a seguir: '${frase}' | Responda em português do Brasil`;
+    
+    this.askDeepSeek(questionContext);
+    this.isGeminiLoading.set(false);
+    this.updateQtdQuestionsMade();
+    this.updateUserDoubts('');
+  }
+
   // Actions
   selectOption(event: MatRadioChange): void {
     const selectedAnswer = event.value;
@@ -145,6 +165,7 @@ export class QuizzIaComponent {
         ...progress[index],
         selectedAnswer,
         isCorrect: isAnswerCorrect,
+        sentence: question.sentence
       };
       return progress.map((p, i) => (i === index ? updatedItem : p));
     });
@@ -253,7 +274,6 @@ export class QuizzIaComponent {
     this.isGeminiLoading.set(false);
     this.updateQtdQuestionsMade();
     this.updateUserDoubts('');
-
   }
 
   async adaptQuestionToVocabulary(index: number) {

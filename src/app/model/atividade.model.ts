@@ -3,4 +3,5 @@ export interface Atividade {
   concluida: boolean;
   dataConclusao?: Date | null;
   perguntas?: any;
+  videos: any
 }

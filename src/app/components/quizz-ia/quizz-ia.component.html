@@ -1,12 +1,12 @@
 @if (isLoading()) {
-  <div class="app-container loading-container">
-    <mat-card class="quiz-card loading-card">
-      <div class="spinner-wrapper">
-        <mat-spinner diameter="50" color="primary"></mat-spinner>
-        <p class="loading-text">Carregando Quiz...</p>
-      </div>
-    </mat-card>
-  </div>
+<div class="app-container loading-container">
+  <mat-card class="quiz-card loading-card">
+    <div class="spinner-wrapper ">
+      <mat-spinner diameter="50" color="primary"></mat-spinner>
+      <p class="loading-text">Carregando Quiz...</p>
+    </div>
+  </mat-card>
+</div>
 } @else {
 <div class="app-container">
   <mat-card class="quiz-card">
@@ -22,75 +22,93 @@
     </div>
 
     <mat-card-content class="quiz-content">
-      
       @if (currentQuestion()) {
-        <div class="question-box">
-          <p class="question-label">Complete the sentence:</p>
-          <p class="question-sentence">"{{ currentQuestion().sentence.replace('___', '______') }}"</p>
-        </div>
+      <div class="question-box">
+        <p class="question-label">Complete the sentence:</p>
 
-        <!-- Feedback -->
-        @if (isCorrect() !== null) {
-          <div class="feedback-box" [class.feedback-correct]="isCorrect()" [class.feedback-incorrect]="!isCorrect()">
-            @if (isCorrect()) {
-              <p class="feedback-text-bold feedback-text-green">
-                <mat-icon class="icon-check">check_circle</mat-icon>
-                Correct! Excellent job.
-              </p>
-            } @else {
-              <p class="feedback-text-bold feedback-text-red">
-                <mat-icon class="icon-error">cancel</mat-icon>
-                Incorrect Answer.
-              </p>
-              <p *ngIf="!ehGrupoControle" class="feedback-text-italic">
-                <span class="feedback-label">Tutoring:</span> {{ feedbackText() }}
-              </p>
-            }
-          </div>
+        @if (ehGrupoControle) {
+        <p class="question-sentence">"{{ currentQuestion().sentence.replace("___", "______") }}"</p>
+        } @else {
+        <p class="question-sentence">
+          " @for (word of currentQuestion().sentence.split(' '); track word) { @if (word.includes('___')) {
+          <span class="word-placeholder">{{ word.replace("___", "_______") }}</span>
+          } @else {
+          <span class="word-dotted" (click)="obterContextoPalavra(word, currentQuestion().sentence)">{{ word + " " }}</span>
+          }
+          <span> </span>
+          } "
+        </p>
         }
+      </div>
 
-        @if (geminiResponse() || isLoadingUserQuestion) {
-        <mat-card class="gemini-response-card">
-          <mat-card-content>
-            <div class="response-header">
-              <mat-icon class="response-icon">auto_fix_high</mat-icon>
-              <span class="response-title">Tutor inteligente</span>
-            </div>
-            @if (geminiResponse()) {
-              <p class="response-text">{{ geminiResponse() }}</p>
-            }
-            <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent" class="spinner"></mat-progress-spinner>
-          </mat-card-content>
-        </mat-card>
+      <!-- Feedback -->
+      @if (isCorrect() !== null) {
+      <div class="feedback-box" [class.feedback-correct]="isCorrect()" [class.feedback-incorrect]="!isCorrect()">
+        @if (isCorrect()) {
+        <p class="feedback-text-bold feedback-text-green">
+          <mat-icon class="icon-check">check_circle</mat-icon>
+          Correct! Excellent job.
+        </p>
+        } @else {
+        <p class="feedback-text-bold feedback-text-red">
+          <mat-icon class="icon-error">cancel</mat-icon>
+          Incorrect Answer.
+        </p>
+        <p *ngIf="!ehGrupoControle" class="feedback-text-italic"><span class="feedback-label">Tutoring:</span> {{ feedbackText() }}</p>
+        }
+      </div>
+      } @if (geminiResponse() || isLoadingUserQuestion) {
+      <mat-card class="gemini-response-card">
+        <mat-card-content>
+          <div class="response-header">
+            <mat-icon class="response-icon">auto_fix_high</mat-icon>
+            <span class="response-title">Tutor inteligente</span>
+          </div>
+          @if (geminiResponse()) {
+          <p class="response-text">{{ geminiResponse() }}</p>
+          }
+          <mat-progress-spinner
+            *ngIf="isLoadingUserQuestion"
+            diameter="20"
+            mode="indeterminate"
+            color="accent"
+            class="spinner"
+          ></mat-progress-spinner>
+        </mat-card-content>
+      </mat-card>
       }
 
-        <!-- Options -->
-        <mat-radio-group (change)="selectOption($event)" [value]="userSelection()" class="options-group">
-          @for (option of currentQuestion().options; track option) {
-            <mat-radio-button [value]="option" class="custom-radio">
-              <span class="option-text">{{ option }}</span>
-            </mat-radio-button>
-          }
-        </mat-radio-group>
+      <!-- Options -->
+      <mat-radio-group (change)="selectOption($event)" [value]="userSelection()" class="options-group">
+        @for (option of currentQuestion().options; track option) {
+        <mat-radio-button [value]="option" class="custom-radio">
+          <span class="option-text">{{ option }}</span>
+        </mat-radio-button>
+        }
+      </mat-radio-group>
       }
 
       <!-- Doubts & IA -->
       <div class="doubts-container" *ngIf="!ehGrupoControle && currentProgress() as progress">
-        
         <mat-form-field class="doubts-input-field" appearance="outline">
-          
-          <mat-label>{{instrucaoIA}}</mat-label>
-          <textarea
-            matInput
-            [ngModel]="progress.userDoubts"
-            (ngModelChange)="updateUserDoubts($event)"
-            rows="2"
-            
-          ></textarea>
+          <mat-label>{{ instrucaoIA }}</mat-label>
+          <textarea matInput [ngModel]="progress.userDoubts" (ngModelChange)="updateUserDoubts($event)" rows="2"></textarea>
         </mat-form-field>
 
-        <button mat-mini-fab color="primary" (click)="askDeepSeekUserQuestion()" [disabled]="isGeminiLoading() || !progress.userDoubts" class="gemini-button">
-          <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent" class="spinner"></mat-progress-spinner>
+        <button
+          mat-mini-fab
+          color="primary"
+          (click)="askDeepSeekUserQuestion()"
+          [disabled]="isGeminiLoading() || !progress.userDoubts"
+          class="gemini-button"
+        >
+          <mat-progress-spinner
+            *ngIf="isLoadingUserQuestion"
+            diameter="20"
+            mode="indeterminate"
+            color="accent"
+            class="spinner"
+          ></mat-progress-spinner>
           <mat-icon class="gemini-icon" *ngIf="!isLoadingUserQuestion">send</mat-icon>
         </button>
       </div>
@@ -109,22 +127,15 @@
         [disabled]="userSelection() === null && currentQuestionIndex() < quizData().length"
         class="action-button-next"
       >
-        @if (isLastQuestion()) {
-          Finish Quiz <mat-icon>done_all</mat-icon>
-        } @else {
-          Next Question <mat-icon>arrow_forward</mat-icon>
+        @if (isLastQuestion()) { Finish Quiz <mat-icon>done_all</mat-icon> } @else { Next Question <mat-icon>arrow_forward</mat-icon>
         }
       </button>
     </mat-card-actions>
-    }
-
-    @if (currentQuestionIndex() === quizData().length) {
-      <div class="quiz-complete-message">
-        <p class="completion-title">🎉 Quiz Finalizado! 🎉</p>
-        <p class="completion-subtitle">
-          Você concluiu todas as {{ quizData().length }} perguntas. Revise o seu progresso!
-        </p>
-      </div>
+    } @if (currentQuestionIndex() === quizData().length) {
+    <div class="quiz-complete-message">
+      <p class="completion-title">🎉 Quiz Finalizado! 🎉</p>
+      <p class="completion-subtitle">Você concluiu todas as {{ quizData().length }} perguntas. Revise o seu progresso!</p>
+    </div>
     }
   </mat-card>
 </div>

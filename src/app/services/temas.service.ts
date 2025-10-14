@@ -38,4 +38,9 @@ export class TemasService {
     const email = this.usuarioRepositoryService.getUserEmail();
     return this.httpClient.post("https://5ijvp6uva8.execute-api.sa-east-1.amazonaws.com/default/quizz", { email, respostas, idCurso });
   }
+
+  registrarVideoAssistido(idCurso: string | null ) {
+    const email = this.usuarioRepositoryService.getUserEmail();
+    return this.httpClient.post("https://5ijvp6uva8.execute-api.sa-east-1.amazonaws.com/default/quizz", { email, nomeAtividade: "Conteúdo", idCurso });
+  }
 }

@@ -7,7 +7,7 @@
   "password": "",
   "vocabulary": "tecnologia, religião, filosofia",
   "IAVocabulary": "Tools and machines; Thinking about life; How things move and work",
-  "ehGrupoControle": true,
+  "ehGrupoControle": false,
   "cursos": [
     {
       "id": "7cf00315-225c-4217-82e7-7badd5681eee",
@@ -27,7 +27,9 @@
                 "are",
                 "will"
               ],
-              "opcaoCorreta": 1
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
+
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -38,7 +40,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 0
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -49,7 +52,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 2
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -60,7 +64,8 @@
                 "do",
                 "is"
               ],
-              "opcaoCorreta": 3
+              "opcaoCorreta": 3,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -71,7 +76,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 1
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -82,7 +88,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 0
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -93,7 +100,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 0
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -104,7 +112,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 1
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Qual das opções abaixo está NEGANDO a frase abaixo",
@@ -115,7 +124,8 @@
                 "They are not in my Office.",
                 "They are in my not Office."
               ],
-              "opcaoCorreta": 2
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -126,7 +136,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 1
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
@@ -137,7 +148,8 @@
                 "good teacher He is.",
                 "good teacher a is he."
               ],
-              "opcaoCorreta": 1
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -149,7 +161,8 @@
                 "are",
                 "do"
               ],
-              "opcaoCorreta": 2
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
@@ -160,7 +173,8 @@
                 "are it my pen?",
                 "do it my pen?"
               ],
-              "opcaoCorreta": 0
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Escolha a resposta correta:",
@@ -171,7 +185,8 @@
                 "is",
                 "are"
               ],
-              "opcaoCorreta": 3
+              "opcaoCorreta": 3,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Qual das opções abaixo está NEGANDO a frase abaixo",
@@ -182,7 +197,8 @@
                 "students They are not.",
                 "They are not students."
               ],
-              "opcaoCorreta": 3
+              "opcaoCorreta": 3,
+              "opcaoSelecionada": 1
             },
             {
               "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
@@ -193,24 +209,26 @@
                 "do we be brazillians?",
                 "be we brazillians?"
               ],
-              "opcaoCorreta": 0
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 1
             }
           ],
-          "concluida": false,
+          "concluida": true,
           "dataConclusao": ""
         },
         {
           "nome": "Conteúdo",
           "videos": [
             {
-              "videoId": "verbotobe.mp4"
+              "videoId": "verbotobe.mp4",
+              "tituloVideo": "Verbo To Be"
             }
           ],
-          "concluida": false
+          "concluida": true
         },
         {
           "nome": "Quizz",
-          "concluida": false,
+          "concluida": true,
           "perguntas": [
             {
               "id": 1,
@@ -397,7 +415,7 @@
         },
         {
           "nome": "Pós-teste",
-          "concluida": false,
+          "concluida": true,
           "perguntas": [
             {
               "titulo": "Escolha a resposta correta:",
@@ -578,6 +596,10 @@
             }
           ],
           "dataConclusao": "2025-10-07T21:45:49.278Z"
+        },
+        {
+          "nome": "Memorização",
+          "concluida": false
         }
       ],
       "completo": false

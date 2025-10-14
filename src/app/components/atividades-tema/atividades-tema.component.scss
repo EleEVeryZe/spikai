@@ -208,8 +208,13 @@ mat-progress-bar .mat-progress-bar-fill::after {
   opacity: 0.9;
 }
 .video-card {
-  width: 100%;           /* ocupa toda largura do container */
+  width: 110%;           /* ocupa toda largura do container */
   margin-bottom: 30px;   /* espaço abaixo do vídeo */
+  
+}
+
+.video-card-title {
+  padding: 15px;
 }
 
 .video-container {

@@ -2,9 +2,11 @@ import { Routes } from "@angular/router";
 import { AtividadesTemaComponent } from "./components/atividades-tema/atividades-tema.component";
 import { CadastroComponent } from "./components/cadastro/cadastro.component";
 import { CreateComponent } from "./components/crud/create/create.component";
+import { EstatisticoComponent } from "./components/estatistico/estatistico.component";
 import { ImovelDetailsComponent } from "./components/imovel-details/imovel-details.component";
 import { LoginComponent } from "./components/login/login.component";
 import { MainComponent } from "./components/main/main.component";
+import { MemorizacaoComponent } from "./components/memorizacao/memorizacao.component";
 import { NotFoundComponent } from "./components/not-found/not-found.component";
 import { PreTesteComponent } from "./components/pre-teste/pre-teste.component";
 import { QuizzIaComponent } from "./components/quizz-ia/quizz-ia.component";
@@ -30,6 +32,7 @@ export const routes: Routes = [
       { path: ':id/Quizz', component: QuizzIaComponent },
       { path: ':id/Pós-teste/:ehPos', component: PreTesteComponent },
       { path: 'edit/:userId', component: CadastroComponent },
+      { path: 'Memorização', component: MemorizacaoComponent },
     ],
   },
 
@@ -41,6 +44,7 @@ export const routes: Routes = [
   { path: "details/:id", component: ImovelDetailsComponent },
   { path: "create", component: CreateComponent },
   { path: "edit", component: CreateComponent },
+  { path: "estatistica", component: EstatisticoComponent },
 
   // Página de não encontrado
   { path: "not-found", component: NotFoundComponent },

@@ -49,6 +49,8 @@ export class LoginComponent {
   email = new FormControl('', [Validators.required, Validators.email]);
   password = new FormControl('', [Validators.required]);
 
+  isLoading = false;
+
   ngOnInit(): void {
     if (this.auth.isAuthenticated()) this.router.navigate(['/principal']);
 
@@ -77,6 +79,7 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       console.log('Formulário enviado!', this.loginForm.value);
+      this.isLoading = true;
       this.usuarioRepositoryService.onLogin(this.loginForm.value.email.toLowerCase(), this.loginForm.value.password).subscribe({
         next: (res: any) => {
           console.log('Login successful:', res);
@@ -89,6 +92,8 @@ export class LoginComponent {
             this.showMessage(err?.error?.message); 
           else 
             this.showMessage('Erro ao fazer login.');
+
+          this.isLoading = false;
         },
       });
     }

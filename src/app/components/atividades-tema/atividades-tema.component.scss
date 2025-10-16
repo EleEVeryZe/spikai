@@ -232,3 +232,27 @@ mat-progress-bar .mat-progress-bar-fill::after {
   object-fit: cover;     /* ou 'contain' se quiser ver o vídeo inteiro */
   border-radius: 8px;    /* arredonda cantos do vídeo */
 }
+
+.atividade-pontos {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #3f51b5;
+  margin: 4px 0 8px 0;
+}
+
+.points-icon {
+  color: #ffca28;
+  margin-right: 6px;
+}
+
+.baixo-desempenho {
+  color: #e53935;
+  font-weight: 600;
+}
+
+.mensagem-reforco {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin-top: -4px;
+}

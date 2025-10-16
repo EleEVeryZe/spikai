@@ -1,29 +1,32 @@
+/* Estilos globais do contêiner do Quiz */
 .quiz-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 100px;
+    /* Usa apenas a definição mais recente de padding */
+    padding: 40px 20px; 
     min-height: 100vh;
-    padding: 20px;
     background-color: #f0f2f5;
 }
 
+/* Estilos do Cartão Material (mat-card) */
 mat-card {
     margin-bottom: 20vh;
     width: 100%;
-    max-width: 600px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    /* Permite que o card cresça para ocupar o espaço disponível */
-    flex-grow: 1;
+    /* Mantém a largura maior (800px) da versão otimizada */
+    max-width: 800px; 
+    /* Mantém a sombra mais profunda e o raio maior (12px) da versão otimizada */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); 
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
 }
 
+/* Estilos do conteúdo da pergunta (para o modo de fazer o quiz) */
 .pergunta-content {
     text-align: center;
     padding: 24px;
-    flex-grow: 1; /* Faz com que o conteúdo da pergunta ocupe o espaço extra */
+    flex-grow: 1; 
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -41,6 +44,7 @@ mat-card {
     margin: 16px 0;
 }
 
+
 .opcoes-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -49,6 +53,21 @@ mat-card {
 }
 
 .opcoes-container button {
+    height: 60px;
+    font-size: 16px;
+}
+
+
+/* Contêiner das opções de resposta */
+.opcoes-container2 {
+    display: grid;
+    /* Garante flexibilidade em telas menores para revisão */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 16px;
+    padding: 24px;
+}
+
+.opcoes-container2 button {
     height: 60px;
     font-size: 16px;
 }
@@ -67,40 +86,154 @@ mat-card {
   font-weight: bold;
 }
 
-/* Estilo para a opção selecionada */
+/* Estilo para a opção selecionada durante o quiz (prioriza a cor azul do Material) */
 .opcao-selecionada {
-    background-color: #536dfe !important; /* Cor de destaque para a seleção */
+    background-color: #536dfe !important; 
     color: white !important;
 }
 
-.rodape {
-    text-align: center;
-    padding: 16px;
-    border-top: 1px solid #e0e0e0;
-}
+/* --- Estilos Específicos do Cartão de Resultados (Revisão) --- */
 
 .resultados-card {
+    padding: 0; /* Remove padding do card principal para que o header se estenda */
+}
+
+.resultados-header {
+    background-color: #1976d2; /* Cor primária do Material */
+    color: white;
+    padding: 24px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.resultados-header mat-card-title {
+    font-weight: 600;
+}
+
+.resultados-content {
+    padding: 24px;
+}
+
+/* Resumo de Acertos/Erros no Topo */
+.score-resumo {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px 0;
+    margin-bottom: 24px;
+}
+
+.score-item {
     text-align: center;
-    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.resultados-content p {
-    font-size: 18px;
-    margin: 8px 0;
+.score-item mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
 }
 
-.acertos {
-    color: green;
-    font-weight: bold;
+.score-acertos mat-icon {
+    color: #4caf50; /* Verde */
 }
 
-.erros {
-    color: red;
-    font-weight: bold;
+.score-erros mat-icon {
+    color: #f44336; /* Vermelho */
 }
 
 .total-score {
+    font-size: 32px;
     font-weight: bold;
-    font-size: 24px;
-    margin-top: 16px;
+    margin-top: 8px;
+}
+
+.card-divider {
+    margin: 20px 0;
+}
+
+/* Estilo para cada Pergunta Revisada */
+.pergunta-feita {
+    /* CORREÇÃO APLICADA: Removendo o padding-bottom para eliminar o espaçamento indesejado no final da pergunta. */
+    /* padding-bottom: 20px; */ 
+}
+
+.pergunta-item-header {
+    margin-bottom: 12px;
+    align-items: center;
+    padding-left: 0 !important; 
+}
+
+.pergunta-item-header h3 {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.pergunta-desc {
+    color: #555;
+    font-size: 0.9em;
+}
+
+.resultado-icon {
+    font-size: 30px;
+    margin-right: 16px;
+    width: 30px;
+    height: 30px;
+}
+
+.icon-correta {
+    color: #4caf50;
+}
+
+.icon-errada {
+    color: #f44336;
+}
+
+/* Estilo das Opções de Resposta na Revisão */
+.revisao-opcoes {
+    padding: 0 16px 16px 16px; 
+    gap: 12px;
+}
+
+.opcao-revisao-btn {
+    height: auto; 
+    min-height: 40px;
+    white-space: normal; 
+    text-align: left;
+    padding: 8px 16px;
+    line-height: 1.2;
+    border-width: 2px !important;
+}
+
+/* Cores de status para os botões de opção */
+.correta {
+    background-color: #e8f5e9 !important; /* Fundo verde claro */
+    border-color: #4caf50 !important;
+    color: #1b5e20 !important;
+    font-weight: 500;
+}
+
+.errada {
+    background-color: #ffebee !important; /* Fundo vermelho claro */
+    border-color: #f44336 !important;
+    color: #c62828 !important;
+    font-weight: 500;
+}
+
+.selecionada {
+    /* Destaca a opção que o usuário escolheu, mesmo que errada */
+    box-shadow: 0 0 5px 1px rgba(25, 118, 210, 0.5); 
+}
+
+/* Pontuação Final */
+.pontuacao-final {
+    text-align: center;
+    padding-top: 16px;
+}
+
+.score-final-numero {
+    font-weight: 700;
+    font-size: 1.5em; /* Aumenta o tamanho */
+    color: #1976d2; /* Cor de destaque */
 }

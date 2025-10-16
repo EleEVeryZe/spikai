@@ -36,10 +36,6 @@ export const routes: Routes = [
     ],
   },
 
-  // Tema e escolha do tema
-  
-  //{ path: 'tema/:nome', component: TemaDetalheComponent }, // você cria esse componente
-
   // CRUD de imóveis
   { path: "details/:id", component: ImovelDetailsComponent },
   { path: "create", component: CreateComponent },

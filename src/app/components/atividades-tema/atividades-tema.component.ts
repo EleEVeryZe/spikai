@@ -87,8 +87,8 @@ export class AtividadesTemaComponent {
       console.log('Usuário assistiu 75% do vídeo!');
       this.temasService.registrarVideoAssistido(this.tema?.id + '').subscribe({
         next: (res: any) => {
-          console.log('Quizz respondido:', res);
-          this.showMessage('Resultado salvo com sucesso!');
+          console.log('Usuario assistiu 75% do vídeo:', res);
+          this.ngOnInit();
         },
         error: (err: any) => {
           console.error(err);
@@ -124,10 +124,9 @@ export class AtividadesTemaComponent {
               this.tituloVideo = temas[temaIdx].atividades[1].videos[0].tituloVideo;
               const hostname = window.location.hostname;
 
-              let suffix = "";
+              let suffix = '';
 
-              if (this.videoKey?.indexOf(".mp4") == -1)
-                suffix = ".mp4";
+              if (this.videoKey?.indexOf('.mp4') == -1) suffix = '.mp4';
               if (hostname === 'localhost') this.videoUrl = 'assets/resource/' + this.videoKey + suffix;
               else this.videoUrl = 'resource/' + this.videoKey + suffix;
             }
@@ -137,6 +136,14 @@ export class AtividadesTemaComponent {
         });
       }
     });
+  }
+
+  getPontosAtividade(atividade: any): number {
+    if (!atividade.perguntas?.length) return 0;
+
+    const acertos = atividade.perguntas.filter((p: any) => p.opcaoSelecionada === p.opcaoCorreta).length;
+
+    return Math.round((acertos / atividade.perguntas.length) * 100);
   }
 
   ehAtividadeAnteriorConcluida(i: number) {

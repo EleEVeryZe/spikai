@@ -244,11 +244,20 @@
   color: #673ab7;
   border-color: #673ab7;
 }
-.action-button-next {
-  flex: 1;
-  font-weight: 600;
-  background-color: #673ab7;
+
+
+.action-button-next, .action-button-prev {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
+
+.action-button-next mat-icon, .action-button-prev mat-icon {
+    vertical-align: middle; 
+}
+
+
 /* Completion Message */
 .quiz-complete-message {
   margin-top: 24px;

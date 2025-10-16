@@ -34,6 +34,23 @@
       <mat-card-content>
         <h2 class="atividade-title-visual">{{ atividade.nome }}</h2>
         <p class="tema-description" *ngIf="ehAtividadeAnteriorConcluida(i)">{{ getActivityDescription(atividade.nome) }}</p>
+        <!-- Pontuação: exibida apenas quando concluída -->
+        <p
+          class="atividade-pontos"
+          *ngIf="(atividade.nome === 'Pré-teste' || atividade.nome === 'Pós-teste') && atividade.concluida"
+          [ngClass]="{
+            'baixo-desempenho': atividade.nome === 'Pós-teste' && getPontosAtividade(atividade) < 70
+          }"
+        >
+          <mat-icon class="points-icon">emoji_events</mat-icon>
+          Desempenho:
+          <strong>{{ getPontosAtividade(atividade) }}%</strong>
+        </p>
+
+        <!-- Mensagem motivacional se pós-teste concluído e nota < 70% -->
+        <p class="mensagem-reforco" *ngIf="atividade.nome === 'Pós-teste' && atividade.concluida && getPontosAtividade(atividade) < 70">
+          Refaça o Quizz ou assista novamente a aula. Se preferir, também é possível agendar uma aula reforço.!
+        </p>
         <p class="atividade-status" *ngIf="atividade.concluida">
           <mat-icon class="status-check">check_circle</mat-icon> Concluído em: {{ atividade.dataConclusao | date : "dd/MM/yyyy" }}
         </p>

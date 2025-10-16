@@ -59,7 +59,7 @@
             mat-raised-button
             color="primary"
             class="w-full h-12 pt-2 rounded-lg font-bold btn-login"
-            [disabled]="!loginForm.valid"
+            [disabled]="!loginForm.valid || isLoading"
             type="submit"
           >
             Entrar

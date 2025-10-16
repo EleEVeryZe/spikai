@@ -76,7 +76,7 @@ export const cursos = [
           {
             titulo: "Qual das opções abaixo está PERGUNTANDO corretamente",
             descricao: "He is a good teacher.",
-            opcoes: ["He is a good teacher?", "is he a good teacher?", "good teacher He is.", "good teacher a is he."],
+            opcoes: ["He is a good teacher?", "is he a good teacher?", "good teacher he is.", "good teacher a is he."],
             opcaoCorreta: 1,
           },
           {
@@ -101,7 +101,7 @@ export const cursos = [
           {
             titulo: "Qual das opções abaixo está NEGANDO a frase abaixo",
             descricao: "They are students.",
-            opcoes: ["They not are students.", "They are students not.", "students They are not.", "They are not students."],
+            opcoes: ["They not are students.", "They are students not.", "students they are not.", "They are not students."],
             opcaoCorreta: 3,
           },
           {

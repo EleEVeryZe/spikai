@@ -10,45 +10,39 @@
     </mat-card-content>
 
     <mat-card-actions class="opcoes-container">
-      <button 
+      <button
         mat-raised-button
         color="primary"
         *ngFor="let opcao of perguntaAtual?.opcoes; let i = index"
         (click)="selecionarOpcao(i)"
-        [ngClass]="{'opcao-selecionada': opcaoSelecionada === i}"
+        [disabled]="quizJaFeito"
+        [ngClass]="{
+          'opcao-selecionada': opcaoSelecionada === i,
+          correta: quizJaFeito && i === perguntaAtual.opcaoCorreta,
+          errada: quizJaFeito && respostasDoUsuario[indiceAtual]?.opcaoSelecionada === i && i !== perguntaAtual.opcaoCorreta
+        }"
       >
         {{ opcao }}
       </button>
     </mat-card-actions>
-    
+
     <mat-card-actions class="flex-row">
-      <button
-        mat-stroked-button
-        class="proximo-btn"
-        color="primary"
-        [disabled]="indiceAtual === 0"
-        (click)="voltarPergunta()"
-      >
+      <button mat-stroked-button class="proximo-btn" color="primary" [disabled]="indiceAtual === 0" (click)="voltarPergunta()">
         Anterior
       </button>
-      
-      <button 
-        mat-raised-button
-        color="accent"
-        class="proximo-btn"
-        [disabled]="opcaoSelecionada === null"
-        (click)="avancarPergunta()"
-      >
+
+      <button mat-raised-button color="accent" class="proximo-btn" [disabled]="opcaoSelecionada === null" (click)="avancarPergunta()">
         Próximo
       </button>
     </mat-card-actions>
 
     <mat-card-footer class="rodape">
-      <p>Pergunta {{ indiceAtual + 1 }} de {{ perguntas.length }}</p>
+      <p>Pergunta {{ indiceAtual + 1 }} de {{ perguntas ? perguntas.length : '0' }}</p>
     </mat-card-footer>
   </mat-card>
 
-  <mat-card *ngIf="quizFinalizado" class="resultados-card">
+  
+  <mat-card *ngIf="quizFinalizado && !quizJaFeito" class="resultados-card">
     <mat-card-header>
       <mat-card-title>Quiz Finalizado!</mat-card-title>
     </mat-card-header>
@@ -58,27 +52,71 @@
       <p>Erros: <span class="erros">{{ erros }}</span></p>
       <mat-divider></mat-divider>
       <p>Pontuação Final: <span class="total-score">{{ acertos }} / {{ perguntas.length }}</span></p>
-
-      
-       <mat-card-actions class="flex-row">
-      <button
-        mat-stroked-button
-        class="proximo-btn"
-        color="primary"
-        (click)="refazer()"
-      >
-        Refazer
-      </button>
-      
-      <button 
-        mat-raised-button
-        color="accent"
-        class="proximo-btn"
-        (click)="concluirPreTeste()"
-      >
-        Concluir
-      </button>
-    </mat-card-actions>
     </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="quizJaFeito" class="resultados-card mat-elevation-z8">
+    <!-- Resumo do Score Principal -->
+    <div class="score-resumo">
+      <div class="score-item score-acertos">
+        <mat-icon>check_circle</mat-icon>
+        <p>Acertos</p>
+        <span class="total-score">{{ acertos }}</span>
+      </div>
+      <div class="score-item score-erros">
+        <mat-icon>cancel</mat-icon>
+        <p>Erros</p>
+        <span class="total-score">{{ erros }}</span>
+      </div>
+    </div>
+
+    <mat-divider class="card-divider"></mat-divider>
+
+    <!-- Revisão de Perguntas -->
+    <mat-list>
+      <div *ngFor="let pergunta of perguntas; let i = index" class="pergunta-feita">
+        <mat-list-item class="pergunta-item-header">
+          <h3 matListItemTitle>{{ i + 1 }}. {{ pergunta.titulo }}</h3>
+          <span matListItemLine class="pergunta-desc">{{ pergunta.descricao }}</span>
+
+          <mat-icon
+            matListItemAvatar
+            class="resultado-icon"
+            [ngClass]="{
+              'icon-correta': respostasDoUsuario[i]?.opcaoSelecionada === pergunta.opcaoCorreta,
+              'icon-errada': respostasDoUsuario[i]?.opcaoSelecionada !== pergunta.opcaoCorreta
+            }"
+          >
+            {{ respostasDoUsuario[i]?.opcaoSelecionada === pergunta.opcaoCorreta ? "check_circle" : "highlight_off" }}
+          </mat-icon>
+        </mat-list-item>
+
+        <div class="opcoes-container2 revisao-opcoes">
+          <button
+            mat-stroked-button
+            *ngFor="let opcao of pergunta.opcoes; let j = index"
+            [disabled]="true"
+            [ngClass]="{
+              correta: j === pergunta.opcaoCorreta,
+              errada: respostasDoUsuario[i]?.opcaoSelecionada === j && j !== pergunta.opcaoCorreta,
+              selecionada: respostasDoUsuario[i]?.opcaoSelecionada === j
+            }"
+            class="opcao-revisao-btn"
+          >
+            {{ opcao }}
+          </button>
+        </div>
+        <mat-divider *ngIf="i < perguntas.length - 1"></mat-divider>
+      </div>
+    </mat-list>
+
+    <mat-divider class="card-divider"></mat-divider>
+
+    <!-- Pontuação Final Detalhada -->
+    <div class="pontuacao-final">
+      <p class="mat-headline-5">
+        Pontuação Total: <span class="score-final-numero">{{ acertos }} / {{ perguntas.length }}</span>
+      </p>
+    </div>
   </mat-card>
 </div>

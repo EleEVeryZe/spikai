@@ -170,6 +170,9 @@ export class QuizzIaComponent {
       return progress.map((p, i) => (i === index ? updatedItem : p));
     });
 
+    if (isAnswerCorrect)
+      this.speak(question.sentence.replaceAll("___", question.correctAnswer));
+
     this.geminiResponse.set(null);
   }
 
@@ -336,6 +339,9 @@ export class QuizzIaComponent {
         this.quizData.update((questions) =>
           questions.map((q, i) => (i === index ? { ...q, sentence: adapted.sentence, tutoringText: adapted.tutoringText } : q))
         );
+
+        this.speak(adapted.sentence);
+
         this.isLoading.set(false);
       }
     } catch (err) {
@@ -402,5 +408,25 @@ export class QuizzIaComponent {
     }
     this.isGeminiLoading.set(false);
     this.isLoadingUserQuestion = false;
+  }
+
+  speak(text: string): void {
+    if (!('speechSynthesis' in window)) {
+      console.warn('Text-to-speech not supported in this browser.');
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text.replaceAll("_", ""));
+    utterance.lang = 'en-US'; // or 'pt-BR' for Portuguese
+    utterance.rate = 0.5;       // speed (0.1–10)
+    utterance.pitch = 1;      // tone (0–2)
+    utterance.volume = 1;     // 0–1
+
+    speechSynthesis.cancel(); // stop any current speech
+    speechSynthesis.speak(utterance);
+  }
+
+  stop(): void {
+    speechSynthesis.cancel();
   }
 }

@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,9 +15,12 @@ import { TemasService } from '../../services/temas.service';
 
 @Component({
   selector: 'app-pre-teste',
-  imports: [MatProgressBarModule, MatButtonModule, CommonModule, MatCardModule, MatIconModule, MatDividerModule, MatButtonModule],
+  imports: [
+    MatIconModule,
+    MatListModule,
+    MatProgressBarModule, MatButtonModule, CommonModule, MatCardModule, MatDividerModule, MatButtonModule],
   templateUrl: './pre-teste.component.html',
-  styleUrl: './pre-teste.component.scss'
+  styleUrl: './pre-teste.component.scss',
 })
 export class PreTesteComponent implements OnInit {
   perguntas: any;
@@ -25,71 +29,85 @@ export class PreTesteComponent implements OnInit {
   acertos = 0;
   erros = 0;
   quizFinalizado = false;
-  
+
   opcaoSelecionada: number | null = null;
-  
+
   respostasDoUsuario: Resposta[] = [];
-  
+
   idCurso: string | null = null;
 
   ehPos: boolean | null = false;
 
-  constructor(private readonly sharedUi: SharedUiService, private route: ActivatedRoute, private temasService: TemasService, private snackBar: MatSnackBar, private router: Router ) { }
+  quizJaFeito = false; // controla se a atividade já foi concluída
+
+  constructor(
+    private readonly sharedUi: SharedUiService,
+    private route: ActivatedRoute,
+    private temasService: TemasService,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-
-    
     this.route.paramMap.subscribe((params) => {
       this.idCurso = params.get('id');
       this.ehPos = !!params.get('ehPos');
-      this.sharedUi.goBackTo("tema/" + this.idCurso);
+      this.sharedUi.goBackTo('tema/' + this.idCurso);
       this.sharedUi.hideArrowBackToolbar(false);
       this.sharedUi.scrollPageToTop();
 
-      this.temasService.getAtividade(this.idCurso + "", this.ehPos ? "Pós-teste" : "Pré-teste").subscribe(atvd => {
-        this.perguntas = atvd?.perguntas/*.slice(0,3)*/
-        this.carregarProximaPergunta();
-      })
+      this.temasService.getAtividade(this.idCurso + '', this.ehPos ? 'Pós-teste' : 'Pré-teste').subscribe((atvd) => {
+        this.perguntas = atvd?.perguntas;//.slice(0, 3);
+        this.quizJaFeito = atvd?.concluida || false;
+
+        if (this.quizJaFeito) {
+          // já existe resultado salvo
+          this.respostasDoUsuario = atvd?.perguntas ?? []; // backend deve enviar respostas
+          this.quizFinalizado = true; // exibe tela de resultado
+          this.calcularPlacarFinal();
+        } else {
+          this.carregarProximaPergunta();
+        }
+      });
     });
   }
 
   carregarProximaPergunta() {
     if (this.indiceAtual < this.perguntas.length) {
       this.perguntaAtual = this.perguntas[this.indiceAtual];
-      
-      const respostaAnterior = this.respostasDoUsuario.find(r => r.perguntaIndex === this.indiceAtual);
-      if (respostaAnterior) 
-        this.opcaoSelecionada = respostaAnterior.opcaoSelecionada;
-      else 
-        this.opcaoSelecionada = this.perguntaAtual.opcaoSelecionada;
+
+      const respostaAnterior = this.respostasDoUsuario.find((r) => r.perguntaIndex === this.indiceAtual);
+      if (respostaAnterior) this.opcaoSelecionada = respostaAnterior.opcaoSelecionada;
+      else this.opcaoSelecionada = this.perguntaAtual.opcaoSelecionada;
     } else {
       this.quizFinalizado = true;
+      this.concluirPreTeste();
     }
   }
 
   selecionarOpcao(opcaoIndex: number) {
     this.opcaoSelecionada = opcaoIndex;
   }
-  
+
   avancarPergunta() {
     if (this.opcaoSelecionada === null) {
-      return; 
+      return;
     }
-    
-    const respostaExistenteIndex = this.respostasDoUsuario.findIndex(r => r.perguntaIndex === this.indiceAtual);
+
+    const respostaExistenteIndex = this.respostasDoUsuario.findIndex((r) => r.perguntaIndex === this.indiceAtual);
     if (respostaExistenteIndex !== -1) {
       this.respostasDoUsuario[respostaExistenteIndex].opcaoSelecionada = this.opcaoSelecionada;
     } else {
       this.respostasDoUsuario.push({
         perguntaIndex: this.indiceAtual,
-        opcaoSelecionada: this.opcaoSelecionada
+        opcaoSelecionada: this.opcaoSelecionada,
       });
     }
 
     if (this.indiceAtual + 1 === this.perguntas.length) {
       this.calcularPlacarFinal();
     }
-    
+
     this.indiceAtual++;
     this.carregarProximaPergunta();
   }
@@ -100,13 +118,13 @@ export class PreTesteComponent implements OnInit {
       this.carregarProximaPergunta();
     }
   }
-  
+
   calcularPlacarFinal() {
     this.acertos = 0;
     this.erros = 0;
-    
-    this.respostasDoUsuario.forEach(resposta => {
-      if (resposta.opcaoSelecionada === this.perguntas[resposta.perguntaIndex].opcaoCorreta) {
+
+    this.respostasDoUsuario.forEach((resposta, idx) => {
+      if (resposta.opcaoSelecionada === this.perguntas[idx].opcaoCorreta) {
         this.acertos++;
       } else {
         this.erros++;
@@ -114,7 +132,6 @@ export class PreTesteComponent implements OnInit {
     });
   }
 
-  
   showMessage(message: string, isError: boolean = false) {
     this.snackBar.open(message, 'Fechar', {
       duration: 3000,
@@ -125,24 +142,22 @@ export class PreTesteComponent implements OnInit {
   }
 
   concluirPreTeste() {
-    this.temasService.responderAtividade(this.respostasDoUsuario, this.idCurso, this.ehPos).subscribe(
-      {
-        next: (res: any) => {
-          console.log('User registered:', res);
-          this.showMessage('Resultado salvo com sucesso!');
-          this.router.navigate(['/tema/' + this.idCurso]);
-        },
-        error: (err: any) => {
-          console.error(err);
-          this.showMessage('Erro ao guardar resultado.', true);
-        },
-      }
-    );
+    this.temasService.responderAtividade(this.respostasDoUsuario, this.idCurso, this.ehPos).subscribe({
+      next: (res: any) => {
+        console.log('User registered:', res);
+        this.showMessage('Resultado salvo com sucesso!');
+        this.router.navigate(['/tema/' + this.idCurso]);
+      },
+      error: (err: any) => {
+        console.error(err);
+        this.showMessage('Erro ao guardar resultado.', true);
+      },
+    });
   }
 
   refazer() {
     this.respostasDoUsuario = [];
-    this.quizFinalizado = false
+    this.quizFinalizado = false;
     this.indiceAtual = 0;
     this.carregarProximaPergunta();
   }

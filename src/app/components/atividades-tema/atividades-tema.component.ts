@@ -90,8 +90,11 @@ export class AtividadesTemaComponent {
         next: (res: any) => {
           console.log('Usuario assistiu 75% do vídeo:', res);
           
-          if (this.tema)
+          if (this.tema){
             this.tema.atividades[1].concluida = true;
+          }
+          
+            
         },
         error: (err: any) => {
           console.error(err);

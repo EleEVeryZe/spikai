@@ -71,19 +71,43 @@
           <mat-error *ngIf="registrationForm.get('education')?.hasError('required')"> A escolaridade é obrigatória. </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Vocabulário de Interesse</mat-label>
+        <mat-form-field appearance="outline" class="full-width chip-input-full-width">
+          
+          <mat-label>Áreas de Interesse</mat-label>
           <mat-icon matPrefix>extension</mat-icon>
-          <textarea
-            matInput
-            formControlName="vocabulary"
-            (change)="setVocabularyAsChanged()"
-            placeholder="Ex: Tecnologia, Finanças, Saúde..."
-            rows="2"
-          ></textarea>
+
+          <mat-chip-grid #chipList aria-label="Seleção de Áreas de Interesse">
+            <mat-chip-row *ngFor="let area of areasSelecionadas" [removable]="true" (removed)="removeArea(area)" color="primary" selected>
+              {{ area }}
+              <button matChipRemove [attr.aria-label]="'remover ' + area">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+
+            <input
+              placeholder="Ex: Ciência, História, Finanças..."
+              #areaInput
+              [formControl]="areaCtrl"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matAutocomplete]="auto"
+              (matChipInputTokenEnd)="addArea($event)"
+            />
+          </mat-chip-grid>
+
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedArea($event)">
+            <mat-option *ngFor="let area of areasFiltradas | async" [value]="area">
+              {{ area }}
+            </mat-option>
+            <mat-option *ngIf="(areasFiltradas | async)?.length === 0 && areaCtrl.value" disabled>
+              Adicionar: "{{ areaCtrl.value }}"
+            </mat-option>
+          </mat-autocomplete>
+
+          <mat-hint>Dica: Escolha as áreas onde você mais precisará ou usará o inglês.</mat-hint>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" class="full-width" [disabled]="!registrationForm.valid || isLoading" >
+        <button mat-raised-button color="primary" class="full-width" [disabled]="!registrationForm.valid || isLoading">
           <mat-progress-spinner *ngIf="isLoading" diameter="20" mode="indeterminate" color="accent" class="spinner"></mat-progress-spinner>
           <span *ngIf="!isLoading">
             {{ isEditMode ? "Atualizar" : "Cadastrar" }}

@@ -72,7 +72,9 @@ export class QuizzIaComponent {
   // Statistics
   ehGrupoControle!: boolean;
 
-  instrucaoIA = "Tire suas dúvidas com tutor IA";
+  quizJaFeito: boolean = false;
+
+  instrucaoIA = 'Tire suas dúvidas com tutor IA';
 
   constructor(
     private router: Router,
@@ -92,8 +94,9 @@ export class QuizzIaComponent {
       this.idCurso = idCurso || '';
 
       this.temasService.getAtividade(idCurso + '', 'Quizz').subscribe((atvd) => {
-        const perguntas = (atvd?.perguntas/*.slice(0, 3)*/ as Question[]) ?? [];
+        const perguntas = (atvd?.perguntas /*.slice(0, 3)*/ as Question[]) ?? [];
         this.quizData.set(perguntas);
+        this.quizJaFeito = atvd?.concluida || false;
 
         this.temasService.getUserProperties().subscribe(({ vocabulary, ehGrupoControle }) => {
           this.userVocabulary = vocabulary;
@@ -132,7 +135,6 @@ export class QuizzIaComponent {
   isLastQuestion = computed(() => this.currentQuestionIndex() === this.quizData().length - 1);
   progressPercent = computed(() => Math.min(100, ((this.currentQuestionIndex() + 1) / this.quizData().length) * 100));
 
-
   obterContextoPalavra(word: string, frase: string) {
     console.log(word);
 
@@ -144,7 +146,7 @@ export class QuizzIaComponent {
     this.geminiResponse.set(null);
 
     const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 50 palavras) da palavra '${word}' na frase a seguir: '${frase}' | Responda em português do Brasil`;
-    
+
     this.askDeepSeek(questionContext);
     this.isGeminiLoading.set(false);
     this.updateQtdQuestionsMade();
@@ -165,13 +167,12 @@ export class QuizzIaComponent {
         ...progress[index],
         selectedAnswer,
         isCorrect: isAnswerCorrect,
-        sentence: question.sentence
+        sentence: question.sentence,
       };
       return progress.map((p, i) => (i === index ? updatedItem : p));
     });
 
-    if (isAnswerCorrect)
-      this.speak(question.sentence.replaceAll("___", question.correctAnswer));
+    if (isAnswerCorrect) this.speak(question.sentence.replaceAll('___', question.correctAnswer));
 
     this.geminiResponse.set(null);
   }
@@ -197,7 +198,6 @@ export class QuizzIaComponent {
       };
       return progress.map((p, i) => (i === index ? updatedItem : p));
     });
-    this.geminiResponse.set(null);
   }
 
   nextQuestion(): void {
@@ -212,6 +212,13 @@ export class QuizzIaComponent {
   }
 
   guardarRespostas(): void {
+    if (this.quizJaFeito) {
+      setTimeout(() => {
+        this.router.navigate(['/tema/' + this.idCurso]);
+      }, 5000);
+      return;
+    }
+
     const perguntas = this.quizData();
 
     if (perguntas) {
@@ -258,7 +265,7 @@ export class QuizzIaComponent {
     this.geminiResponse.set(null);
   }
 
-  async askDeepSeekUserQuestion() {
+  askDeepSeekUserQuestion() {
     this.isLoadingUserQuestion = true;
     const doubt = this.currentProgress().userDoubts;
     this.instrucaoIA = doubt;
@@ -269,8 +276,7 @@ export class QuizzIaComponent {
     this.geminiResponse.set(null);
 
     const questionContext = `A questão é: "${this.currentQuestion().sentence.replace('___', this.currentQuestion().correctAnswer)}".`;
-    const systemPrompt =
-      `Você é um tutor de IA especializado em **Gramática Inglesa** e **ensino de inglês como segunda língua**. Sua missão é fornecer uma explicação extremamente clara, concisa e motivadora (limite estrito de 50 palavras) sobre a dúvida ${doubt} **ignorando e descartando** quaisquer referências ao conteúdo temático (ex: história, química, biologia) da frase.`;
+    const systemPrompt = `Você é um tutor de IA especializado em **Gramática Inglesa** e **ensino de inglês como segunda língua**. Sua missão é fornecer uma explicação extremamente clara, concisa e motivadora (limite estrito de 50 palavras) sobre a dúvida ${doubt} **ignorando e descartando** quaisquer referências ao conteúdo temático (ex: história, química, biologia) da frase.`;
 
     const totalPrompt = `Responda em portugues do brasil | ${systemPrompt} | ${questionContext} `;
     this.askDeepSeek(totalPrompt);
@@ -280,7 +286,7 @@ export class QuizzIaComponent {
   }
 
   async adaptQuestionToVocabulary(index: number) {
-    if (this.ehGrupoControle) {
+    if (this.ehGrupoControle || this.quizJaFeito) {
       this.isLoading.set(false);
       return;
     }
@@ -299,17 +305,32 @@ export class QuizzIaComponent {
       this.indexVocabulary = 0;
     }
 
-    const prompt = `Rewrite the following quiz question so that the sentence and tutoring explanation
-    Grammatical Immutability: The new sentence must preserve the grammatical structure of the original. Specifically, the subject of the new sentence must have the same grammatical number (singular/plural) and person (first, second, third) as the original. This ensures that the correctAnswer remains the only valid choice.
-    use vocabulary about: ${vocabularyTurn}
-    Keep the options and correctAnswer unchanged.
+    const prompt = `
     
-    Question:
-    sentence: "${question.sentence}"
-    correctAnswer: "${question.correctAnswer}"
-    tutoringText: "${question.tutoringText}"
+    You are an English tutor that personalizes quiz questions.
 
-    Return JSON with properties: sentence, tutoringText.
+Your task:
+1. Rewrite ONLY the 'sentence' field of the given JSON, adapting it to use vocabulary related to **${vocabularyTurn}**.  
+2. DO NOT translate, paraphrase, or change the grammar structure unnecessarily — only replace or adapt words to fit the given topic.
+3. Write 'tutoringText' in **Brazilian Portuguese**, but keep 'sentence' **entirely in English**.
+4. Return the result strictly as valid JSON with these exact three properties:  
+   'sentence', 'correctAnswer', 'tutoringText'.  
+5. Do not include explanations, comments, or any text outside the JSON.
+
+Input:
+{
+  "sentence": "${question.sentence}",
+  "correctAnswer": "${question.correctAnswer}",
+  "tutoringText": "${question.tutoringText}"
+}
+
+Output (JSON only):
+{
+  "sentence": "...",
+  "correctAnswer": "...",
+  "tutoringText": "..."
+}
+
 `;
 
     const payload = {
@@ -337,7 +358,9 @@ export class QuizzIaComponent {
         const adapted = JSON.parse(raw.replaceAll('```', '').replaceAll('json', '')); // expect JSON response
         // update quizData immutably
         this.quizData.update((questions) =>
-          questions.map((q, i) => (i === index ? { ...q, sentence: adapted.sentence, tutoringText: adapted.tutoringText } : q))
+          questions.map((q, i) =>
+            i === index ? { ...q, sentence: adapted.sentence, correctAnswer: adapted.correctAnswer, tutoringText: adapted.tutoringText } : q
+          )
         );
 
         this.speak(adapted.sentence);
@@ -416,11 +439,11 @@ export class QuizzIaComponent {
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(text.replaceAll("_", ""));
+    const utterance = new SpeechSynthesisUtterance(text.replaceAll('_', ''));
     utterance.lang = 'en-US'; // or 'pt-BR' for Portuguese
-    utterance.rate = 0.5;       // speed (0.1–10)
-    utterance.pitch = 1;      // tone (0–2)
-    utterance.volume = 1;     // 0–1
+    utterance.rate = 0.5; // speed (0.1–10)
+    utterance.pitch = 1; // tone (0–2)
+    utterance.volume = 1; // 0–1
 
     speechSynthesis.cancel(); // stop any current speech
     speechSynthesis.speak(utterance);

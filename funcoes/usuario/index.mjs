@@ -62,7 +62,7 @@ export const handler = async (event) => {
   try {
     const getObjectCmd = new GetObjectCommand({
       Bucket: BUCKET_NAME,
-      Key: sanitizedEmail,
+      Key: `resource/user_${sanitizedEmail}.json`
     });
 
     const response = await s3.send(getObjectCmd);

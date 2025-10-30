@@ -65,8 +65,10 @@ export class UsuarioRepositoryService {
   }
 
   getUserState(userEmail?: string) : Observable<Usuario> {
-    const filename = this.getUserBucketName(userEmail);
-    return this.httpClient.get<Usuario>(filename.toLocaleLowerCase());
+    if (!userEmail)
+        userEmail = this.authService.loadUserState().email;
+
+    return this.httpClient.post<Usuario>("https://0xaywrm14h.execute-api.sa-east-1.amazonaws.com/default/usuario", JSON.stringify({ email: userEmail }));
   }
 
   getAllUser() {

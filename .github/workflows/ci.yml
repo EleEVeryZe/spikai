@@ -169,3 +169,38 @@ jobs:
               aws lambda update-function-code \
                 --function-name quizz \
                 --zip-file fileb://lambda-quizz.zip
+                
+  deploy-lambda-usuario:
+        if: contains(github.event.head_commit.message, 'lambda-usuario:') || contains(github.event.head_commit.message, 'all:')
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Set up Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '18'
+
+          - name: Install dependenciesss
+            working-directory: funcoes/usuario
+            run: npm install
+
+          - name: Zip Lambda function
+            working-directory: funcoes/usuario
+            run: zip -r lambda-usuario.zip index.mjs node_modules
+
+          - name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v2
+            with:
+              aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              aws-region: ${{ secrets.AWS_REGION }}
+
+          - name: Deploy to AWS Lambda
+            working-directory: funcoes/usuario
+            run: |
+              aws lambda update-function-code \
+                --function-name usuario \
+                --zip-file fileb://lambda-usuario.zip

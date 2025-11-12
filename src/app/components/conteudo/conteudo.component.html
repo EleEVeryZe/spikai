@@ -1,0 +1,7 @@
+<mat-card class="video-card" *ngIf="videoUrl.length">
+  <video #videoPlayer controls (timeupdate)="onTimeUpdate(videoPlayer)" (loadedmetadata)="onMetadataLoaded(videoPlayer)">
+    <source [src]="videoUrl" type="video/mp4" />
+    Seu navegador não suporta vídeos em HTML5.
+  </video>
+</mat-card>
+<div [innerHTML]="htmlString"></div>

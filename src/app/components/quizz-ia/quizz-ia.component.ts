@@ -153,7 +153,6 @@ export class QuizzIaComponent {
     this.updateUserDoubts('');
   }
 
-  // Actions
   selectOption(event: MatRadioChange): void {
     const selectedAnswer = event.value;
     const question = this.currentQuestion();
@@ -316,6 +315,7 @@ Your task:
 4. Return the result strictly as valid JSON with these exact three properties:  
    'sentence', 'correctAnswer', 'tutoringText'.  
 5. Do not include explanations, comments, or any text outside the JSON.
+6. Add 3 wrong options and the correct one
 
 Input:
 {
@@ -328,7 +328,8 @@ Output (JSON only):
 {
   "sentence": "...",
   "correctAnswer": "...",
-  "tutoringText": "..."
+  "tutoringText": "...",
+  "options": ["op1"...]
 }
 
 `;
@@ -359,7 +360,7 @@ Output (JSON only):
         // update quizData immutably
         this.quizData.update((questions) =>
           questions.map((q, i) =>
-            i === index ? { ...q, sentence: adapted.sentence, correctAnswer: adapted.correctAnswer, tutoringText: adapted.tutoringText } : q
+            i === index ? { ...q, options: adapted.options, sentence: adapted.sentence, correctAnswer: adapted.correctAnswer, tutoringText: adapted.tutoringText } : q
           )
         );
 
@@ -368,7 +369,9 @@ Output (JSON only):
         this.isLoading.set(false);
       }
     } catch (err) {
-      console.error('DeepSeek adaptation failed', err);
+      console.log('DeepSeek adaptation failed', err);
+    } finally {
+        this.isLoading.set(false);
     }
   }
 

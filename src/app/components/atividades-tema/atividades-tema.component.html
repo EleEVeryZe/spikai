@@ -14,23 +14,14 @@
   </div>
 
   <!-- Activities Grid -->
-  <div class="atividades-grid" *ngIf="tema && temaAnteriorConcluido">
+  <div class="atividades-grid" *ngIf="tema">
     <mat-card class="atividade-card-visual" *ngFor="let atividade of tema.atividades; let i = index">
-      <div *ngIf="!videoUrl || !ehExibirVideo" class="atividade-icon-wrapper">
+      <div class="atividade-icon-wrapper">
         <mat-icon class="activity-icon" [ngClass]="{ concluida: atividade.concluida, pendente: !atividade.concluida }">
           {{ getActivityIcon(atividade.nome) }}
         </mat-icon>
-      </div>
+      </div>  
 
-      <!-- Video Card -->
-      <div class="video-card" *ngIf="videoUrl && ehExibirVideo && atividade.nome === 'Conteúdo'">
-        <mat-card-title class="video-card-title">{{ tituloVideo || "Conteúdo de Vídeo" }}</mat-card-title>
-        <div class="video-container">
-          <video #videoPlayer controls (timeupdate)="onTimeUpdate(videoPlayer)" (loadedmetadata)="onMetadataLoaded(videoPlayer)">
-            <source [src]="videoUrl" type="video/mp4" />
-          </video>
-        </div>
-      </div>
       <mat-card-content>
         <h2 class="atividade-title-visual">{{ atividade.nome }}</h2>
         <p class="tema-description" *ngIf="ehAtividadeAnteriorConcluida(i)">{{ getActivityDescription(atividade.nome) }}</p>
@@ -59,8 +50,7 @@
         </p>
 
         <button
-          *ngIf="!(!atividade.concluida && atividade.nome == 'Conteúdo')"
-          [disabled]="ehAtividadeAnteriorConcluida(i)"
+          
           mat-flat-button
           color="primary"
           class="action-button"
@@ -79,16 +69,6 @@
         <mat-icon color="warn" class="message-icon">sentiment_dissatisfied</mat-icon>
         <h2>Oops! Tema não encontrado.</h2>
         <p>Parece que o tema que você está procurando não existe. Verifique o ID na URL.</p>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <div class="info-message" *ngIf="tema && !temaAnteriorConcluido">
-    <mat-card class="locked-card">
-      <mat-card-content class="message-content">
-        <mat-icon color="primary" class="message-icon">lock</mat-icon>
-        <h2>Tema Bloqueado</h2>
-        <p>Você precisa completar o tema anterior para acessar "{{ tema.nome }}". Continue firme nos estudos!</p>
       </mat-card-content>
     </mat-card>
   </div>

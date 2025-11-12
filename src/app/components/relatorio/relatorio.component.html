@@ -1,0 +1,74 @@
+<div class="container">
+  <!-- Select para escolher o curso -->
+  <mat-form-field appearance="fill" class="curso-select">
+    <mat-label>Selecionar Curso</mat-label>
+    <mat-select [(value)]="cursoSelecionado" (selectionChange)="filtrarPorCurso()">
+      <mat-option *ngFor="let curso of cursosDisponiveis" [value]="curso">
+        {{ curso }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Tabela -->
+  <table mat-table [dataSource]="dadosFiltrados" matSort class="mat-elevation-z8 full-width">
+
+    <!-- Nome -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+      <td mat-cell *matCellDef="let element">{{element.name}}</td>
+    </ng-container>
+
+    <!-- Idade -->
+    <ng-container matColumnDef="age">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Idade</th>
+      <td mat-cell *matCellDef="let element">{{element.age}}</td>
+    </ng-container>
+
+    <!-- Escolaridade -->
+    <ng-container matColumnDef="education">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Escolaridade</th>
+      <td mat-cell *matCellDef="let element">{{element.education}}</td>
+    </ng-container>
+
+    <!-- Grupo Controle -->
+    <ng-container matColumnDef="ehGrupoControle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tem IAA</th>
+      <td mat-cell *matCellDef="let element">
+        {{!element.ehGrupoControle ? 'Sim' : 'Não'}}
+      </td>
+    </ng-container>
+
+    <!-- Vocabulário -->
+    <ng-container matColumnDef="vocabulary">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Vocabulário</th>
+      <td mat-cell *matCellDef="let element">{{element.vocabulary}}</td>
+    </ng-container>
+
+    <!-- Pré-teste -->
+    <ng-container matColumnDef="preTeste">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Pré-teste (%)</th>
+      <td mat-cell *matCellDef="let element">{{element.preTeste}}%</td>
+    </ng-container>
+
+    <!-- Quizz -->
+    <ng-container matColumnDef="quizz">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Quizz (%)</th>
+      <td mat-cell *matCellDef="let element">{{element.quizz}}%</td>
+    </ng-container>
+
+    <!-- Pós-teste -->
+    <ng-container matColumnDef="posTeste">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Pós-teste (%)</th>
+      <td mat-cell *matCellDef="let element">{{element.posTeste}}%</td>
+    </ng-container>
+
+    <!-- Quantidade de Perguntas -->
+    <ng-container matColumnDef="qtdQuestionMade">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Perguntas Quizz</th>
+      <td mat-cell *matCellDef="let element">{{element.qtdQuestionMade}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
+  </table>
+</div>

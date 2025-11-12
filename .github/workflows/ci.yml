@@ -183,7 +183,7 @@ jobs:
             with:
               node-version: '18'
 
-          - name: Install dependenciesss
+          - name: Install dependencie
             working-directory: funcoes/usuario
             run: npm install
 

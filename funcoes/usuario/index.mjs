@@ -68,7 +68,7 @@ export const handler = async (event) => {
     const response = await s3.send(getObjectCmd);
     const userFileContent = await streamToString(response.Body);
 
-    if (!usuarios) {
+    if (!userFileContent) {
       return {
         statusCode: 400,
         headers,

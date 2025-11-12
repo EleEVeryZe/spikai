@@ -34,9 +34,9 @@ export class TemasService {
     return this.httpClient.post("https://vm6v7qxux3.execute-api.sa-east-1.amazonaws.com/default/pre-teste", { email, respostas, idCurso, ehPos });
   }
 
-  responderQuizz(respostas: Resposta[], idCurso: string | null ) {
+  responderQuizz(respostas: Resposta[], idCurso: string | null, restante = {} ) {
     const email = this.usuarioRepositoryService.getUserEmail();
-    return this.httpClient.post("https://5ijvp6uva8.execute-api.sa-east-1.amazonaws.com/default/quizz", { email, respostas, idCurso });
+    return this.httpClient.post("https://5ijvp6uva8.execute-api.sa-east-1.amazonaws.com/default/quizz", { email, respostas, idCurso, ...restante });
   }
 
   registrarVideoAssistido(idCurso: string | null ) {

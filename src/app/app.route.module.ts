@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 import { AtividadesTemaComponent } from "./components/atividades-tema/atividades-tema.component";
 import { CadastroComponent } from "./components/cadastro/cadastro.component";
+import { ConteudoComponent } from "./components/conteudo/conteudo.component";
 import { CreateComponent } from "./components/crud/create/create.component";
 import { EstatisticoComponent } from "./components/estatistico/estatistico.component";
 import { ImovelDetailsComponent } from "./components/imovel-details/imovel-details.component";
@@ -10,7 +11,9 @@ import { MemorizacaoComponent } from "./components/memorizacao/memorizacao.compo
 import { NotFoundComponent } from "./components/not-found/not-found.component";
 import { PreTesteComponent } from "./components/pre-teste/pre-teste.component";
 import { QuizzIaComponent } from "./components/quizz-ia/quizz-ia.component";
+import { RelatorioComponent } from "./components/relatorio/relatorio.component";
 import { TemasComponent } from "./components/temas/temas.component";
+import { TextoComponent } from "./components/texto/texto.component";
 import { AuthGuard } from "./services/auth.guard";
 
 export const routes: Routes = [
@@ -20,6 +23,7 @@ export const routes: Routes = [
   // Login e cadastro
   { path: "login", component: LoginComponent },
   { path: "cadastro", component: CadastroComponent },
+  { path: "relatorio", component: RelatorioComponent },
 
   {
     path: '',
@@ -33,10 +37,13 @@ export const routes: Routes = [
       { path: ':id/Pós-teste/:ehPos', component: PreTesteComponent },
       { path: 'edit/:userId', component: CadastroComponent },
       { path: 'Memorização', component: MemorizacaoComponent },
+      { path: 'conteudo/:id', component: ConteudoComponent },
+      { path: ':id/texto', component: TextoComponent },
     ],
   },
 
   // CRUD de imóveis
+  
   { path: "details/:id", component: ImovelDetailsComponent },
   { path: "create", component: CreateComponent },
   { path: "edit", component: CreateComponent },

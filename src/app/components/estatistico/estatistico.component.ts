@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { forkJoin, map } from 'rxjs';
+import { catchError, forkJoin, map, of } from 'rxjs';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 
 @Component({
@@ -18,7 +18,7 @@ export class EstatisticoComponent {
 
       const observables = data.map(
         ({ name, email, age, gender, education, password, vocabulary, IAVocabulary, ehGrupoControle, isEdit }) => {
-          // Para cada item, crie um Observable que:
+          const errorLine = `${name};${email};${age};${gender};${education};${vocabulary};${ehGrupoControle};-1;-1;-1;ERRO_NA_BUSCA;ERRO_NA_BUSCA`;
           return this.usuarioRepositoryService.getUserState(email).pipe(
             map(({ cursos }) => {
               // 1. Processa os dados
@@ -33,6 +33,11 @@ export class EstatisticoComponent {
 
               // 2. Retorna a linha do CSV como uma string
               return `${name};${email};${age};${gender};${education};${vocabulary};${ehGrupoControle};${acertos};${erros};${totalPerguntas};${resultadoQuizz};${resultadoPosTeste}`;
+            }),
+            catchError((error) => {
+              console.error(`Falha ao buscar dados para o email: ${email}`, error);
+
+              return of(errorLine);
             })
           );
         }
@@ -84,7 +89,7 @@ export class EstatisticoComponent {
 
       qtdQuestionMade = pergunta.qtdQuestionMade;
       userDoubts = pergunta.userDoubts;
-      sentence = pergunta.sentence + "|";
+      sentence = pergunta.sentence + '|';
     }
     return { acertos, erros, totalPerguntas: quiz.perguntas.length, qtdQuestionMade, userDoubts, sentence };
   }

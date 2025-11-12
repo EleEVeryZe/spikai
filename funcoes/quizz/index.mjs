@@ -89,18 +89,34 @@ export const handler = async (event) => {
 
     const curso = dadosExistentes.cursos.find((curso) => curso.id === idCurso);
 
-    if (nomeAtividade != "Conteúdo"){
-      const atividade = curso?.atividades.find(atv => atv.nome === "Quizz");
+    if (nomeAtividade == "Quizz") {
+      const atividade = curso?.atividades.find((atv) => atv.nome === "Quizz");
       atividade.perguntas = respostas;
       atividade.concluida = true;
       atividade.dataConclusao = new Date().toISOString();
       curso.concluido = 75;
+    } else if (nomeAtividade == "Texto") {
+      const atividade = curso?.atividades.find((atv) => atv.nome === "Texto");
+
+      if (!atividade)
+        curso?.atividades.push({
+          nome: "Texto",
+          perguntas: respostas,
+          concluida: body.ehConcluida,
+          concluida: body.ehConcluida ? new Date().toISOString() : "",
+        });
+      else {
+        atividade.perguntas = respostas;
+        atividade.concluida = body.ehConcluida;
+        if (body.ehConcluida) atividade.dataConclusao = new Date().toISOString();
+        atividade.texto = body.texto;
+      }
     } else {
-      const atividade = curso?.atividades.find(atv => atv.nome === "Conteúdo");
+      const atividade = curso?.atividades.find((atv) => atv.nome === "Conteúdo");
       atividade.concluida = true;
       atividade.dataConclusao = new Date().toISOString();
       curso.concluido = 50;
-    }    
+    }
 
     // 4. Adiciona as novas respostas aos dados existentes
     const dadosParaSalvar = {

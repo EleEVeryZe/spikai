@@ -58,7 +58,7 @@ export class UsuarioRepositoryService {
 
     const sanitizedEmail = userEmail?.replace(/@/g, '_at_').replace(/\./g, '_dot_');
     const hostname = window.location.hostname;
-    if (hostname === 'localhost') 
+    if (hostname === 'localhost')
       return `assets/resource/user_${sanitizedEmail}.json`;
 
     return `resource/user_${sanitizedEmail}.json`;
@@ -68,7 +68,17 @@ export class UsuarioRepositoryService {
     if (!userEmail)
         userEmail = this.authService.loadUserState().email;
 
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost')
+      return this.getUserStateStat(userEmail);
+
     return this.httpClient.post<Usuario>("https://0xaywrm14h.execute-api.sa-east-1.amazonaws.com/default/usuario", JSON.stringify({ email: userEmail }));
+  }
+
+  
+  getUserStateStat(userEmail?: string) : Observable<Usuario> {
+    const filename = this.getUserBucketName(userEmail);
+    return this.httpClient.get<Usuario>(filename.toLocaleLowerCase());
   }
 
   getAllUser() {

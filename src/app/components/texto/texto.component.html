@@ -1,0 +1,41 @@
+<div class="quiz-container" *ngIf="atividade">
+
+    
+
+  <div class="texto">
+    " @for (word of atividade.texto.split(' '); track word) {
+    <span class="word-dotted" (click)="obterContextoPalavra(word, atividade.texto)">{{ word + " " }}</span>
+    }
+  </div>
+  @if (geminiResponse || isLoadingUserQuestion) {
+  <mat-card class="gemini-response-card">
+    <mat-card-content>
+      <div class="response-header">
+        <mat-icon class="response-icon">auto_fix_high</mat-icon>
+        <span class="response-title">Tutor inteligente</span>
+      </div>
+      @if (geminiResponse) {
+      <p class="response-text">{{ geminiResponse }}</p>
+      }
+      <mat-progress-spinner
+        *ngIf="isLoadingUserQuestion"
+        diameter="20"
+        mode="indeterminate"
+        color="accent"
+        class="spinner"
+      ></mat-progress-spinner>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  <div class="opcoes">
+    <button *ngFor="let opcao of atividade.perguntas" (click)="selecionar(opcao)" [ngClass]="obterClasse(opcao)">
+      {{ opcao.descricao }}
+    </button>
+  </div>
+
+  <div class="feedback" *ngIf="respondeu">
+    <p *ngIf="respostaSelecionada?.correta" class="mensagem correta">✅ Correct! Well done!</p>
+    <p *ngIf="!respostaSelecionada?.correta" class="mensagem incorreta">❌ Incorrect. Try reading again!</p>
+  </div>
+</div>

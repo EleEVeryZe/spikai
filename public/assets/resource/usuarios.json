@@ -1,14 +1,46 @@
 [
   {
-    "name": "rod31",
-    "email": "Rod31@gmail.com",
+    "name": "Neo",
+    "email": "neo@neo.com",
+    "age": 32,
+    "gender": "male",
+    "education": "Ensino Superior Incompleto",
+    "password": "123123",
+    "vocabulary": "Carros",
+    "IAVocabulary": "Vehicles with wheels; Machines for travel",
+    "ehGrupoControle": true
+  },
+  {
+    "name": "Neo2@neo",
+    "email": "Neo2@neo",
+    "age": 33,
+    "gender": "female",
+    "education": "Ensino Superior Completo",
+    "password": "123123",
+    "vocabulary": "Engenharia Elétrica",
+    "IAVocabulary": "Working with electricity and power systems",
+    "ehGrupoControle": false
+  },
+  {
+    "name": "Neo3",
+    "email": "neo3@neo",
+    "age": 9,
+    "gender": "male",
+    "education": "Ensino Superior Completo",
+    "password": "123123",
+    "vocabulary": "Logistica",
+    "IAVocabulary": "Moving things from one place to another; Getting goods to the right place; The planning of how things are moved",
+    "ehGrupoControle": true
+  },
+  {
+    "name": "morfeu",
+    "email": "morfeu@morfeu",
     "age": 6,
     "gender": "male",
     "education": "Ensino Médio",
     "password": "123123",
-    "vocabulary": "tecnologia, religião, filosofia",
-    "IAVocabulary": "Tools and machines; Thinking about life; How things move and work",
-    "ehGrupoControle": false,
-    "isEdit": true
+    "vocabulary": "Inteligência Artificial",
+    "IAVocabulary": "Thinking machines; Computer brains",
+    "ehGrupoControle": false
   }
 ]

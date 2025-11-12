@@ -1,41 +1,87 @@
 <div class="quiz-container" *ngIf="atividade">
+  <section class="texto-section" (mouseleave)="handleWordPointerLeave()">
+    <h2 class="section-title">Texto inteligente</h2>
+    <div class="texto-content">
+      <button
+        class="translate-button texto-content__translate-button"
+        (click)="traduzirTexto()"
+        [disabled]="isTranslating"
+      >
+        <mat-icon>translate</mat-icon>
+        <span>Traduzir texto</span>
+      </button>
 
-    
-
-  <div class="texto">
-    " @for (word of atividade.texto.split(' '); track word) {
-    <span class="word-dotted" (click)="obterContextoPalavra(word, atividade.texto)">{{ word + " " }}</span>
-    }
-  </div>
-  @if (geminiResponse || isLoadingUserQuestion) {
-  <mat-card class="gemini-response-card">
-    <mat-card-content>
-      <div class="response-header">
-        <mat-icon class="response-icon">auto_fix_high</mat-icon>
-        <span class="response-title">Tutor inteligente</span>
+      <div class="texto-words">
+        @for (word of atividade.texto.split(' '); track $index) {
+        <span
+          class="texto-word"
+          [class.texto-word--selected]="isWordSelected($index)"
+          (mousedown)="handleWordPointerDown($event, word, $index)"
+          (mouseup)="handleWordPointerUp($event, word, $index)"
+          (touchstart)="handleWordPointerDown($event, word, $index)"
+          (touchend)="handleWordPointerUp($event, word, $index)"
+          (touchcancel)="handleWordPointerLeave()"
+          >{{ word }}</span
+        >
+        }
       </div>
-      @if (geminiResponse) {
-      <p class="response-text">{{ geminiResponse }}</p>
-      }
+      <div class="translation-feedback">
       <mat-progress-spinner
-        *ngIf="isLoadingUserQuestion"
+        *ngIf="isTranslating"
         diameter="20"
         mode="indeterminate"
         color="accent"
-        class="spinner"
       ></mat-progress-spinner>
-    </mat-card-content>
-  </mat-card>
-  }
+      <p *ngIf="translationResponse && !isTranslating" class="translation-text">
+        {{ translationResponse }}
+      </p>
+    </div>
+    </div>
+    
+  </section>
 
-  <div class="opcoes">
-    <button *ngFor="let opcao of atividade.perguntas" (click)="selecionar(opcao)" [ngClass]="obterClasse(opcao)">
-      {{ opcao.descricao }}
-    </button>
-  </div>
+  <aside class="sidebar">
+    @if (geminiResponse || isLoadingUserQuestion) {
+      <mat-card class="tutor-card">
+        <mat-card-content>
+          <div class="tutor-card__header">
+            <mat-icon class="tutor-card__icon">auto_fix_high</mat-icon>
+            <span class="tutor-card__title">Tutor inteligente</span>
+          </div>
+          @if (geminiResponse) {
+            <p class="tutor-card__response">{{ geminiResponse }}</p>
+          }
+          <mat-progress-spinner
+            *ngIf="isLoadingUserQuestion"
+            diameter="20"
+            mode="indeterminate"
+            color="accent"
+            class="tutor-card__spinner"
+          ></mat-progress-spinner>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <div class="opcoes-card">
+      <div class="opcoes-card__header">
+        <h3 class="section-subtitle">Escolha a alternativa correta</h3>
+      </div>
+
+      <div class="opcoes-grid">
+        <button
+          class="quiz-option"
+          *ngFor="let opcao of atividade.perguntas"
+          (click)="selecionar(opcao)"
+          [ngClass]="obterClasse(opcao)"
+        >
+          {{ opcao.descricao }}
+        </button>
+      </div>
+    </div>
+  </aside>
 
   <div class="feedback" *ngIf="respondeu">
-    <p *ngIf="respostaSelecionada?.correta" class="mensagem correta">✅ Correct! Well done!</p>
-    <p *ngIf="!respostaSelecionada?.correta" class="mensagem incorreta">❌ Incorrect. Try reading again!</p>
+    <p *ngIf="respostaSelecionada?.correta" class="mensagem mensagem--correta">✅ Correct! Well done!</p>
+    <p *ngIf="!respostaSelecionada?.correta" class="mensagem mensagem--incorreta">❌ Incorrect. Try reading again!</p>
   </div>
 </div>

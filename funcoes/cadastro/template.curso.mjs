@@ -98,12 +98,13 @@ export const cursos = [
       },
       {
         nome: "Conteúdo",
+        conteudoASerImportado: "conteudos/verbotobe.html",
         videos: [
           {
-            videoId: "verbotobe.mp4",
-          },
+            videoId: "verbotobe.mp4"
+          }
         ],
-        concluida: false,
+        concluida: false
       },
       {
         nome: "Quizz",

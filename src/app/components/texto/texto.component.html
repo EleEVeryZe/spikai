@@ -1,12 +1,7 @@
-<div class="quiz-container" *ngIf="atividade">
+<div class="quiz-container" *ngIf="!isLoadingAtividade && atividade">
   <section class="texto-section" (mouseleave)="handleWordPointerLeave()">
-    <h2 class="section-title">Texto inteligente</h2>
     <div class="texto-content">
-      <button
-        class="translate-button texto-content__translate-button"
-        (click)="traduzirTexto()"
-        [disabled]="isTranslating"
-      >
+      <button class="translate-button texto-content__translate-button" (click)="traduzirTexto()" [disabled]="isTranslating">
         <mat-icon>translate</mat-icon>
         <span>Traduzir texto</span>
       </button>
@@ -26,62 +21,79 @@
         }
       </div>
       <div class="translation-feedback">
-      <mat-progress-spinner
-        *ngIf="isTranslating"
-        diameter="20"
-        mode="indeterminate"
-        color="accent"
-      ></mat-progress-spinner>
-      <p *ngIf="translationResponse && !isTranslating" class="translation-text">
-        {{ translationResponse }}
-      </p>
+        <mat-progress-spinner *ngIf="isTranslating" diameter="20" mode="indeterminate" color="accent"></mat-progress-spinner>
+        <p *ngIf="translationResponse && !isTranslating" class="translation-text">
+          {{ translationResponse }}
+        </p>
+      </div>
     </div>
-    </div>
-    
   </section>
 
   <aside class="sidebar">
     @if (geminiResponse || isLoadingUserQuestion) {
-      <mat-card class="tutor-card">
-        <mat-card-content>
-          <div class="tutor-card__header">
-            <mat-icon class="tutor-card__icon">auto_fix_high</mat-icon>
-            <span class="tutor-card__title">Tutor inteligente</span>
-          </div>
-          @if (geminiResponse) {
-            <p class="tutor-card__response">{{ geminiResponse }}</p>
-          }
-          <mat-progress-spinner
-            *ngIf="isLoadingUserQuestion"
-            diameter="20"
-            mode="indeterminate"
-            color="accent"
-            class="tutor-card__spinner"
-          ></mat-progress-spinner>
-        </mat-card-content>
-      </mat-card>
+    <mat-card class="tutor-card">
+      <mat-card-content>
+        <div class="tutor-card__header">
+          <mat-icon class="tutor-card__icon">auto_fix_high</mat-icon>
+          <span class="tutor-card__title">Tutor inteligente</span>
+        </div>
+        @if (geminiResponse) {
+        <p class="tutor-card__response">{{ geminiResponse }}</p>
+        }
+        <mat-progress-spinner
+          *ngIf="isLoadingUserQuestion"
+          diameter="20"
+          mode="indeterminate"
+          color="accent"
+          class="tutor-card__spinner"
+        ></mat-progress-spinner>
+      </mat-card-content>
+    </mat-card>
     }
 
-    <div class="opcoes-card">
+    <div class="opcoes-card" *ngIf="getCurrentQuestion(); else allQuestionsCompleted">
       <div class="opcoes-card__header">
         <h3 class="section-subtitle">Escolha a alternativa correta</h3>
+        <span class="question-progress" *ngIf="getTotalQuestions() > 0">
+          Pergunta {{ currentQuestionIndex + 1 }} de {{ getTotalQuestions() }}
+        </span>
       </div>
 
-      <div class="opcoes-grid">
-        <button
-          class="quiz-option"
-          *ngFor="let opcao of atividade.perguntas"
-          (click)="selecionar(opcao)"
-          [ngClass]="obterClasse(opcao)"
-        >
-          {{ opcao.descricao }}
-        </button>
+      <div class="question-container" [class.question-container--fade-out]="isTransitioning">
+        <h4 class="question-text">{{ getCurrentQuestion()?.pergunta }}</h4>
+        
+        <div class="opcoes-grid">
+          <button 
+            class="quiz-option" 
+            *ngFor="let opcao of getCurrentQuestion()?.opcoes" 
+            (click)="selecionar(opcao)" 
+            [ngClass]="obterClasse(opcao)"
+            [disabled]="respondeu || isTransitioning"
+          >
+            {{ opcao.descricao }}
+          </button>
+        </div>
       </div>
     </div>
+
+    <ng-template #allQuestionsCompleted>
+      <div class="opcoes-card">
+        <div class="completion-message">
+          <mat-icon class="completion-icon">check_circle</mat-icon>
+          <h3 class="completion-title">Parabéns!</h3>
+          <p class="completion-text">Você completou todas as perguntas do exercício.</p>
+        </div>
+      </div>
+    </ng-template>
   </aside>
 
-  <div class="feedback" *ngIf="respondeu">
+  <div class="feedback" *ngIf="respondeu && getCurrentQuestion()">
     <p *ngIf="respostaSelecionada?.correta" class="mensagem mensagem--correta">✅ Correct! Well done!</p>
     <p *ngIf="!respostaSelecionada?.correta" class="mensagem mensagem--incorreta">❌ Incorrect. Try reading again!</p>
   </div>
+</div>
+
+<div class="loading-container" *ngIf="isLoadingAtividade">
+  <mat-progress-spinner diameter="50" mode="indeterminate" color="primary"></mat-progress-spinner>
+  <p class="loading-text">Gerando texto a partir do vocabulário de interesse...</p>
 </div>

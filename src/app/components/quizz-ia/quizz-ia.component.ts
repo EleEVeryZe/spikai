@@ -90,11 +90,15 @@ export class QuizzIaComponent {
       const idCurso = params.get('id');
       this.sharedUi.goBackTo('tema/' + idCurso);
       this.sharedUi.hideArrowBackToolbar(false);
-      this.sharedUi.scrollPageToTop();
       this.idCurso = idCurso || '';
 
       this.temasService.getAtividade(idCurso + '', 'Quizz').subscribe((atvd) => {
-        const perguntas = (atvd?.perguntas /*.slice(0, 3)*/ as Question[]) ?? [];
+        const hostname = window.location.hostname;
+        let perguntas;
+        if (hostname === 'localhost')
+          perguntas = (atvd?.perguntas.slice(0, 3) as Question[]) ?? [];
+        else 
+          perguntas = (atvd?.perguntas /*.slice(0, 3)*/ as Question[]) ?? [];
         this.quizData.set(perguntas);
         this.quizJaFeito = atvd?.concluida || false;
 
@@ -136,8 +140,7 @@ export class QuizzIaComponent {
   progressPercent = computed(() => Math.min(100, ((this.currentQuestionIndex() + 1) / this.quizData().length) * 100));
 
   obterContextoPalavra(word: string, frase: string) {
-    console.log(word);
-
+    this.speak(word);
     this.isLoadingUserQuestion = true;
 
     if (this.isGeminiLoading()) return;
@@ -200,6 +203,7 @@ export class QuizzIaComponent {
   }
 
   nextQuestion(): void {
+    this.stopSpeaking();
     if (this.currentQuestionIndex() < this.quizData().length - 1) {
       this.currentQuestionIndex.update((i) => i + 1);
       if (this.userVocabulary.length) this.adaptQuestionToVocabulary(this.currentQuestionIndex());
@@ -452,7 +456,7 @@ Output (JSON only):
     speechSynthesis.speak(utterance);
   }
 
-  stop(): void {
+  stopSpeaking(): void {
     speechSynthesis.cancel();
   }
 }

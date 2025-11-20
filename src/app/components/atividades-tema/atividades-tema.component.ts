@@ -139,6 +139,6 @@ export class AtividadesTemaComponent {
       return;
     }
 
-     this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade.toLocaleLowerCase()]);
+     this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade]);
   }
 }

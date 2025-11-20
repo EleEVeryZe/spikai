@@ -15,6 +15,19 @@ import { ActivatedRoute } from '@angular/router';
 import { Atividade, Opcao } from '../../model/atividade.model';
 import { TemasService } from '../../services/temas.service';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
+import { debounceTime, switchMap, filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
+
+interface PerguntaComOpcoes {
+  pergunta: string;
+  opcoes: Opcao[];
+}
+
+interface SmartTextResponse {
+  texto: string;
+  perguntas: PerguntaComOpcoes[];
+}
 
 @Component({
   selector: 'app-texto',
@@ -46,17 +59,38 @@ export class TextoComponent {
   private currentWordRequestId = 0;
   private longPressTimeoutId?: number;
   private longPressTriggered = false;
+  private selection$ = new Subject<void>();
   isMultiSelectMode = false;
   translationResponse = '';
   isTranslating = false;
+  isLoadingAtividade = true;
+  currentQuestionIndex = 0;
+  isTransitioning = false;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly usuarioRepositoryService: UsuarioRepositoryService,
     private readonly temasService: TemasService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+    this.selection$.pipe(
+      debounceTime(1000),
+      switchMap(() => {
+        const selectedWords = this.getSelectedWords();
+        this.isLoadingUserQuestion = true;
+        return this.obterContextoPalavras(selectedWords, this.atividade?.texto ?? '');
+      })
+    ).subscribe({
+      next: () => {
+        this.isLoadingUserQuestion = false;
+      },
+      error: () => {
+        this.geminiResponse = '';
+        this.isLoadingUserQuestion = false;
+      }
+    });
+
     this.route.paramMap.subscribe((params) => {
       const idCurso = params.get('id');
 
@@ -68,10 +102,14 @@ export class TextoComponent {
         const atvd = cursos[0].atividades.find((atv) => atv.nome === 'Texto');
         if (atvd && atvd.texto.length > 0) {
           this.atividade = atvd;
-        } else {
-          this.atividade = await this.getSmartText(this.uniqueWords);
-          this.temasService.responderQuizz(this.atividade.perguntas, idCurso, { texto: this.atividade.texto, nomeAtividade: "Texto" }).subscribe();
-        }
+          this.isLoadingAtividade = false;
+        } else 
+          this.getSmartText(this.uniqueWords).then((atividade) => {
+            this.atividade = atividade;
+            this.currentQuestionIndex = 0;
+            this.isLoadingAtividade = false;
+            this.temasService.responderQuizz(this.atividade.perguntas, idCurso, { texto: this.atividade.texto, nomeAtividade: "Texto" }).subscribe();
+          });
       });
     });
   }
@@ -81,33 +119,57 @@ export class TextoComponent {
       return Promise.reject(new Error('Vocabulary field is required'));
     }
 
-    const prompt = `Você é um tutor de inglês. Usando a lista de palavras abaixo, crie um texto em inglês de 200 palavras e 4 perguntas a respeito do texto. 3 perguntas deve estar incorretas e apenas 1 correta.
-    
-    Input: ${uniqueWords.join(', ')}
-    
-    Exemplo de Resposta:
-    {
-        texto: "Ana is a doctor at Rio Doce Hospital...",
-        perguntas: [
-          {
-            descricao: "Ana é programadora de computador"
-            correta: false
-          }
-        ]
-    }
+    const prompt = `Você é um tutor de inglês. Sua tarefa é criar um exercício de compreensão de leitura e gramática baseado em uma lista de palavras-chave.
+
+## 📝 Instruções de Criação
+
+1.  **Crie um texto em inglês de aproximadamente 200 palavras** usando a lista de palavras-chave fornecida.
+2.  O texto deve obrigatoriamente incorporar o **Verbo To Be** (em suas diversas formas: $am, is, are$) e o **Present Continuous** (estrutura: $to\ be\ +\ verbo\ no\ -ing$) de forma natural e frequente.
+3.  Após o texto, crie **5 perguntas** de múltipla escolha sobre o conteúdo do texto.
+4.  Cada pergunta deve ter **4 opções de resposta**:
+    * **1 opção correta** que reflita o texto com precisão.
+    * **3 opções incorretas** (distratores).
+5.  O formato de saída deve ser um objeto JSON estrito, como mostrado no exemplo abaixo.
+
+**Input:** ${uniqueWords.join(', ')}
+
+---
+
+**Exemplo de Formato de Resposta JSON:**
+{
+    "texto": "...",
+    "perguntas": [
+        {
+            "pergunta": "Qual é a profissão de Ana, de acordo com o texto?",
+            "opcoes": [
+                {"descricao": "Ela é programadora de computador.", "correta": false},
+                {"descricao": "Ela é médica.", "correta": true},
+                {"descricao": "Ela está estudando direito.", "correta": false},
+                {"descricao": "Ela é professora de história.", "correta": false}
+            ]
+        },
+        // ... mais 4 perguntas nesse formato ...
+    ]
+}
     `;
 
     const tutor = new Tutor();
-    return JSON.parse(await tutor.askDeepSeek(prompt));
+    const tutorAnswer = await tutor.askDeepSeek(prompt);
+    const response: SmartTextResponse = JSON.parse(tutorAnswer);
+    return {
+      nome: 'Texto' as const,
+      concluida: false,
+      videos: [],
+      texto: response.texto || '',
+      perguntas: response.perguntas
+    } as any;
   }
 
   processSentences(): string[] {
     const allWords: string[] = [];
-    const ignoredPatterns = ['___']; // Padrões a serem ignorados
+    const ignoredPatterns = ['___'];
 
     this.inputSentences.forEach((sentence) => {
-      // Regex: Substitui todos os sinais de pontuação e os padrões ignorados por espaço,
-      // depois divide a frase em palavras.
       const cleanedSentence = sentence.replace(/[.,!?:;"]/g, ' ').replace(new RegExp(ignoredPatterns.join('|'), 'g'), ' ');
 
       const words = cleanedSentence
@@ -122,10 +184,40 @@ export class TextoComponent {
     return Array.from(new Set(allWords));
   }
 
-  selecionar(opcao: Opcao) {
-    if (this.respondeu) return; // impede mudança após resposta
+  getCurrentQuestion(): PerguntaComOpcoes | null {
+    const perguntas = (this.atividade?.perguntas as PerguntaComOpcoes[]) || [];
+    if (perguntas.length === 0 || this.currentQuestionIndex >= perguntas.length) {
+      return null;
+    }
+    return perguntas[this.currentQuestionIndex];
+  }
+
+  getTotalQuestions(): number {
+    const perguntas = (this.atividade?.perguntas as PerguntaComOpcoes[]) || [];
+    return perguntas.length;
+  }
+
+  async selecionar(opcao: Opcao) {
+    if (this.respondeu || this.isTransitioning) return; // impede mudança após resposta ou durante transição
+
     this.respostaSelecionada = opcao;
     this.respondeu = true;
+
+    // Aguardar um pouco para mostrar o feedback
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Fade out
+    this.isTransitioning = true;
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Avançar para próxima pergunta
+    this.currentQuestionIndex++;
+    this.respondeu = false;
+    this.respostaSelecionada = undefined;
+
+    // Fade in
+    await new Promise(resolve => setTimeout(resolve, 100));
+    this.isTransitioning = false;
   }
 
   obterClasse(opcao: Opcao): string {
@@ -140,10 +232,11 @@ export class TextoComponent {
     this.longPressTriggered = false;
 
     this.longPressTimeoutId = window.setTimeout(() => {
+      this.selectedWordIndexes.clear();
       this.longPressTriggered = true;
       this.isMultiSelectMode = true;
       this.toggleWordSelection(index);
-      this.fetchSelectedWordsContext();
+      this.selection$.next();
     }, 450);
   }
 
@@ -167,7 +260,7 @@ export class TextoComponent {
       this.selectedWordIndexes.add(index);
     }
 
-    this.fetchSelectedWordsContext();
+    this.selection$.next();
   }
 
   handleWordPointerLeave() {
@@ -205,25 +298,13 @@ export class TextoComponent {
       .filter((word) => !!word);
   }
 
-  private async fetchSelectedWordsContext() {
-    const selectedWords = this.getSelectedWords();
-
-    if (!selectedWords.length) {
-      this.isLoadingUserQuestion = false;
-      this.geminiResponse = '';
-      return;
-    }
-
-    await this.obterContextoPalavras(selectedWords, this.atividade.texto);
-  }
-
   async obterContextoPalavras(words: string[], frase: string) {
     const requestId = ++this.currentWordRequestId;
     this.isLoadingUserQuestion = true;
     this.isGeminiLoading = true;
     this.geminiResponse = '';
 
-    const palavras = words.join(', ');
+    const palavras = words.join(' ');
     const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 70 palavras) da seleção '${palavras}' considerando o texto completo a seguir: '${frase}'. Responda em português do Brasil e seja objetivo.`;
 
     try {

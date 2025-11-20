@@ -253,6 +253,17 @@ export const cursos = [
         dataConclusao: "",
       },
       {
+        nome: "Texto",
+        concluida: false,
+        texto: "",
+        perguntas: [
+          {
+            descricao: "Ana é programadora de computador",
+            correta: false
+          }
+        ]
+      },
+      {
         nome: "Pós-teste",
         concluida: false,
         perguntas: [

@@ -53,13 +53,20 @@ export class Tutor {
           throw new Error(`API request failed: ${response.status} ${response.statusText}`);
         }
 
-        const result: DeepSeekResponse = await response.json();
+        const json = await response.json();
+        let content = json?.choices?.[0]?.message?.content;
 
-        if (!result.choices?.[0]?.message?.content) {
-          throw new Error('Invalid response format from API');
+        if (!content) {
+          throw new Error("Invalid response format: no content found");
         }
 
-        return result.choices[0].message.content.trim();
+        // optional cleanup
+        content = content
+          .replace(/^```json\s*/i, "")
+          .replace(/```$/, "")
+          .trim();
+        return content;
+        
       } catch (error) {
         console.error(`Attempt ${attempt + 1} failed:`, error);
         if (attempt === this.DEEPSEEK_CONFIG.MAX_RETRIES - 1) {

@@ -38,7 +38,7 @@ export const routes: Routes = [
       { path: 'edit/:userId', component: CadastroComponent },
       { path: 'Memorização', component: MemorizacaoComponent },
       { path: 'conteudo/:id', component: ConteudoComponent },
-      { path: ':id/texto', component: TextoComponent },
+      { path: ':id/Texto', component: TextoComponent },
     ],
   },
 

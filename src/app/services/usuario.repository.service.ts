@@ -69,7 +69,7 @@ export class UsuarioRepositoryService {
         userEmail = this.authService.loadUserState().email;
 
     const hostname = window.location.hostname;
-    if (hostname === 'localhost')
+    if (hostname === '!localhost')
       return this.getUserStateStat(userEmail);
 
     return this.httpClient.post<Usuario>("https://0xaywrm14h.execute-api.sa-east-1.amazonaws.com/default/usuario", JSON.stringify({ email: userEmail }));

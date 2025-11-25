@@ -92,7 +92,7 @@ export const handler = async (event) => {
     if (nomeAtividade == "Quizz") {
       const atividade = curso?.atividades.find((atv) => atv.nome === "Quizz");
       atividade.perguntas = respostas;
-      atividade.concluida = true;
+      atividade.concluida = body.ehConcluida;
       atividade.dataConclusao = new Date().toISOString();
       curso.concluido = 75;
     } else if (nomeAtividade == "Texto") {
@@ -103,7 +103,7 @@ export const handler = async (event) => {
           nome: "Texto",
           perguntas: respostas,
           concluida: body.ehConcluida,
-          concluida: body.ehConcluida ? new Date().toISOString() : "",
+          dataConclusao: body.ehConcluida ? new Date().toISOString() : "",
         });
       else {
         atividade.perguntas = respostas;

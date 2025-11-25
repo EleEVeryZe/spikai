@@ -133,7 +133,6 @@ export const handler = async (event) => {
       };
     }
 
-    // Caso seja novo cadastro
     if (userExists) {
       return {
         statusCode: 409,
@@ -142,8 +141,7 @@ export const handler = async (event) => {
       };
     }
 
-    // Criação de novo usuário
-    userList.push({ ...userData, ehGrupoControle: userList.length % 2 === 0 });
+    userList.push({ ...userData });
 
     await s3.send(
       new PutObjectCommand({
@@ -158,7 +156,7 @@ export const handler = async (event) => {
       new PutObjectCommand({
         Bucket: BUCKET_NAME,
         Key: filename,
-        Body: JSON.stringify({ ...userData, password: "", ehGrupoControle: userList.length % 2 === 0, cursos }, null, 2),
+        Body: JSON.stringify({ ...userData, password: "", ehGrupoControle: false, cursos }, null, 2),
         ContentType: "application/json",
       })
     );

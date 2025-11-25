@@ -135,6 +135,15 @@
     <div class="quiz-complete-message">
       <p class="completion-title">🎉 Quiz Finalizado! 🎉</p>
       <p class="completion-subtitle">Você concluiu todas as {{ quizData().length }} perguntas. Revise o seu progresso!</p>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="fecharQuizz()"
+        class="action-button-next"
+      >
+        Fechar Quizz
+        
+      </button>
     </div>
     }
   </mat-card>

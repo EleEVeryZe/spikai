@@ -23,6 +23,7 @@ interface Question {
   tutoringText: string;
   selectedAnswer: string;
   userDoubts: string;
+  ehFeitaPorIA?: boolean;
 }
 
 interface QuestionProgress {
@@ -204,27 +205,25 @@ export class QuizzIaComponent {
 
   nextQuestion(): void {
     this.stopSpeaking();
-    if (this.currentQuestionIndex() < this.quizData().length - 1) {
-      this.currentQuestionIndex.update((i) => i + 1);
-      if (this.userVocabulary.length) this.adaptQuestionToVocabulary(this.currentQuestionIndex());
+    this.currentQuestionIndex.update((i) => i + 1);
+    if (this.currentQuestionIndex() < this.quizData().length) {
+      if (this.userVocabulary.length) this.adaptQuestionToVocabulary(this.currentQuestionIndex()).then(() => this.guardarRespostas());
     } else {
-      this.currentQuestionIndex.update((i) => i + 1);
-      this.guardarRespostas();
+      this.guardarRespostas(true, this.currentQuestionIndex() - 1); 
     }
     this.geminiResponse.set(null);
   }
 
-  guardarRespostas(): void {
-    if (this.quizJaFeito) {
-      setTimeout(() => {
-        this.router.navigate(['/tema/' + this.idCurso]);
-      }, 5000);
-      return;
-    }
+  fecharQuizz(): void {
+    this.router.navigate(['/tema/' + this.idCurso]);
+  }
 
+  guardarRespostas(ehConcluida = false, idxQuestion = this.currentQuestionIndex()): void {
     const perguntas = this.quizData();
-
     if (perguntas) {
+      if (this.quizData()[idxQuestion].ehFeitaPorIA) return;
+      
+      this.quizData()[idxQuestion].ehFeitaPorIA = true;
       let currentIndex = 0;
       const respostas = perguntas.map((pergunta: any) => {
         return {
@@ -232,16 +231,11 @@ export class QuizzIaComponent {
           ...this.quizProgress()[currentIndex++],
         };
       });
-      const userEmail = this.usuarioRepositoryService.getUserEmail();
-      console.log('Atividade', respostas, userEmail, this.idCurso);
-      this.temasService.responderQuizz(respostas, this.idCurso).subscribe({
+
+      this.temasService.responderQuizz(respostas, this.idCurso, { ehConcluida, nomeAtividade: "Quizz" }).subscribe({
         next: (res: any) => {
           console.log('Quizz respondido:', res);
           this.showMessage('Resultado salvo com sucesso!');
-
-          setTimeout(() => {
-            this.router.navigate(['/tema/' + this.idCurso]);
-          }, 5000);
         },
         error: (err: any) => {
           console.error(err);
@@ -289,14 +283,17 @@ export class QuizzIaComponent {
   }
 
   async adaptQuestionToVocabulary(index: number) {
-    if (this.ehGrupoControle || this.quizJaFeito) {
+    if (this.ehGrupoControle) {
       this.isLoading.set(false);
       return;
     }
 
     this.isLoading.set(true);
     const question = this.quizData()[index];
-    if (!question || !this.userVocabulary.length) return;
+    if (!question || !this.userVocabulary.length || question.ehFeitaPorIA) {
+      this.isLoading.set(false);
+      return;
+    }
     const apiUrl = `https://api.deepseek.com/v1/chat/completions`;
     const deepseekAPIKey = 'sk-2a4144829a9946fc9d01b0e8be0bf98d';
 

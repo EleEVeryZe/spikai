@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Tutor } from '../../services/tutor.service';
+import { AITutor } from '../../services/tutor.service';
 
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,13 +12,23 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { ActivatedRoute } from '@angular/router';
-import { Atividade, Opcao } from '../../model/atividade.model';
-import { TemasService } from '../../services/temas.service';
-import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
-import { debounceTime, switchMap, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
+import { Opcao } from '../../model/atividade.model';
+import { TextoActivity } from '../../model/texto-activity.model';
+import { Usuario } from '../../model/user.model';
+import { VoiceControlStatus } from '../../model/voice-control-status.model';
+import { SharedUiService } from '../../services/shared-ui.service';
+import { TemasService } from '../../services/temas.service';
+import { UiUtilsService } from '../../services/ui.utils.service';
+import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
+import { VoiceControlService } from '../../services/voice-control.service';
 
-
+/**
+ * * TODOS: 
+  1. Gerar plano de estudos e alimentar template do curso.
+  2. Criar tela de cadastro de professor
+ */
 interface PerguntaComOpcoes {
   pergunta: string;
   opcoes: Opcao[];
@@ -47,36 +57,51 @@ interface SmartTextResponse {
   styleUrl: './texto.component.scss',
 })
 export class TextoComponent {
-  inputSentences: string[] = [];
-  uniqueWords: string[] = [];
-  atividade!: Atividade;
+  atividade!: TextoActivity;
   respostaSelecionada?: Opcao;
   respondeu = false;
   isLoadingUserQuestion = false;
   isGeminiLoading = false;
   geminiResponse = '';
   selectedWordIndexes: Set<number> = new Set<number>();
-  private currentWordRequestId = 0;
-  private longPressTimeoutId?: number;
-  private longPressTriggered = false;
-  private selection$ = new Subject<void>();
+  currentWordRequestId = 0;
+  longPressTimeoutId?: number;
+  longPressTriggered = false;
+  selection$ = new Subject<void>();
   isMultiSelectMode = false;
   translationResponse = '';
   isTranslating = false;
   isLoadingAtividade = true;
   currentQuestionIndex = 0;
   isTransitioning = false;
+  
+  idCurso = "";
+  user!: Usuario;
+  private isDragging = false;  
+  private startX = 0;
+  private startY = 0;
+  private readonly DRAG_THRESHOLD = 10;
+
+  voiceControlState!: VoiceControlStatus;
 
   constructor(
+    private readonly uiUtils: UiUtilsService,
     private readonly route: ActivatedRoute,
     private readonly usuarioRepositoryService: UsuarioRepositoryService,
-    private readonly temasService: TemasService
+    private readonly temasService: TemasService,
+    private readonly sharedUi: SharedUiService,
+    readonly speakService: VoiceControlService
   ) { }
 
   ngOnInit(): void {
+    this.speakService.status$.subscribe((status) => {
+      this.voiceControlState = status;
+    })
+
     this.selection$.pipe(
       debounceTime(1000),
       switchMap(() => {
+        window.scrollTo(0,0)
         const selectedWords = this.getSelectedWords();
         this.isLoadingUserQuestion = true;
         return this.obterContextoPalavras(selectedWords, this.atividade?.texto ?? '');
@@ -88,27 +113,42 @@ export class TextoComponent {
       error: () => {
         this.geminiResponse = '';
         this.isLoadingUserQuestion = false;
+        this.uiUtils.showMessage('Erro ao buscar contexto da palavra.', true);
       }
     });
 
     this.route.paramMap.subscribe((params) => {
-      const idCurso = params.get('id');
+      this.idCurso = params.get('id') || "";
+      this.sharedUi.goBackTo('tema/' + this.idCurso);
 
-      this.usuarioRepositoryService.getUserState().subscribe(async ({ cursos }) => {
-        const quizz = cursos[0].atividades[2];
-        this.inputSentences = quizz.perguntas.map(({ sentence }: any) => sentence);
-        this.uniqueWords = this.processSentences();
+      this.usuarioRepositoryService.getUserState().subscribe(async (user) => {
+        this.user = user;
+        const currentCourse = user.setCurrentCourse(this.idCurso);
+        if (!currentCourse) return;
 
-        const atvd = cursos[0].atividades.find((atv) => atv.nome === 'Texto');
+        const uniqueWords = user.processSentences();
+        const atvd = user.getAtividade("Texto") as unknown as TextoActivity;
+
         if (atvd && atvd.texto.length > 0) {
           this.atividade = atvd;
           this.isLoadingAtividade = false;
-        } else 
-          this.getSmartText(this.uniqueWords).then((atividade) => {
+        } else
+          this.getSmartText(uniqueWords).then((atividade) => {
             this.atividade = atividade;
             this.currentQuestionIndex = 0;
             this.isLoadingAtividade = false;
-            this.temasService.responderQuizz(this.atividade.perguntas, idCurso, { texto: this.atividade.texto, nomeAtividade: "Texto" }).subscribe();
+            this.temasService.responderQuizz(this.atividade.perguntas, this.idCurso, { texto: this.atividade.texto, nomeAtividade: "Texto" }).subscribe(
+              {
+                next: () => {
+                  this.isLoadingUserQuestion = false;
+                },
+                error: () => {
+                  this.geminiResponse = '';
+                  this.isLoadingUserQuestion = false;
+                  this.uiUtils.showMessage('Erro ao guardar resultado do quizz.', true);
+                }
+              }
+            );
           });
       });
     });
@@ -119,69 +159,41 @@ export class TextoComponent {
       return Promise.reject(new Error('Vocabulary field is required'));
     }
 
-    const prompt = `Você é um tutor de inglês. Sua tarefa é criar um exercício de compreensão de leitura e gramática baseado em uma lista de palavras-chave.
+    const prompt = `Create a 200-word English text using: ${uniqueWords.join(', ')} Incorporate ${this.user.getPreviousTemas().map(prevCourse => `**${prevCourse}** `)} frequently. Output only the text.`;
 
-## 📝 Instruções de Criação
-
-1.  **Crie um texto em inglês de aproximadamente 200 palavras** usando a lista de palavras-chave fornecida.
-2.  O texto deve obrigatoriamente incorporar o **Verbo To Be** (em suas diversas formas: $am, is, are$) e o **Present Continuous** (estrutura: $to\ be\ +\ verbo\ no\ -ing$) de forma natural e frequente.
-3.  Após o texto, crie **5 perguntas** de múltipla escolha sobre o conteúdo do texto.
-4.  Cada pergunta deve ter **4 opções de resposta**:
-    * **1 opção correta** que reflita o texto com precisão.
-    * **3 opções incorretas** (distratores).
-5.  O formato de saída deve ser um objeto JSON estrito, como mostrado no exemplo abaixo.
-
-**Input:** ${uniqueWords.join(', ')}
-
----
-
-**Exemplo de Formato de Resposta JSON:**
-{
-    "texto": "...",
-    "perguntas": [
-        {
-            "pergunta": "Qual é a profissão de Ana, de acordo com o texto?",
-            "opcoes": [
-                {"descricao": "Ela é programadora de computador.", "correta": false},
-                {"descricao": "Ela é médica.", "correta": true},
-                {"descricao": "Ela está estudando direito.", "correta": false},
-                {"descricao": "Ela é professora de história.", "correta": false}
-            ]
-        },
-        // ... mais 4 perguntas nesse formato ...
-    ]
-}
-    `;
-
-    const tutor = new Tutor();
+    const tutor = new AITutor();
     const tutorAnswer = await tutor.askDeepSeek(prompt);
-    const response: SmartTextResponse = JSON.parse(tutorAnswer);
+
+    const secondPromt = `Crie 3 perguntas MCQ em português sobre o texto.
+
+FORMATO JSON:
+[
+  {
+    "pergunta": "texto",
+    "opcoes": [
+      {"descricao": "opção", "correta": false/true}
+    ]
+  }
+]
+
+REGRAS:
+- 4 opções por pergunta (1 correta)
+- Distratores plausíveis
+
+TEXTO:
+[o texto completo aqui]
+${tutorAnswer}
+    `
+
+    const tutorAnswer2 = await tutor.askDeepSeek(secondPromt);
+
     return {
       nome: 'Texto' as const,
       concluida: false,
       videos: [],
-      texto: response.texto || '',
-      perguntas: response.perguntas
+      texto: tutorAnswer || '',
+      perguntas: tutorAnswer2
     } as any;
-  }
-
-  processSentences(): string[] {
-    const allWords: string[] = [];
-    const ignoredPatterns = ['___'];
-
-    this.inputSentences.forEach((sentence) => {
-      const cleanedSentence = sentence.replace(/[.,!?:;"]/g, ' ').replace(new RegExp(ignoredPatterns.join('|'), 'g'), ' ');
-
-      const words = cleanedSentence
-        .split(/\s+/) // Divide por um ou mais espaços
-        .filter((word) => word.length > 0) // Remove strings vazias
-        .map((word) => word.toLowerCase()); // Converte para minúsculas
-
-      allWords.push(...words);
-    });
-
-    // 3.2. Remover Duplicatas e Preencher FormArray
-    return Array.from(new Set(allWords));
   }
 
   getCurrentQuestion(): PerguntaComOpcoes | null {
@@ -203,19 +215,29 @@ export class TextoComponent {
     this.respostaSelecionada = opcao;
     this.respondeu = true;
 
-    // Aguardar um pouco para mostrar o feedback
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => {
+      this.atividade.perguntas[this.currentQuestionIndex].ehAcerto = opcao.correta;
+      this.temasService.responderQuizz(this.atividade.perguntas, this.idCurso, { texto: this.atividade.texto, nomeAtividade: 'Texto' }).subscribe({
+        next: (res: any) => {
+          console.log('Quizz respondido:', res);
+          this.uiUtils.showMessage('Resultado salvo com sucesso!');
+          resolve("");
+        },
+        error: (err: any) => {
+          console.error(err);
+          this.uiUtils.showMessage('Erro ao guardar resultado.', true);
+          resolve("");
+        },
+      });
+    });
 
-    // Fade out
     this.isTransitioning = true;
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Avançar para próxima pergunta
     this.currentQuestionIndex++;
     this.respondeu = false;
     this.respostaSelecionada = undefined;
 
-    // Fade in
     await new Promise(resolve => setTimeout(resolve, 100));
     this.isTransitioning = false;
   }
@@ -228,10 +250,19 @@ export class TextoComponent {
   }
 
   handleWordPointerDown(event: TouchEvent | MouseEvent, _word: string, index: number) {
-    event.preventDefault();
+    this.isDragging = false;
     this.longPressTriggered = false;
 
+    const clientX = (event instanceof TouchEvent) ? event.touches[0].clientX : event.clientX;
+    const clientY = (event instanceof TouchEvent) ? event.touches[0].clientY : event.clientY;
+    this.startX = clientX;
+    this.startY = clientY;
+
     this.longPressTimeoutId = window.setTimeout(() => {
+      if (this.isDragging) return;
+
+      this.vibrate(100);
+
       this.selectedWordIndexes.clear();
       this.longPressTriggered = true;
       this.isMultiSelectMode = true;
@@ -240,12 +271,35 @@ export class TextoComponent {
     }, 450);
   }
 
+  handleWordPointerMove(event: TouchEvent | MouseEvent) {
+    if (this.longPressTimeoutId && !this.isDragging) {
+      const clientX = (event instanceof TouchEvent) ? event.touches[0].clientX : event.clientX;
+      const clientY = (event instanceof TouchEvent) ? event.touches[0].clientY : event.clientY;
+
+      const distanceX = Math.abs(clientX - this.startX);
+      const distanceY = Math.abs(clientY - this.startY);
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      if (distance > this.DRAG_THRESHOLD) {
+        this.isDragging = true;
+      }
+    }
+  }
+
   handleWordPointerUp(event: TouchEvent | MouseEvent, _word: string, index: number) {
     event.preventDefault();
 
     if (this.longPressTimeoutId) {
       clearTimeout(this.longPressTimeoutId);
       this.longPressTimeoutId = undefined;
+    }
+
+    if (this.isDragging) {
+      this.isDragging = false;
+      if (this.longPressTriggered) {
+        this.longPressTriggered = false;
+      }
+      return;
     }
 
     if (this.longPressTriggered) {
@@ -268,10 +322,18 @@ export class TextoComponent {
       clearTimeout(this.longPressTimeoutId);
       this.longPressTimeoutId = undefined;
     }
+    this.isDragging = false;
+    this.longPressTriggered = false;
+  }
+
+  vibrate(duration: number | number[]): void {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(duration);
+    }
   }
 
   isWordSelected(index: number): boolean {
-    return this.selectedWordIndexes.has(index);
+    return this.selectedWordIndexes.has(index); 
   }
 
   private toggleWordSelection(index: number) {
@@ -287,9 +349,8 @@ export class TextoComponent {
   }
 
   private getSelectedWords(): string[] {
-    if (!this.atividade?.texto) {
+    if (!this.atividade?.texto)
       return [];
-    }
 
     const words = this.atividade.texto.split(' ');
     return Array.from(this.selectedWordIndexes)
@@ -308,18 +369,17 @@ export class TextoComponent {
     const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 70 palavras) da seleção '${palavras}' considerando o texto completo a seguir: '${frase}'. Responda em português do Brasil e seja objetivo.`;
 
     try {
-      const tutor = new Tutor();
-      const response = await tutor.askDeepSeek(questionContext);
-
-      if (this.currentWordRequestId === requestId) {
-        this.geminiResponse = response;
-      }
+      const tutor = new AITutor();
+      const response = await tutor.askDeepSeek(questionContext); //await new Promise((solve) => setTimeout(() => solve(words.join(', ')), 5000));
+      if (this.currentWordRequestId === requestId)
+        this.geminiResponse = response as string;
     } catch (error) {
+      this.uiUtils.showMessage('Erro ao buscar contexto da palavra.', true);
       console.error('[TextoComponent] Erro ao buscar contexto da palavra', error);
 
-      if (this.currentWordRequestId === requestId) {
+      if (this.currentWordRequestId === requestId)
         this.geminiResponse = 'Não foi possível carregar o significado agora. Tente novamente.';
-      }
+
     } finally {
       if (this.currentWordRequestId === requestId) {
         this.isGeminiLoading = false;
@@ -337,7 +397,7 @@ export class TextoComponent {
     const prompt = `Traduza para o português do Brasil o texto a seguir, mantendo significado e fluidez natural: '${this.atividade.texto}'`;
 
     try {
-      const tutor = new Tutor();
+      const tutor = new AITutor();
       this.translationResponse = await tutor.askDeepSeek(prompt);
     } catch (error) {
       console.error('[TextoComponent] Erro ao traduzir texto', error);
@@ -345,5 +405,5 @@ export class TextoComponent {
     } finally {
       this.isTranslating = false;
     }
-  }
+  }  
 }

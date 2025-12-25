@@ -1,36 +1,5 @@
 <div class="quiz-container" *ngIf="!isLoadingAtividade && atividade">
-  <section class="texto-section" (mouseleave)="handleWordPointerLeave()">
-    <div class="texto-content">
-      <button class="translate-button texto-content__translate-button" (click)="traduzirTexto()" [disabled]="isTranslating">
-        <mat-icon>translate</mat-icon>
-        <span>Traduzir texto</span>
-      </button>
-
-      <div class="texto-words">
-        @for (word of atividade.texto.split(' '); track $index) {
-        <span
-          class="texto-word"
-          [class.texto-word--selected]="isWordSelected($index)"
-          (mousedown)="handleWordPointerDown($event, word, $index)"
-          (mouseup)="handleWordPointerUp($event, word, $index)"
-          (touchstart)="handleWordPointerDown($event, word, $index)"
-          (touchend)="handleWordPointerUp($event, word, $index)"
-          (touchcancel)="handleWordPointerLeave()"
-          >{{ word }}</span
-        >
-        }
-      </div>
-      <div class="translation-feedback">
-        <mat-progress-spinner *ngIf="isTranslating" diameter="20" mode="indeterminate" color="accent"></mat-progress-spinner>
-        <p *ngIf="translationResponse && !isTranslating" class="translation-text">
-          {{ translationResponse }}
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <aside class="sidebar">
-    @if (geminiResponse || isLoadingUserQuestion) {
+  @if (geminiResponse || isLoadingUserQuestion) {
     <mat-card class="tutor-card">
       <mat-card-content>
         <div class="tutor-card__header">
@@ -40,17 +9,61 @@
         @if (geminiResponse) {
         <p class="tutor-card__response">{{ geminiResponse }}</p>
         }
-        <mat-progress-spinner
-          *ngIf="isLoadingUserQuestion"
-          diameter="20"
-          mode="indeterminate"
-          color="accent"
-          class="tutor-card__spinner"
-        ></mat-progress-spinner>
+        <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent"
+          class="tutor-card__spinner"></mat-progress-spinner>
       </mat-card-content>
     </mat-card>
     }
+  <section class="texto-section" (mouseleave)="handleWordPointerLeave()" (mousemove)="handleWordPointerMove($event)" (touchmove)="handleWordPointerMove($event)">
+    <div class="texto-content">
+      <button class="translate-button texto-content__translate-button" (click)="traduzirTexto()"
+        [disabled]="isTranslating">
+        <mat-icon>translate</mat-icon>
+        <span>Traduzir texto</span>
+      </button>
 
+      <div class="tts-controls">
+        <button mat-icon-button (click)="speakService.decreaseRate()" aria-label="Slower">
+          <mat-icon>fast_rewind</mat-icon>
+        </button>
+      
+        <button mat-icon-button (click)="speakService.toggleSpeech(atividade.texto)" aria-label="Play/Pause">
+          <mat-icon>
+            {{ voiceControlState.isSpeaking && !voiceControlState.isPaused ? 'pause' : 'play_arrow' }}
+          </mat-icon>
+        </button>
+      
+        <button mat-icon-button (click)="speakService.increaseRate()" aria-label="Faster">
+          <mat-icon>fast_forward</mat-icon>
+        </button>
+      
+        <span class="rate">Velocidade: {{ voiceControlState.rate.toFixed(1) }}x</span>
+      </div>
+
+      <div class="texto-words">
+        @for (word of atividade.texto.split(' '); track $index) {
+          <span class="texto-word" 
+          [id]="'spoken-word-' + $index"
+          [class.texto-word--selected]="isWordSelected($index)"
+          [class.highlighted-word]="voiceControlState.worksInThisBrowser && voiceControlState.isSpeaking && !voiceControlState.isPaused && $index === voiceControlState.currentSpokenWordIndex"
+          (mousedown)="handleWordPointerDown($event, word, $index)"
+          (mouseup)="handleWordPointerUp($event, word, $index)"
+          (touchstart)="handleWordPointerDown($event, word, $index)"
+          (touchend)="handleWordPointerUp($event, word, $index)" 
+          (touchcancel)="handleWordPointerLeave()">{{ word }}&nbsp;</span>
+        }
+      </div>
+      <div class="translation-feedback">
+        <mat-progress-spinner *ngIf="isTranslating" diameter="20" mode="indeterminate"
+          color="accent"></mat-progress-spinner>
+        <p *ngIf="translationResponse && !isTranslating" class="translation-text">
+          {{ translationResponse }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <aside class="sidebar">
     <div class="opcoes-card" *ngIf="getCurrentQuestion(); else allQuestionsCompleted">
       <div class="opcoes-card__header">
         <h3 class="section-subtitle">Escolha a alternativa correta</h3>
@@ -61,15 +74,10 @@
 
       <div class="question-container" [class.question-container--fade-out]="isTransitioning">
         <h4 class="question-text">{{ getCurrentQuestion()?.pergunta }}</h4>
-        
+
         <div class="opcoes-grid">
-          <button 
-            class="quiz-option" 
-            *ngFor="let opcao of getCurrentQuestion()?.opcoes" 
-            (click)="selecionar(opcao)" 
-            [ngClass]="obterClasse(opcao)"
-            [disabled]="respondeu || isTransitioning"
-          >
+          <button class="quiz-option" *ngFor="let opcao of getCurrentQuestion()?.opcoes" (click)="selecionar(opcao)"
+            [ngClass]="obterClasse(opcao)" [disabled]="respondeu || isTransitioning">
             {{ opcao.descricao }}
           </button>
         </div>

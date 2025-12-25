@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ImovelDetailsComponent } from './imovel-details.component';
+import { VoiceControlComponent } from './voice-control.component';
 
-describe('ImovelDetailsComponent', () => {
-  let component: ImovelDetailsComponent;
-  let fixture: ComponentFixture<ImovelDetailsComponent>;
+describe('VoiceControlComponent', () => {
+  let component: VoiceControlComponent;
+  let fixture: ComponentFixture<VoiceControlComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ImovelDetailsComponent]
+      imports: [VoiceControlComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ImovelDetailsComponent);
+    fixture = TestBed.createComponent(VoiceControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

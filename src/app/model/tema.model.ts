@@ -1,10 +1,9 @@
-import { Atividade } from './atividade.model';
+import { Activity, AtividadeBase } from './atividade.model';
 
 export interface Tema {
   id: number;
   nome: string;
-  atividades: Atividade[];
+  atividades: AtividadeBase[];
   completo: boolean;
   titulo: string;
-  
 }

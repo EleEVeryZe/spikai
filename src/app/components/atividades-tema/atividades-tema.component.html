@@ -24,46 +24,44 @@
 
       <mat-card-content>
         <h2 class="atividade-title-visual">{{ atividade.nome }}</h2>
-        <p class="tema-description" *ngIf="ehAtividadeAnteriorConcluida(i)">{{ getActivityDescription(atividade.nome) }}</p>
-        <!-- Pontuação: exibida apenas quando concluída -->
+        <p class="tema-description">{{ getActivityDescription(atividade.nome) }}</p>
         <p
           class="atividade-pontos"
-          *ngIf="(atividade.nome === 'Pré-teste' || atividade.nome === 'Pós-teste') && atividade.concluida"
+          *ngIf="atividade.ehAtividadeConcluida()"
           [ngClass]="{
-            'baixo-desempenho': atividade.nome === 'Pós-teste' && getPontosAtividade(atividade) < 70
+            'baixo-desempenho': atividade.nome === 'Pós-teste' && atividade.obterNota() < 70
           }"
         >
           <mat-icon class="points-icon">emoji_events</mat-icon>
           Desempenho:
-          <strong>{{ getPontosAtividade(atividade) }}%</strong>
+          <strong>{{ atividade.obterNota() }}%</strong>
         </p>
 
         <!-- Mensagem motivacional se pós-teste concluído e nota < 70% -->
-        <p class="mensagem-reforco" *ngIf="atividade.nome === 'Pós-teste' && atividade.concluida && getPontosAtividade(atividade) < 70">
+        <p class="mensagem-reforco" *ngIf="atividade.nome === 'Pós-teste' && atividade.ehAtividadeConcluida() && atividade.obterNota() < 70">
           Refaça o Quizz ou assista novamente a aula. Se preferir, também é possível agendar uma aula reforço.!
         </p>
-        <p class="atividade-status" *ngIf="atividade.concluida">
+        <p class="atividade-status" *ngIf="atividade.ehAtividadeConcluida()">
           <mat-icon class="status-check">check_circle</mat-icon> Concluído em: {{ atividade.dataConclusao | date : "dd/MM/yyyy" }}
         </p>
-        <p class="atividade-status" *ngIf="!atividade.concluida">
+        <p class="atividade-status" *ngIf="!atividade.ehAtividadeConcluida()">
           <mat-icon class="status-pending">radio_button_unchecked</mat-icon> Pendente
         </p>
 
         <button
-          
           mat-flat-button
           color="primary"
           class="action-button"
-          (click)="iniciarAtividade(atividade.nome)"
+          (click)="iniciarAtividade(atividade)"
         >
-          {{ getCardBtnTxt(atividade.nome, atividade.concluida) }}
+          {{ getCardBtnTxt(atividade.ehAtividadeConcluida()) }}
         </button>
       </mat-card-content>
     </mat-card>
   </div>
 
   <!-- Info / Error Messages -->
-  <div class="info-message" *ngIf="!tema">
+  <div class="info-message" *ngIf="!tema && !isLoadingTema">
     <mat-card class="error-card">
       <mat-card-content class="message-content">
         <mat-icon color="warn" class="message-icon">sentiment_dissatisfied</mat-icon>

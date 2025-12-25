@@ -94,9 +94,10 @@ export class ConteudoComponent {
 
   ngOnInit(): void {
     this.sharedService.hideArrowBackToolbar(false);
-
+    
     this.route.paramMap.subscribe((params) => {
       const temaId = params.get('id');
+      this.sharedService.goBackTo('tema/' + temaId);
       if (temaId) {
         this.temasService.getTemas().subscribe((temas: any) => {
           const temaIdx = temas.findIndex((cur: any) => cur.id == temaId);

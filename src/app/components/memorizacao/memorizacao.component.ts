@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
+import { QuizzAtividade } from '../../model/quizz-activity.model';
 // Interface para estruturar os dados de cada palavra
 interface WordItem {
   word: string;
@@ -39,7 +40,6 @@ export class MemorizacaoComponent {
   wordForm: FormGroup;
 
   constructor(private fb: FormBuilder, private readonly usuarioRepositoryService: UsuarioRepositoryService, private snackBar: MatSnackBar, private router: Router) {
-    // Inicializa o formulário com um FormArray vazio para as palavras
     this.wordForm = this.fb.group({
       words: this.fb.array([])
     });
@@ -47,7 +47,7 @@ export class MemorizacaoComponent {
 
   ngOnInit(): void {
     this.usuarioRepositoryService.getUserState().subscribe(({cursos}) => {
-      const quizz = cursos[0].atividades[2];
+      const quizz = cursos[0].atividades[2] as QuizzAtividade;
        this.inputSentences = quizz.perguntas.map(( { sentence } : any ) => sentence);
        this.processSentences();
     });

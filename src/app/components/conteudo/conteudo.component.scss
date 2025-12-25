@@ -10,10 +10,11 @@
   width: 100%;
   max-width: 720px;
   padding: 0;
+  max-height: 500px;
 
   video {
+    max-height: 500px;
     width: 100%;
-    border-radius: 12px;
   }
 }
 

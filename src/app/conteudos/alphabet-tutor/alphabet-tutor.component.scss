@@ -1,0 +1,5 @@
+.container { max-width: 900px; margin: auto; text-align: center; }
+.letters { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 20px; }
+.letter-card { padding: 16px; border-radius: 12px; background: #f4f6fb; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.letter-card:hover { background: #e9edff; }
+button { margin: 10px; padding: 10px 16px; border-radius: 8px; border: none; cursor: pointer; }

@@ -1,10 +1,8 @@
 import { Routes } from "@angular/router";
 import { AtividadesTemaComponent } from "./components/atividades-tema/atividades-tema.component";
+import { CadastroProfessorComponent } from "./components/cadastro-professor/cadastro-professor.component";
 import { CadastroComponent } from "./components/cadastro/cadastro.component";
-import { ConteudoComponent } from "./components/conteudo/conteudo.component";
-import { CreateComponent } from "./components/crud/create/create.component";
 import { EstatisticoComponent } from "./components/estatistico/estatistico.component";
-import { ImovelDetailsComponent } from "./components/imovel-details/imovel-details.component";
 import { LoginComponent } from "./components/login/login.component";
 import { MainComponent } from "./components/main/main.component";
 import { MemorizacaoComponent } from "./components/memorizacao/memorizacao.component";
@@ -14,6 +12,7 @@ import { QuizzIaComponent } from "./components/quizz-ia/quizz-ia.component";
 import { RelatorioComponent } from "./components/relatorio/relatorio.component";
 import { TemasComponent } from "./components/temas/temas.component";
 import { TextoComponent } from "./components/texto/texto.component";
+import { AlphabetTutorComponent } from "./conteudos/alphabet-tutor/alphabet-tutor.component";
 import { AuthGuard } from "./services/auth.guard";
 
 export const routes: Routes = [
@@ -24,6 +23,7 @@ export const routes: Routes = [
   { path: "login", component: LoginComponent },
   { path: "cadastro", component: CadastroComponent },
   { path: "relatorio", component: RelatorioComponent },
+  { path: "cadastro-professor", component: CadastroProfessorComponent },
 
   {
     path: '',
@@ -37,16 +37,11 @@ export const routes: Routes = [
       { path: ':id/Pós-teste/:ehPos', component: PreTesteComponent },
       { path: 'edit/:userId', component: CadastroComponent },
       { path: 'Memorização', component: MemorizacaoComponent },
-      { path: 'conteudo/:id', component: ConteudoComponent },
+      { path: ':id/Conteúdo', component: AlphabetTutorComponent },
       { path: ':id/Texto', component: TextoComponent },
     ],
   },
 
-  // CRUD de imóveis
-  
-  { path: "details/:id", component: ImovelDetailsComponent },
-  { path: "create", component: CreateComponent },
-  { path: "edit", component: CreateComponent },
   { path: "estatistica", component: EstatisticoComponent },
 
   // Página de não encontrado

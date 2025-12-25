@@ -57,7 +57,9 @@
         <p *ngIf="!ehGrupoControle" class="feedback-text-italic"><span class="feedback-label">Tutoring:</span> {{ feedbackText() }}</p>
         }
       </div>
-      } @if (geminiResponse() || isLoadingUserQuestion) {
+      } 
+      
+      @if (geminiResponse() || isLoadingUserQuestion) {
       <mat-card class="gemini-response-card">
         <mat-card-content>
           <div class="response-header">
@@ -91,7 +93,7 @@
       <!-- Doubts & IA -->
       <div class="doubts-container" *ngIf="!ehGrupoControle && currentProgress() as progress">
         <mat-form-field class="doubts-input-field" appearance="outline">
-          <mat-label>{{ instrucaoIA }}</mat-label>
+          <mat-label>Tire suas dúvidas com tutor IA</mat-label>
           <textarea matInput [ngModel]="progress.userDoubts" (ngModelChange)="updateUserDoubts($event)" rows="2"></textarea>
         </mat-form-field>
 

@@ -1,0 +1,18 @@
+<div class="container">
+  <app-voice-control></app-voice-control>
+
+  <div class="letters" *ngIf="lessons.length">
+    <div class="letter-card" *ngFor="let l of lessons" (click)="speakLetter(l)">
+      <h2>{{ l.letter }}</h2>
+      <p *ngIf="showPronunciation">({{ l.pronunciation }})</p>
+      <p>
+        <strong>{{ l.example }}</strong>
+      </p>
+      <p>{{ l.translation }}</p>
+    </div>
+  </div>
+
+  <button *ngIf="lessons.length" (click)="togglePronunciation()">{{ showPronunciation ? "Hide" : "Show" }} pronunciation tip</button>
+
+  <button *ngIf="finished" (click)="recordPronunciation()">🎙 Record your pronunciation</button>
+</div>

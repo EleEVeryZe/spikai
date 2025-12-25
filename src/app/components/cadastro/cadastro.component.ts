@@ -18,7 +18,7 @@ import { finalize, map, Observable, startWith } from 'rxjs';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { Tutor } from '../../services/tutor.service';
+import { AITutor } from '../../services/tutor.service';
 
 export function requiredChipListValidator(areasSelecionadas: string[]): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -195,9 +195,6 @@ export class CadastroComponent {
                 age: user.age || '',
                 gender: user.gender || '',
                 education: user.education || '',
-                // Não faz patchValue no 'vocabulary' do formulário,
-                // ele será reconstruído pelo 'areasSelecionadas' no onSubmit
-                // ou mantido vazio.
               });
             }
           },
@@ -234,7 +231,7 @@ Input: ${value.vocabulary.trim()}
 
 Output:`;
 
-    const tutor = new Tutor();
+    const tutor = new AITutor();
     return tutor.askDeepSeek(prompt);
   }
 

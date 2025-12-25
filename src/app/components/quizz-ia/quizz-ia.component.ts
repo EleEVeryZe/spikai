@@ -9,11 +9,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
-import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
+import { AITutor } from '../../services/tutor.service';
+import { UiUtilsService } from '../../services/ui.utils.service';
 
 interface Question {
   id: number;
@@ -62,28 +62,42 @@ export class QuizzIaComponent {
 
   quizProgress: WritableSignal<QuestionProgress[]> = signal([]);
 
-  // New: user-defined vocabulary of interest
   userVocabulary: string = '';
   indexVocabulary: number = 0;
 
-  // Deepseek State
   isGeminiLoading = signal(false);
   geminiResponse = signal<string | null>(null);
 
-  // Statistics
   ehGrupoControle!: boolean;
+
+  tutor = new AITutor();
 
   quizJaFeito: boolean = false;
 
-  instrucaoIA = 'Tire suas dúvidas com tutor IA';
+  questionsLeft = computed(() => this.quizData().length - this.currentQuestionIndex());
+  isLastQuestion = computed(() => this.currentQuestionIndex() === this.quizData().length - 1);
+  progressPercent = computed(() => Math.min(100, ((this.currentQuestionIndex() + 1) / this.quizData().length) * 100));
+
+  currentQuestion = computed(() => this.quizData()[this.currentQuestionIndex()] ?? null);
+  currentProgress = computed(() => this.quizProgress()[this.currentQuestionIndex()] ?? null);
+
+  userSelection = computed(() => this.currentProgress()?.selectedAnswer ?? null);
+  isCorrect = computed(() => this.currentProgress()?.isCorrect ?? null);
+
+  feedbackText = computed(() => {
+    const progress = this.currentProgress();
+    if (progress?.isCorrect === false) {
+      return this.currentQuestion()?.tutoringText || 'No tutoring provided.';
+    }
+    return null;
+  });
 
   constructor(
     private router: Router,
-    private snackBar: MatSnackBar,
+    private readonly uiUtils: UiUtilsService,
     private readonly sharedUi: SharedUiService,
     private readonly route: ActivatedRoute,
-    private readonly temasService: TemasService,
-    private usuarioRepositoryService: UsuarioRepositoryService
+    private readonly temasService: TemasService
   ) {}
 
   ngOnInit(): void {
@@ -96,10 +110,8 @@ export class QuizzIaComponent {
       this.temasService.getAtividade(idCurso + '', 'Quizz').subscribe((atvd) => {
         const hostname = window.location.hostname;
         let perguntas;
-        if (hostname === 'localhost')
-          perguntas = (atvd?.perguntas.slice(0, 3) as Question[]) ?? [];
-        else 
-          perguntas = (atvd?.perguntas /*.slice(0, 3)*/ as Question[]) ?? [];
+        if (hostname === 'localhost') perguntas = (atvd?.perguntas.slice(0, 3) as Question[]) ?? [];
+        else perguntas = (atvd?.perguntas /*.slice(0, 3)*/ as Question[]) ?? [];
         this.quizData.set(perguntas);
         this.quizJaFeito = atvd?.concluida || false;
 
@@ -115,32 +127,16 @@ export class QuizzIaComponent {
             }))
           );
 
-          if (perguntas.length > 0 && this.userVocabulary.length) this.adaptQuestionToVocabulary(0);
+          if (perguntas.length > 0 && this.userVocabulary.length) this.adaptQuestionToVocabulary(0).then(() => {
+            this.isLoading.set(false);
+            this.guardarRespostas()
+          });
         });
       });
     });
   }
 
-  // Computed signals
-  currentQuestion = computed(() => this.quizData()[this.currentQuestionIndex()] ?? null);
-  currentProgress = computed(() => this.quizProgress()[this.currentQuestionIndex()] ?? null);
-
-  userSelection = computed(() => this.currentProgress()?.selectedAnswer ?? null);
-  isCorrect = computed(() => this.currentProgress()?.isCorrect ?? null);
-
-  feedbackText = computed(() => {
-    const progress = this.currentProgress();
-    if (progress?.isCorrect === false) {
-      return this.currentQuestion()?.tutoringText || 'No tutoring provided.';
-    }
-    return null;
-  });
-
-  questionsLeft = computed(() => this.quizData().length - this.currentQuestionIndex());
-  isLastQuestion = computed(() => this.currentQuestionIndex() === this.quizData().length - 1);
-  progressPercent = computed(() => Math.min(100, ((this.currentQuestionIndex() + 1) / this.quizData().length) * 100));
-
-  obterContextoPalavra(word: string, frase: string) {
+  async obterContextoPalavra(word: string, frase: string) {
     this.speak(word);
     this.isLoadingUserQuestion = true;
 
@@ -151,8 +147,10 @@ export class QuizzIaComponent {
 
     const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 50 palavras) da palavra '${word}' na frase a seguir: '${frase}' | Responda em português do Brasil`;
 
-    this.askDeepSeek(questionContext);
+    const AiAnswer = await this.tutor.askDeepSeek(questionContext);
+    this.geminiResponse.set(AiAnswer);
     this.isGeminiLoading.set(false);
+    this.isLoadingUserQuestion = false;
     this.updateQtdQuestionsMade();
     this.updateUserDoubts('');
   }
@@ -163,21 +161,17 @@ export class QuizzIaComponent {
     if (!question) return;
 
     const isAnswerCorrect = selectedAnswer === question.correctAnswer;
-    const index = this.currentQuestionIndex();
-
     this.quizProgress.update((progress) => {
       const updatedItem: QuestionProgress = {
-        ...progress[index],
+        ...progress[this.currentQuestionIndex()],
         selectedAnswer,
         isCorrect: isAnswerCorrect,
         sentence: question.sentence,
       };
-      return progress.map((p, i) => (i === index ? updatedItem : p));
+      return progress.map((p, i) => (i === this.currentQuestionIndex() ? updatedItem : p));
     });
 
     if (isAnswerCorrect) this.speak(question.sentence.replaceAll('___', question.correctAnswer));
-
-    this.geminiResponse.set(null);
   }
 
   updateQtdQuestionsMade(): void {
@@ -189,7 +183,7 @@ export class QuizzIaComponent {
       };
       return progress.map((p, i) => (i === index ? updatedItem : p));
     });
-    this.geminiResponse.set(null);
+    
   }
 
   updateUserDoubts(text: string): void {
@@ -205,11 +199,10 @@ export class QuizzIaComponent {
 
   nextQuestion(): void {
     this.stopSpeaking();
+    this.guardarRespostas(false, this.currentQuestionIndex());
     this.currentQuestionIndex.update((i) => i + 1);
     if (this.currentQuestionIndex() < this.quizData().length) {
-      if (this.userVocabulary.length) this.adaptQuestionToVocabulary(this.currentQuestionIndex()).then(() => this.guardarRespostas());
-    } else {
-      this.guardarRespostas(true, this.currentQuestionIndex() - 1); 
+      if (this.userVocabulary.length) this.adaptQuestionToVocabulary(this.currentQuestionIndex());
     }
     this.geminiResponse.set(null);
   }
@@ -222,7 +215,7 @@ export class QuizzIaComponent {
     const perguntas = this.quizData();
     if (perguntas) {
       if (this.quizData()[idxQuestion].ehFeitaPorIA) return;
-      
+
       this.quizData()[idxQuestion].ehFeitaPorIA = true;
       let currentIndex = 0;
       const respostas = perguntas.map((pergunta: any) => {
@@ -232,26 +225,17 @@ export class QuizzIaComponent {
         };
       });
 
-      this.temasService.responderQuizz(respostas, this.idCurso, { ehConcluida, nomeAtividade: "Quizz" }).subscribe({
+      this.temasService.responderQuizz(respostas, this.idCurso, { ehConcluida, nomeAtividade: 'Quizz' }).subscribe({
         next: (res: any) => {
           console.log('Quizz respondido:', res);
-          this.showMessage('Resultado salvo com sucesso!');
+          this.uiUtils.showMessage('Resultado salvo com sucesso!');
         },
         error: (err: any) => {
           console.error(err);
-          this.showMessage('Erro ao guardar resultado.', true);
+          this.uiUtils.showMessage('Erro ao guardar resultado.', true);
         },
       });
     }
-  }
-
-  showMessage(message: string, isError: boolean = false) {
-    this.snackBar.open(message, 'Fechar', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: isError ? ['snackbar-error'] : ['snackbar-success'],
-    });
   }
 
   previousQuestion(): void {
@@ -262,10 +246,9 @@ export class QuizzIaComponent {
     this.geminiResponse.set(null);
   }
 
-  askDeepSeekUserQuestion() {
+  async askDeepSeekUserQuestion() {
     this.isLoadingUserQuestion = true;
     const doubt = this.currentProgress().userDoubts;
-    this.instrucaoIA = doubt;
 
     if (!doubt || this.isGeminiLoading()) return;
 
@@ -276,37 +259,34 @@ export class QuizzIaComponent {
     const systemPrompt = `Você é um tutor de IA especializado em **Gramática Inglesa** e **ensino de inglês como segunda língua**. Sua missão é fornecer uma explicação extremamente clara, concisa e motivadora (limite estrito de 50 palavras) sobre a dúvida ${doubt} **ignorando e descartando** quaisquer referências ao conteúdo temático (ex: história, química, biologia) da frase.`;
 
     const totalPrompt = `Responda em portugues do brasil | ${systemPrompt} | ${questionContext} `;
-    this.askDeepSeek(totalPrompt);
+
+    const AIDoubtSolverAnswer = await this.tutor.askDeepSeek(totalPrompt);
+    this.geminiResponse.set(AIDoubtSolverAnswer);
+
     this.isGeminiLoading.set(false);
+    this.isLoadingUserQuestion = false;
     this.updateQtdQuestionsMade();
     this.updateUserDoubts('');
   }
 
-  async adaptQuestionToVocabulary(index: number) {
-    if (this.ehGrupoControle) {
-      this.isLoading.set(false);
-      return;
+  getCurrentVocabulary() {
+    let vocabularies = this.userVocabulary.split(',');
+    if (this.indexVocabulary < vocabularies.length) return vocabularies[this.indexVocabulary++];
+    else {
+      this.indexVocabulary = 0;
+      return vocabularies[0];
     }
+  }
+
+  async adaptQuestionToVocabulary(index: number) {
+    const question = this.quizData()[index];
+    if (this.ehGrupoControle || !question || !this.userVocabulary.length || question.ehFeitaPorIA) return;
 
     this.isLoading.set(true);
-    const question = this.quizData()[index];
-    if (!question || !this.userVocabulary.length || question.ehFeitaPorIA) {
-      this.isLoading.set(false);
-      return;
-    }
-    const apiUrl = `https://api.deepseek.com/v1/chat/completions`;
-    const deepseekAPIKey = 'sk-2a4144829a9946fc9d01b0e8be0bf98d';
 
-    let vocabularies = this.userVocabulary.split(',');
-    let vocabularyTurn = '';
-    if (this.indexVocabulary < vocabularies.length) vocabularyTurn = vocabularies[this.indexVocabulary++];
-    else {
-      vocabularyTurn = vocabularies[0];
-      this.indexVocabulary = 0;
-    }
+    let vocabularyTurn = this.getCurrentVocabulary();
 
     const prompt = `
-    
     You are an English tutor that personalizes quiz questions.
 
 Your task:
@@ -335,106 +315,24 @@ Output (JSON only):
 
 `;
 
-    const payload = {
-      model: 'deepseek-chat',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
-      max_tokens: 500,
-    };
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${deepseekAPIKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-      console.log('Adaptation response:', result);
-      const raw = result.choices?.[0]?.message?.content;
-
-      if (raw) {
-        const adapted = JSON.parse(raw.replaceAll('```', '').replaceAll('json', '')); // expect JSON response
-        // update quizData immutably
-        this.quizData.update((questions) =>
-          questions.map((q, i) =>
-            i === index ? { ...q, options: adapted.options, sentence: adapted.sentence, correctAnswer: adapted.correctAnswer, tutoringText: adapted.tutoringText } : q
-          )
-        );
-
-        this.speak(adapted.sentence);
-
-        this.isLoading.set(false);
-      }
-    } catch (err) {
-      console.log('DeepSeek adaptation failed', err);
-    } finally {
-        this.isLoading.set(false);
+    const adapted = await this.tutor.askDeepSeek(prompt);
+    if (adapted) {
+      this.quizData.update((questions) =>
+        questions.map((q, i) =>
+          i === index
+            ? {
+                ...q,
+                options: adapted.options,
+                sentence: adapted.sentence,
+                correctAnswer: adapted.correctAnswer,
+                tutoringText: adapted.tutoringText,
+              }
+            : q
+        )
+      );
+      this.speak(adapted.sentence);
     }
-  }
-
-  /**
-   * Calls the Gemini API to clarify the user's doubt.
-   */
-  async askDeepSeek(totalPrompt: string): Promise<void> {
-    const apiUrl = `https://api.deepseek.com/v1/chat/completions`;
-    const deepseekAPIKey = 'sk-2a4144829a9946fc9d01b0e8be0bf98d';
-    const payload = {
-      model: 'deepseek-chat',
-      messages: [
-        {
-          role: 'user',
-          content: totalPrompt,
-        },
-      ],
-      temperature: 0,
-      max_tokens: 1000,
-    };
-
-    const maxRetries = 5;
-    let delay = 1000;
-
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${deepseekAPIKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          if (response.status === 429 && i < maxRetries - 1) {
-            await new Promise((resolve) => setTimeout(resolve, delay));
-            delay *= 2;
-            continue;
-          }
-          throw new Error(`API call failed with status: ${response.status}`);
-        }
-        const result = await response.json();
-        console.log('Full API Response:', result);
-
-        const text =
-          result.choices?.[0]?.message?.content ||
-          'Desculpe, o tutor IA não está disponível no momento. Por favor, confira a conexão de internet ou tente novamente.';
-
-        console.log('Tokens used:', result.usage?.total_tokens);
-
-        this.geminiResponse.set(text);
-        break;
-      } catch (error) {
-        if (i === maxRetries - 1) {
-          this.geminiResponse.set('Um erro critico ocorreu. Por favor, tente novamente.');
-        }
-      }
-    }
-    this.isGeminiLoading.set(false);
-    this.isLoadingUserQuestion = false;
+    this.isLoading.set(false);
   }
 
   speak(text: string): void {
@@ -444,12 +342,12 @@ Output (JSON only):
     }
 
     const utterance = new SpeechSynthesisUtterance(text.replaceAll('_', ''));
-    utterance.lang = 'en-US'; // or 'pt-BR' for Portuguese
+    utterance.lang = 'en-US'; //'pt-BR'
     utterance.rate = 0.5; // speed (0.1–10)
     utterance.pitch = 1; // tone (0–2)
     utterance.volume = 1; // 0–1
 
-    speechSynthesis.cancel(); // stop any current speech
+    speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
   }
 

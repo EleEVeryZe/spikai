@@ -1,90 +1,137 @@
-interface DeepSeekResponse {
-  choices?: Array<{
-    message?: {
-      content: string;
-    };
-  }>;
-  usage?: {
-    total_tokens: number;
-  };
+interface PerformanceMetrics {
+  totalTime: number;
+  requestTime: number;
+  parsingTime: number;
+  sizeBytes: number;
+  serverTime?: number;
+  networkTime?: number;
 }
 
-export const environment = {
-  production: false,
-  deepSeekApiKey: 'sk-2a4144829a9946fc9d01b0e8be0bf98d',
-};
-
-export class Tutor {
-  DEEPSEEK_CONFIG = {
-    API_URL: 'https://api.deepseek.com/v1/chat/completions',
-    MODEL: 'deepseek-chat',
-    MAX_RETRIES: 5,
-    INITIAL_DELAY: 1000,
-    MAX_TOKENS: 1000,
-    TEMPERATURE: 0,
+export class AITutor {
+  private readonly CONFIG = {
+    API_URL: 'https://kty7yx7ltk.execute-api.sa-east-1.amazonaws.com/default/askDeepSeek',
+    MAX_RETRIES: 3,
+    TIMEOUT_MS: 30000,
   } as const;
 
-  async askDeepSeek(prompt: string): Promise<string> {
-    const apiKey = this.getDeepSeekApiKey();
-    let delay = this.DEEPSEEK_CONFIG.INITIAL_DELAY;
+  private debugMode = true;
+  private cache = new Map<string, any>();
 
-    for (let attempt = 0; attempt < this.DEEPSEEK_CONFIG.MAX_RETRIES; attempt++) {
+  async askDeepSeek(prompt: string): Promise<any> {
+    const hashedPrompt = await this.hashString(prompt);
+    if (this.cache.has(hashedPrompt)) {
+      this.logDebug('Cache Hit', hashedPrompt);
+      return this.cache.get(hashedPrompt);
+    }
+
+    const startTime = performance.now();
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= this.CONFIG.MAX_RETRIES; attempt++) {
       try {
-        const response = await fetch(this.DEEPSEEK_CONFIG.API_URL, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: this.DEEPSEEK_CONFIG.MODEL,
-            messages: [{ role: 'user', content: prompt }],
-            temperature: this.DEEPSEEK_CONFIG.TEMPERATURE,
-            max_tokens: this.DEEPSEEK_CONFIG.MAX_TOKENS,
-          }),
-        });
-
-        if (!response.ok) {
-          if (response.status === 429 && attempt < this.DEEPSEEK_CONFIG.MAX_RETRIES - 1) {
-            await this.delay(delay);
-            delay *= 2;
-            continue;
-          }
-          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-        }
-
-        const json = await response.json();
-        let content = json?.choices?.[0]?.message?.content;
-
-        if (!content) {
-          throw new Error("Invalid response format: no content found");
-        }
-
-        // optional cleanup
-        content = content
-          .replace(/^```json\s*/i, "")
-          .replace(/```$/, "")
-          .trim();
-        return content;
-        
+        const result = await this.executeRequest(prompt, startTime);
+        this.cache.set(hashedPrompt, result);
+        return result;
       } catch (error) {
-        console.error(`Attempt ${attempt + 1} failed:`, error);
-        if (attempt === this.DEEPSEEK_CONFIG.MAX_RETRIES - 1) {
-          throw new Error('Unable to generate vocabulary after multiple attempts.');
+        lastError = error as Error;
+        this.logDebug(`Attempt ${attempt} failed`, error);
+        if (attempt < this.CONFIG.MAX_RETRIES) {
+           // Exponential backoff: 1s, 2s...
+           await new Promise(res => setTimeout(res, 1000 * attempt));
         }
-        await this.delay(delay);
-        delay *= 2;
       }
     }
 
-    throw new Error('Unexpected error in API call');
+    throw new Error(`Failed after ${this.CONFIG.MAX_RETRIES} attempts. Original error: ${lastError?.message}`);
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+  private async executeRequest(prompt: string, startTime: number) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.CONFIG.TIMEOUT_MS);
+
+    try {
+      const requestStart = performance.now();
+      const response = await fetch(this.CONFIG.API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+        signal: controller.signal
+      });
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const rawText = await response.text();
+      const parseStart = performance.now();
+      const json = JSON.parse(rawText);
+      
+      const content = this.extractContent(json);
+      const parsingTime = performance.now() - parseStart;
+
+      this.finalizeMetrics(startTime, requestStart, rawText.length, parsingTime, json);
+
+      return content;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
-  private getDeepSeekApiKey(): string {
-    return environment.deepSeekApiKey;
+  private extractContent(json: any): any {
+    const rawContent = json.content ?? json;
+    if (typeof rawContent !== 'string') return rawContent;
+
+    const cleaned = rawContent
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/```\s*$/, '')
+      .trim();
+
+    try {
+      return JSON.parse(cleaned);
+    } catch {
+      return cleaned;
+    }
+  }
+
+  private async hashString(message: string): Promise<string> {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  private finalizeMetrics(start: number, reqStart: number, size: number, pTime: number, json: any) {
+    if (!this.debugMode) return;
+
+    const totalTime = performance.now() - start;
+    const requestTime = performance.now() - reqStart;
+
+    const metrics: PerformanceMetrics = {
+      totalTime,
+      requestTime,
+      parsingTime: pTime,
+      sizeBytes: size,
+    };
+
+    if (json.serverTimestamp) {
+      metrics.serverTime = json.serverTimestamp - reqStart;
+      metrics.networkTime = requestTime - metrics.serverTime;
+    }
+
+    this.printMetrics(metrics);
+  }
+
+  private printMetrics(m: PerformanceMetrics) {
+    console.group('📊 DeepSeek Metrics');
+    console.table({
+      'Total (ms)': m.totalTime.toFixed(2),
+      'Network (ms)': m.networkTime?.toFixed(2) ?? 'N/A',
+      'Server (ms)': m.serverTime?.toFixed(2) ?? 'N/A',
+      'Size (bytes)': m.sizeBytes
+    });
+    console.groupEnd();
+  }
+
+  private logDebug(m: string, d?: any) {
+    if (this.debugMode) console.log(`[AITutor] ${m}`, d || '');
   }
 }

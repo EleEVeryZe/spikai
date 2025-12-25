@@ -8,7 +8,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { YouTubePlayerModule } from '@angular/youtube-player';
-import { Tema } from '../../model/tema.model';
+import { AtividadeBase } from '../../model/atividade.model';
+import { Curso } from '../../model/curso.model';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
 
@@ -28,9 +29,9 @@ import { TemasService } from '../../services/temas.service';
   styleUrl: './atividades-tema.component.scss',
 })
 export class AtividadesTemaComponent {
-  tema: Tema | undefined;
+  tema: Curso | undefined;
   temaAnteriorConcluido = true;
-  ehExibirVideo: boolean = false;
+  isLoadingTema = true;
 
   constructor(
     private readonly sharedService: SharedUiService,
@@ -40,9 +41,7 @@ export class AtividadesTemaComponent {
     private snackBar: MatSnackBar
   ) {}
 
-  
-
-  getCardBtnTxt(activityName: any, ehAtvdConcluida: boolean) {
+  getCardBtnTxt(ehAtvdConcluida: boolean) {
     return ehAtvdConcluida ? 'Revisar' : 'Iniciar';
   }
 
@@ -58,7 +57,7 @@ export class AtividadesTemaComponent {
 
   ngOnInit(): void {
     this.sharedService.hideArrowBackToolbar(false);
-
+    this.sharedService.goBackTo('/');
     this.route.paramMap.subscribe((params) => {
       const temaId = params.get('id');
       if (temaId) {
@@ -66,17 +65,10 @@ export class AtividadesTemaComponent {
           const temaIdx = temas.findIndex((cur: any) => cur.id == temaId);
           this.tema = temas[temaIdx];
           if (temaIdx > 0) this.temaAnteriorConcluido = temas[temaIdx - 1]?.completo ?? false;
+          this.isLoadingTema = false;
         });
       }
     });
-  }
-
-  getPontosAtividade(atividade: any): number {
-    if (!atividade.perguntas?.length) return 0;
-
-    const acertos = atividade.perguntas.filter((p: any) => p.opcaoSelecionada === p.opcaoCorreta).length;
-
-    return Math.round((acertos / atividade.perguntas.length) * 100);
   }
 
   ehAtividadeAnteriorConcluida(i: number) {
@@ -114,7 +106,7 @@ export class AtividadesTemaComponent {
       case 'Conteúdo':
         return ''; // Ícone de livro
       case 'Quizz':
-        return 'Assista o vídeo para desbloquear Quizz'; // Ícone de questionário (se disponível, senão 'help_outline')
+        return '';
       case 'Pós-teste':
         return ''; // Ícone de avaliação/teste
       default:
@@ -122,23 +114,15 @@ export class AtividadesTemaComponent {
     }
   }
 
-  iniciarAtividade(nomeAtividade: string) {
-    if (nomeAtividade.toLocaleLowerCase() == 'pós-teste') {
-      this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade + '/true']);
-      return;
+  iniciarAtividade(atividade: AtividadeBase) {
+    const msg = this.tema?.ehPossivelIniciarAtividade(atividade);
+
+    if (msg){
+        this.showMessage(msg);
+        return;
     }
 
-    if (nomeAtividade.toLocaleLowerCase() == 'memorização') {
-      this.router.navigate(['/Memorização']);
-      return;
-    }
-
-    
-    if (nomeAtividade.toLocaleLowerCase() == 'conteúdo') {
-      this.router.navigate(['/conteudo/' + this.tema?.id]);
-      return;
-    }
-
-     this.router.navigate(['/' + this.tema?.id + '/' + nomeAtividade]);
+    console.log(this.tema?.getUrlAtividade(atividade))
+    this.router.navigate([this.tema?.getUrlAtividade(atividade)]);
   }
 }

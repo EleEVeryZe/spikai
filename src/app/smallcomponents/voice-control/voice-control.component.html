@@ -1,0 +1,20 @@
+<div class="tts-controls" *ngIf="voiceControlService.status$ | async as status">
+  
+  <button mat-icon-button (click)="voiceControlService.decreaseRate()" aria-label="Slower">
+    <mat-icon>fast_rewind</mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="playPausePressed()" aria-label="Play/Pause">
+    <mat-icon>
+      {{ status.isSpeaking && !status.isPaused ? "pause" : "play_arrow" }}
+    </mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="voiceControlService.increaseRate()" aria-label="Faster">
+    <mat-icon>fast_forward</mat-icon>
+  </button>
+
+  <span class="rate">
+    Velocidade: {{ rate.toFixed(1) }}x
+  </span>
+</div>

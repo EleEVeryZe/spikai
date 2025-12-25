@@ -5,14 +5,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
-import { Curso } from '../../model/user.model';
+import { Course } from '../../model/user.model';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 
 @Component({
   selector: 'app-temas',
   imports: [
-     CommonModule,
+    CommonModule,
     MatCardModule,
     MatProgressBarModule,
     MatGridListModule,
@@ -22,7 +22,7 @@ import { UsuarioRepositoryService } from '../../services/usuario.repository.serv
   styleUrl: './temas.component.scss'
 })
 export class TemasComponent implements OnInit {
-  temas!: Curso[];
+  temas!: Course[];
 
   constructor(private readonly sharedService: SharedUiService, private router: Router, private usuarioRepositoryService: UsuarioRepositoryService) {
 

@@ -3,7 +3,6 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { provideNgxMask } from 'ngx-mask';
-import { ImovelService } from './services/imovel.service';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +14,7 @@ import { ImovelService } from './services/imovel.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [ImovelService, provideNgxMask()]
+  providers: [provideNgxMask()]
  
 })
 export class AppComponent {

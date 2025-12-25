@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Atividade } from '../model/atividade.model';
+import { Activity } from '../model/atividade.model';
+import { Curso } from '../model/curso.model';
 import { Resposta } from '../model/resposta.model';
 import { Tema } from '../model/tema.model';
+import { Course } from '../model/user.model';
 import { UsuarioRepositoryService } from './usuario.repository.service';
 
 
@@ -18,14 +20,14 @@ export class TemasService {
   } 
   
   getTemas(): Observable<Tema[]> {
-     return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos ));
+     return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos.map((curso: Course) => new Curso(curso)) ));
   }
 
   getTema(id: string): Observable<Tema | undefined> {
     return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos.find((cur:any) => cur.id == id)));
   }
 
-  getAtividade(idTema: string, nomeAtividade: string): Observable<Atividade | undefined> {
+  getAtividade(idTema: string, nomeAtividade: string): Observable<Activity | undefined> {
     return this.usuarioRepositoryService.getUserState().pipe(map((usr: any) => usr.cursos.find((cur:any) => cur.id == idTema).atividades.find((atv:any) => atv.nome == nomeAtividade)));
   }
 

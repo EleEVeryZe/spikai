@@ -1,22 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Tema } from '../model/tema.model';
+import { map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { Usuario } from '../model/user.model';
  const headers = new HttpHeaders({
     'Content-Type': 'application/json',
   });
-
-export interface Usuario {
-  name: string;
-  email: string;
-  age: number;
-  gender: string;
-  education: string;
-  password: string;
-  vocabulary: string;
-  cursos: Tema[]
-}
 
 @Injectable({
   providedIn: 'root'
@@ -72,13 +61,18 @@ export class UsuarioRepositoryService {
     if (hostname === '!localhost')
       return this.getUserStateStat(userEmail);
 
-    return this.httpClient.post<Usuario>("https://0xaywrm14h.execute-api.sa-east-1.amazonaws.com/default/usuario", JSON.stringify({ email: userEmail }));
+    return this.httpClient
+    .post<any>(
+      "https://0xaywrm14h.execute-api.sa-east-1.amazonaws.com/default/usuario",
+      { email: userEmail?.toLocaleLowerCase() }
+    )
+    .pipe(map(data => new Usuario(data)));
   }
 
   
   getUserStateStat(userEmail?: string) : Observable<Usuario> {
-    const filename = this.getUserBucketName(userEmail);
-    return this.httpClient.get<Usuario>(filename.toLocaleLowerCase());
+    const filename = this.getUserBucketName(userEmail?.toLowerCase());
+    return this.httpClient.get<Usuario>(filename.toLocaleLowerCase().toLowerCase());
   }
 
   getAllUser() {

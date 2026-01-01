@@ -105,7 +105,7 @@ export class ConteudoComponent {
 
           if (!this.tema) return;
 
-          const conteudoASerImportado = this.tema.atividades[1].conteudoASerImportado;
+          const conteudoASerImportado = "TODO: Pensar em como será feito essa parte";
           const videoKey = this.tema.atividades[1].videos[0].videoId;
           this.http.get(`assets/${conteudoASerImportado}`, { responseType: 'text' }).subscribe((html) => {
             this.htmlString = this.sanitizer.bypassSecurityTrustHtml(html);

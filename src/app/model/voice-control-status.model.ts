@@ -5,4 +5,5 @@ export interface VoiceControlStatus {
   currentSpokenWordIndex: number;
   rate: number;
   currentText?: string;
+  volume?: number
 }

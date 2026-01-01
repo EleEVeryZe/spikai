@@ -1,0 +1,32 @@
+.quiz-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-button-prev {
+  font-weight: 600;
+  color: #673ab7;
+}
+
+.action-button-next,
+.action-button-prev {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: large;
+}
+
+.action-button-next mat-icon,
+.action-button-prev mat-icon {
+  vertical-align: middle;
+}
+
+.action-button-next:disabled,
+.action-button-prev:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  border: 1px solid #999999;
+}

@@ -1,6 +1,56 @@
+.tts-container {
+  display: block; /* Fits the content size */
+  max-width: 100%;       /* Prevents escaping the screen */
+  padding: 4px 12px;
+  box-sizing: border-box;
+  overflow: hidden;      /* Keeps everything tidy */
+}
 
-.tts-controls {
+.tts-layout {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 8px;              /* Tightened gap */
+  flex-wrap: nowrap;     /* Forces single line */
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+}
+
+.compact-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: center;
+}
+
+.compact-slider {
+  width: 80px;           /* Fixed width prevents it from pushing others off-screen */
+  margin: 0 4px;
+}
+
+.sub-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #666;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.12);
+  margin: 0 4px;
+}
+
+/* Responsive adjustment for very small mobile screens */
+@media (max-width: 400px) {
+  .compact-slider {
+    width: 60px; 
+  }
+  .tts-container {
+    padding: 4px 8px;
+  }
 }

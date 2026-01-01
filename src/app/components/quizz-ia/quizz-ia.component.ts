@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal, WritableSignal } from '@angular/core';
+import { Component, computed, Inject, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,9 +10,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AITutorPort } from '../../ports/AITutor.port';
+import { AI_TUTOR_TOKEN } from '../../ports/AITutor.token';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
-import { AITutor } from '../../services/tutor.service';
 import { UiUtilsService } from '../../services/ui.utils.service';
 
 interface Question {
@@ -70,8 +71,6 @@ export class QuizzIaComponent {
 
   ehGrupoControle!: boolean;
 
-  tutor = new AITutor();
-
   quizJaFeito: boolean = false;
 
   questionsLeft = computed(() => this.quizData().length - this.currentQuestionIndex());
@@ -97,7 +96,8 @@ export class QuizzIaComponent {
     private readonly uiUtils: UiUtilsService,
     private readonly sharedUi: SharedUiService,
     private readonly route: ActivatedRoute,
-    private readonly temasService: TemasService
+    private readonly temasService: TemasService,
+    @Inject(AI_TUTOR_TOKEN) readonly tutor: AITutorPort,
   ) {}
 
   ngOnInit(): void {
@@ -147,7 +147,7 @@ export class QuizzIaComponent {
 
     const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 50 palavras) da palavra '${word}' na frase a seguir: '${frase}' | Responda em português do Brasil`;
 
-    const AiAnswer = await this.tutor.askDeepSeek(questionContext);
+    const AiAnswer = await this.tutor.ask(questionContext);
     this.geminiResponse.set(AiAnswer);
     this.isGeminiLoading.set(false);
     this.isLoadingUserQuestion = false;
@@ -260,7 +260,7 @@ export class QuizzIaComponent {
 
     const totalPrompt = `Responda em portugues do brasil | ${systemPrompt} | ${questionContext} `;
 
-    const AIDoubtSolverAnswer = await this.tutor.askDeepSeek(totalPrompt);
+    const AIDoubtSolverAnswer = await this.tutor.ask(totalPrompt);
     this.geminiResponse.set(AIDoubtSolverAnswer);
 
     this.isGeminiLoading.set(false);
@@ -315,7 +315,7 @@ Output (JSON only):
 
 `;
 
-    const adapted = await this.tutor.askDeepSeek(prompt);
+    const adapted = await this.tutor.ask(prompt);
     if (adapted) {
       this.quizData.update((questions) =>
         questions.map((q, i) =>

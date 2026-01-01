@@ -14,8 +14,9 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
     worksInThisBrowser: false,
     rate: 0.5,
     currentText: '',
+    volume: 0.5,
   };
-  state = { ...this.statusInitialState };
+  state!: VoiceControlStatus;
 
   private statusSubject = new BehaviorSubject<VoiceControlStatus>(this.statusInitialState);
   status$ = this.statusSubject.asObservable();
@@ -26,9 +27,22 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
   private removeHighlightSubject = new Subject<number>();
   removeHighlight$ = this.removeHighlightSubject.asObservable();
 
+  private onBtnPressedSubject = new Subject<string>();
+  onBtnPressed$ = this.onBtnPressedSubject.asObservable();
+
   utterance!: SpeechSynthesisUtterance | null;
 
   constructor() {
+    const voiceBoard = localStorage.getItem('voiceBoard');
+    if (voiceBoard) {
+      const { rate, volume } = JSON.parse(voiceBoard);
+
+      this.statusInitialState.rate = rate === undefined ? this.statusInitialState.rate : rate;
+      this.statusInitialState.volume = volume === undefined ? this.statusInitialState.volume : volume;
+    }
+
+    this.state = { ...this.statusInitialState };
+
     this.initSpeech();
   }
 
@@ -39,6 +53,10 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
   @HostListener('window:beforeunload', ['$event'])
   private unloadHandler() {
     this.stopSpeech();
+  }
+
+  onBtnPressed(name: 'play' | 'pause' | 'stop' | 'increase_rate' | 'lower_rate') {
+    this.onBtnPressedSubject.next(name);
   }
 
   private updateStatusState(newState: Partial<VoiceControlStatus>) {
@@ -54,6 +72,18 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
     };
   }
 
+  private updateVoiceBoard(newState: Partial<{ volume: number; rate: number }>) {
+    const oldLocalStrg = localStorage.getItem('voiceBoard');
+    if (oldLocalStrg) {
+      const prevState = JSON.parse(oldLocalStrg);
+      const newLocalStrg = JSON.stringify({ ...prevState, ...newState });
+      localStorage.setItem('voiceBoard', newLocalStrg);
+    } else {
+      const newLocalStrg = JSON.stringify(newState);
+      localStorage.setItem('voiceBoard', newLocalStrg);
+    }
+  }
+
   private getEnglishVoice(): SpeechSynthesisVoice | undefined {
     const voices = speechSynthesis.getVoices();
     return voices.find((voice) => voice.lang.startsWith('en'));
@@ -64,15 +94,23 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
       const newRate = parseFloat((this.state.rate + 0.1).toFixed(1));
       this.updateStatusState({ rate: newRate });
       this.stopSpeech();
+      this.updateVoiceBoard({ rate: newRate });
     }
   }
 
   decreaseRate() {
     if (this.state.rate > 0.5) {
-      const newRate = parseFloat((this.state.rate - 0.1).toFixed(1));
+      const newRate = Number.parseFloat((this.state.rate - 0.1).toFixed(1));
       this.updateStatusState({ rate: newRate });
-      this.stopSpeech();
+      if (this.state.isSpeaking) this.stopSpeech();
+      this.updateVoiceBoard({ rate: newRate });
     }
+  }
+
+  setVolume(newVolume: number) {
+    this.updateVoiceBoard({ volume: newVolume });
+    this.updateStatusState({ volume: newVolume });
+    if (this.state.isSpeaking) this.stopSpeech();
   }
 
   stopSpeech(): void {
@@ -115,7 +153,7 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
       utterance.lang = 'en-US';
       utterance.rate = this.state.rate;
       utterance.pitch = 1;
-      utterance.volume = 1;
+      utterance.volume = this.state.volume ?? this.statusInitialState.volume;
 
       const voice = this.getEnglishVoice();
       if (voice) utterance.voice = voice;
@@ -131,6 +169,12 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
 
       utterance.onerror = (err) => {
         this.updateStatusState({ isPaused: true, isSpeaking: false });
+        
+        if (err.error === "interrupted") {
+          resolve();
+          return;
+        }
+
         reject(err);
       };
 
@@ -144,7 +188,7 @@ export class VoiceControlService implements VoiceControlPort, OnDestroy {
       if (event.name === 'word') {
         const words = this.state.currentText?.split(' ');
         let indexToHighlight = this.state.currentSpokenWordIndex;
-        if (indexToHighlight < words.length) {
+        if (words && indexToHighlight < words.length) {
           if (indexToHighlight > 0) {
             this.removeHighlightSubject.next(indexToHighlight - 1);
           }

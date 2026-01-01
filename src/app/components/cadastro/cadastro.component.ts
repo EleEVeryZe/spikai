@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,8 @@ import { finalize, map, Observable, startWith } from 'rxjs';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { AITutor } from '../../services/tutor.service';
+import { AITutorPort } from '../../ports/AITutor.port';
+import { AI_TUTOR_TOKEN } from '../../ports/AITutor.token';
 
 export function requiredChipListValidator(areasSelecionadas: string[]): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -143,7 +144,8 @@ export class CadastroComponent {
     private usuarioRepositoryService: UsuarioRepositoryService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(AI_TUTOR_TOKEN) readonly tutor: AITutorPort,
   ) {
     this.registrationForm = this.fb.group({
       name: ['', Validators.required],
@@ -231,8 +233,7 @@ Input: ${value.vocabulary.trim()}
 
 Output:`;
 
-    const tutor = new AITutor();
-    return tutor.askDeepSeek(prompt);
+    return this.tutor.ask(prompt);
   }
 
   async onSubmit(): Promise<void> {

@@ -6,7 +6,10 @@ export interface VoiceControlPort {
     stopSpeech(): void;
     increaseRate(): void;
     decreaseRate(): void;
+    setVolume(newVolume: number): void;
+    onBtnPressed(name: "play" | "pause" | "stop" | "increase_rate" | "lower_rate" ): void;
     status$: Observable<VoiceControlStatus>;
     addHighlight$: Observable<number>;
     removeHighlight$: Observable<number>;
+    onBtnPressed$: Observable<string>;
 }

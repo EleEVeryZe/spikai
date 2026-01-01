@@ -1,8 +1,21 @@
-<div class="container">
-  <app-voice-control></app-voice-control>
+<div class="start-wrapper" *ngIf="!timelyShowService.getIsStarted()">
+  <button class="magic-button" (click)="startApp()">
+    Start
+    <span class="ripple"></span>
+  </button>
+</div>
 
-  <div class="letters" *ngIf="lessons.length">
-    <div class="letter-card" *ngFor="let l of lessons" (click)="speakLetter(l)">
+<div class="container" >
+  <div class="app-voice-control-div">
+    <app-previous-next-btn (previous)="previous()" (next)="next()" [disablePrevious]="disablePrevious" [disableNext]="disableNext"></app-previous-next-btn>
+    <app-voice-control></app-voice-control>
+  </div>
+
+  <!-- <button *ngIf="lessons.length" (click)="togglePronunciation()">{{ showPronunciation ? "Hide" : "Show" }} pronunciation tip</button> -->
+
+
+  <div class="letters" *ngIf="timelyShowService.lessons.length">
+    <div class="letter-card" *ngFor="let l of timelyShowService.lessons; let i = index" (click)="repeatLesson(i)">
       <h2>{{ l.letter }}</h2>
       <p *ngIf="showPronunciation">({{ l.pronunciation }})</p>
       <p>
@@ -11,8 +24,5 @@
       <p>{{ l.translation }}</p>
     </div>
   </div>
-
-  <button *ngIf="lessons.length" (click)="togglePronunciation()">{{ showPronunciation ? "Hide" : "Show" }} pronunciation tip</button>
-
-  <button *ngIf="finished" (click)="recordPronunciation()">🎙 Record your pronunciation</button>
+  <div id="bottom-anchor"></div>
 </div>

@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { AITutor } from '../../services/tutor.service';
-
+import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -18,6 +16,8 @@ import { Opcao } from '../../model/atividade.model';
 import { TextoActivity } from '../../model/texto-activity.model';
 import { Usuario } from '../../model/user.model';
 import { VoiceControlStatus } from '../../model/voice-control-status.model';
+import { AITutorPort } from '../../ports/AITutor.port';
+import { AI_TUTOR_TOKEN } from '../../ports/AITutor.token';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
 import { UiUtilsService } from '../../services/ui.utils.service';
@@ -85,6 +85,7 @@ export class TextoComponent {
   voiceControlState!: VoiceControlStatus;
 
   constructor(
+    @Inject(AI_TUTOR_TOKEN) readonly tutor: AITutorPort,
     private readonly uiUtils: UiUtilsService,
     private readonly route: ActivatedRoute,
     private readonly usuarioRepositoryService: UsuarioRepositoryService,
@@ -161,8 +162,7 @@ export class TextoComponent {
 
     const prompt = `Create a 200-word English text using: ${uniqueWords.join(', ')} Incorporate ${this.user.getPreviousTemas().map(prevCourse => `**${prevCourse}** `)} frequently. Output only the text.`;
 
-    const tutor = new AITutor();
-    const tutorAnswer = await tutor.askDeepSeek(prompt);
+    const tutorAnswer = await this.tutor.ask(prompt);
 
     const secondPromt = `Crie 3 perguntas MCQ em português sobre o texto.
 
@@ -185,7 +185,7 @@ TEXTO:
 ${tutorAnswer}
     `
 
-    const tutorAnswer2 = await tutor.askDeepSeek(secondPromt);
+    const tutorAnswer2 = await this.tutor.ask(secondPromt);
 
     return {
       nome: 'Texto' as const,
@@ -369,8 +369,7 @@ ${tutorAnswer}
     const questionContext = `Você é um professor de inglês. Dê o significado (com limite estrito de 70 palavras) da seleção '${palavras}' considerando o texto completo a seguir: '${frase}'. Responda em português do Brasil e seja objetivo.`;
 
     try {
-      const tutor = new AITutor();
-      const response = await tutor.askDeepSeek(questionContext); //await new Promise((solve) => setTimeout(() => solve(words.join(', ')), 5000));
+      const response = await this.tutor.ask(questionContext);
       if (this.currentWordRequestId === requestId)
         this.geminiResponse = response as string;
     } catch (error) {
@@ -397,8 +396,7 @@ ${tutorAnswer}
     const prompt = `Traduza para o português do Brasil o texto a seguir, mantendo significado e fluidez natural: '${this.atividade.texto}'`;
 
     try {
-      const tutor = new AITutor();
-      this.translationResponse = await tutor.askDeepSeek(prompt);
+      this.translationResponse = await this.tutor.ask(prompt);
     } catch (error) {
       console.error('[TextoComponent] Erro ao traduzir texto', error);
       this.translationResponse = 'Não foi possível traduzir o texto agora. Tente novamente.';

@@ -1,20 +1,33 @@
-<div class="tts-controls" *ngIf="voiceControlService.status$ | async as status">
-  
-  <button mat-icon-button (click)="voiceControlService.decreaseRate()" aria-label="Slower">
-    <mat-icon>fast_rewind</mat-icon>
-  </button>
+<mat-card class="tts-container" *ngIf="voiceControlService.status$ | async as status">
+  <div class="tts-layout">
+    
+    <div class="control-group speed-section">
+      <button mat-icon-button (click)="voiceControlService.decreaseRate()" matTooltip="Slower">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <span class="compact-value">{{ rate.toFixed(1) }}x</span>
+      <button mat-icon-button (click)="voiceControlService.increaseRate()" matTooltip="Faster">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
 
-  <button mat-icon-button (click)="playPausePressed()" aria-label="Play/Pause">
-    <mat-icon>
-      {{ status.isSpeaking && !status.isPaused ? "pause" : "play_arrow" }}
-    </mat-icon>
-  </button>
+    <div class="divider"></div>
 
-  <button mat-icon-button (click)="voiceControlService.increaseRate()" aria-label="Faster">
-    <mat-icon>fast_forward</mat-icon>
-  </button>
+    <button mat-mini-fab color="primary" (click)="playPausePressed()" class="play-button">
+      <mat-icon>
+        {{ status.isSpeaking && !status.isPaused ? "pause" : "play_arrow" }}
+      </mat-icon>
+    </button>
 
-  <span class="rate">
-    Velocidade: {{ rate.toFixed(1) }}x
-  </span>
-</div>
+    <div class="divider"></div>
+
+    <div class="control-group volume-section">
+      <mat-icon class="sub-icon">volume_down</mat-icon>
+      <mat-slider min="0" max="1" step="0.1" class="compact-slider">
+        <input matSliderThumb [value]="volume" (input)="onVolumeChange($event)">
+      </mat-slider>
+      <mat-icon class="sub-icon">volume_up</mat-icon>
+    </div>
+
+  </div>
+</mat-card>

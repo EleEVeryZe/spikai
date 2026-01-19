@@ -16,19 +16,6 @@ button { margin: 10px; padding: 10px 16px; border-radius: 8px; border: none; cur
   background-color: white;
 }
 
-/* Pin the voice control to the bottom of the viewport */
-.app-voice-control-div {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  
-  /* Visual styling to ensure visibility */
-  background: white; 
-  z-index: 999; 
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .start-wrapper {
    position: fixed;
   top: 0;
@@ -71,65 +58,112 @@ button { margin: 10px; padding: 10px 16px; border-radius: 8px; border: none; cur
   background-color: #f5f5f5;
 }
 
+.exercise {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  margin-top: 70px;
+}
+
+.exercise-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.exercise-description {
+  margin: 20px 20px;
+  font-size: 0.95rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.exercise-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;  
+  width: 50%;
+  font-size: 1rem;
+  line-height: 1.6;
+  position: relative;
+}
+
+.speak-btn {
+  margin-left: 10px;
+}
+
+.toggle-pronunciation-btn {
+  margin-left: 10px;
+}
 
 
-
-
-
-/* Button */
+/* Enhanced Magic Button */
 .magic-button {
   position: relative;
   padding: 18px 48px;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   color: #fff;
   border: none;
   border-radius: 999px;
   cursor: pointer;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.3s ease;
+  /* Vibrant Gradient */
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  box-shadow: 0 10px 25px rgba(37, 117, 252, 0.4);
+  
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Hover effect */
-.magic-button:hover {
-  filter: brightness(1.15);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+/* Subtle "Pulse" animation to draw attention */
+@keyframes button-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(106, 17, 203, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); }
 }
 
-/* Click (press) effect */
-.magic-button:active {
-  transform: scale(0.96);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+.magic-button:not(.loading) {
+  animation: button-pulse 2s infinite;
 }
 
-/* Ripple */
-.magic-button .ripple {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.35) 10%,
-    transparent 60%
-  );
-  opacity: 0;
-  transform: scale(0.2);
-  transition: transform 0.4s ease, opacity 0.4s ease;
+/* Loading Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-/* Trigger ripple on click */
-.magic-button:active .ripple {
-  opacity: 1;
-  transform: scale(2);
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* Focus accessibility */
-.magic-button:focus-visible {
-  outline: 3px solid #ffffffaa;
-  outline-offset: 4px;
+/* Loading State Styling */
+.magic-button.loading {
+  opacity: 0.8;
+  cursor: wait;
+  background: linear-gradient(135deg, #8e9eab, #606c88);
+  animation: none;
+}
+
+.magic-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 30px rgba(37, 117, 252, 0.5);
+}
+
+.magic-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
 }

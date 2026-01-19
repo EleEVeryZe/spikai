@@ -1,23 +1,61 @@
 <div class="start-wrapper" *ngIf="!timelyShowService.getIsStarted()">
-  <button class="magic-button" (click)="startApp()">
-    Start
+  <button 
+    class="magic-button" 
+    (click)="startApp()" 
+    [disabled]="!letters.length"
+    [class.loading]="!letters.length">
+    
+    <ng-container *ngIf="!letters.length">
+      <span class="spinner"></span>
+      <span>Loading...</span>
+    </ng-container>
+
+    <ng-container *ngIf="letters.length">
+      <span>Start</span>
+    </ng-container>
+
     <span class="ripple"></span>
   </button>
 </div>
 
 <div class="container" >
   <div class="app-voice-control-div">
-    <app-previous-next-btn (previous)="previous()" (next)="next()" [disablePrevious]="disablePrevious" [disableNext]="disableNext"></app-previous-next-btn>
+    <app-previous-next-btn [totalSteps]="2" [infinityNext]="true" (previous)="next($event)" (next)="next($event)" [disablePrevious]="disablePrevious" [disableNext]="disableNext"></app-previous-next-btn>
     <app-voice-control></app-voice-control>
   </div>
 
   <!-- <button *ngIf="lessons.length" (click)="togglePronunciation()">{{ showPronunciation ? "Hide" : "Show" }} pronunciation tip</button> -->
 
+  <div class="exercise" *ngIf="exercise">
+    
+    <div class="exercise-wrapper">
+      <p class="exercise-description">Try to speak the word, then click the speaker button to hear the pronunciation:</p>
+      
+      <div class="exercise-card">
+        <h2>{{ exercise.letter }}</h2>
+        <button class="toggle-pronunciation-btn" (click)="togglePronunciation()" title="Toggle pronunciation" mat-icon-button>
+          <mat-icon>{{ showPronunciation ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        <p *ngIf="showPronunciation">({{ exercise.pronunciation }})</p>
+        <p>
+          <strong>{{ exercise.example }}</strong>
+        </p>
+        <p>{{ exercise.translation }}</p>
+        <button class="speak-btn" (click)="speak(exercise)" title="Speak the letter" mat-icon-button>
+          <mat-icon>volume_up</mat-icon>
+        </button>
+        
+      </div>
+      <p class="exercise-description">Tente falar a palavra, depois clique no botão do alto-falante para ouvir a pronúncia:</p>
+      <p>{{ current }}/{{ total }}</p>
+    </div>
+    
+  </div>
 
-  <div class="letters" *ngIf="timelyShowService.lessons.length">
+  <div class="letters" *ngIf="timelyShowService.lessons.length && !exercise">
     <div class="letter-card" *ngFor="let l of timelyShowService.lessons; let i = index" (click)="repeatLesson(i)">
       <h2>{{ l.letter }}</h2>
-      <p *ngIf="showPronunciation">({{ l.pronunciation }})</p>
+      <p>({{ l.pronunciation }})</p>
       <p>
         <strong>{{ l.example }}</strong>
       </p>

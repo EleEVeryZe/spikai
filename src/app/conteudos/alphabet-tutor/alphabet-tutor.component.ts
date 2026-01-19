@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { Usuario } from '../../model/user.model';
 import { AITutorPort } from '../../ports/AITutor.port';
@@ -11,6 +12,7 @@ import { TimelyShowService } from '../../services/timelyshow.service';
 import { UsuarioRepositoryService } from '../../services/usuario.repository.service';
 import { PreviousNextBtnComponent } from '../../smallcomponents/previous-next-btn/previous-next-btn.component';
 import { VoiceControlComponent } from '../../smallcomponents/voice-control/voice-control.component';
+import { RandomlyShowService } from '../../services/randomlyshow.service';
 
 interface LetterLesson {
   letter: string;
@@ -22,11 +24,12 @@ interface LetterLesson {
 
 @Component({
   selector: 'app-alphabet-tutor',
-  imports: [CommonModule, VoiceControlComponent, PreviousNextBtnComponent, MatButtonModule],
+  imports: [CommonModule, VoiceControlComponent, PreviousNextBtnComponent, MatButtonModule, MatIconModule],
   templateUrl: './alphabet-tutor.component.html',
   styleUrl: './alphabet-tutor.component.scss',
 })
 export class AlphabetTutorComponent implements OnDestroy {
+  exercise: any;
   private readonly subs = new Subscription();
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -59,7 +62,7 @@ export class AlphabetTutorComponent implements OnDestroy {
     'Zí',
   ];
 
-  showPronunciation = true;
+  showPronunciation = localStorage.getItem('showPronunciation') === 'true';
   letters: LetterLesson[] = [];
 
   disablePrevious = true;
@@ -67,9 +70,14 @@ export class AlphabetTutorComponent implements OnDestroy {
 
   lessonFinished = false;
 
+  total = 0;
+
+  current = 0;
+
   constructor(
     @Inject(AI_TUTOR_TOKEN) readonly tutor: AITutorPort,
     @Inject(VOICE_CONTROL_TOKEN) readonly voiceControlService: VoiceControlPort,
+    private readonly randomlyShowService: RandomlyShowService,
     private readonly user: UsuarioRepositoryService,
     readonly timelyShowService: TimelyShowService
   ) {}
@@ -81,7 +89,7 @@ export class AlphabetTutorComponent implements OnDestroy {
       this.voiceControlService.onBtnPressed$.subscribe((name) => {
         switch (name) {
           case 'pause':
-            this.timelyShowService.stop();
+            this.timelyShowService.pause();
             break;
           case 'play':
             this.timelyShowService.start();
@@ -89,10 +97,6 @@ export class AlphabetTutorComponent implements OnDestroy {
         }
       })
     );
-
-    this.timelyShowService.endOfLesson$.subscribe((isLessonFinished: boolean) => {
-      this.lessonFinished = isLessonFinished;
-    });
   }
 
   startApp() {
@@ -118,13 +122,15 @@ export class AlphabetTutorComponent implements OnDestroy {
 
     this.timelyShowService.setAllLessons(lessons);
     this.timelyShowService.setHandler((lesson: any): Promise<void> => {
-      if (!this.lessonFinished)
+      if (!this.timelyShowService.getState().isPaused)
         setTimeout(() => {
           document.getElementById('bottom-anchor')?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
 
       return this.voiceControlService.toggleSpeech(`${lesson.letter}(...) ${lesson.example}`);
     });
+
+    this.randomlyShowService.setAllLessons(lessons);
   }
 
   ngOnDestroy() {
@@ -133,26 +139,38 @@ export class AlphabetTutorComponent implements OnDestroy {
 
   togglePronunciation() {
     this.showPronunciation = !this.showPronunciation;
+    localStorage.setItem('showPronunciation', this.showPronunciation.toString());
   }
 
   recordPronunciation() {
     alert('Recording feature can be implemented with MediaRecorder API.');
   }
 
-  previous() {
-    this.disablePrevious = true;
-    this.disableNext = false;
-    this.timelyShowService.restart(0);
-  }
-
-  next() {
-    this.disablePrevious = false;
-    this.disableNext = true;
-    this.timelyShowService.showAll();
+  async next(option: number) {
+    switch (option) {
+      case 0:
+        this.timelyShowService.restart(0);
+      break;
+      case 1:
+        this.exercise = null;
+        this.timelyShowService.pause();
+        this.timelyShowService.showAll();
+      break;
+      case 2:
+        this.timelyShowService.stop();
+        this.exercise = this.randomlyShowService.next();
+        this.total = this.randomlyShowService.getSize();
+        this.current = this.randomlyShowService.getCurrent();
+        break;
+    }
   }
 
   repeatLesson(idx: number) {
-    if (this.lessonFinished) this.timelyShowService.execOnlyLesson(idx);
+    if (this.timelyShowService.getState().isPaused) this.timelyShowService.execOnlyLesson(idx);
     else this.timelyShowService.restart(idx);
+  }
+
+  async speak(lesson: LetterLesson) {
+    this.voiceControlService.toggleSpeech(`${lesson.letter}(...) ${lesson.example}`);
   }
 }

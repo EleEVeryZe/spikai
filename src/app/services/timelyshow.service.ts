@@ -16,6 +16,9 @@ export class TimelyShowService implements OnDestroy {
   lessons: any[] = [];
   private handler?: (lesson: any) => Promise<void>;
   private isStarted = false;
+  private isStopped = false;
+  private isPaused = false;
+  
 
   setHandler(handler: (lesson: any) => Promise<void>) {
     this.handler = handler;
@@ -26,10 +29,23 @@ export class TimelyShowService implements OnDestroy {
   }
 
   stop() {
+    if (this.isStopped)
+      return;
+    this.lessons = [];
+    clearInterval(this.timeout);
     this.isRunning = false;
+    this.isStopped = true;
+  }
+
+  pause() {
+    this.isRunning = false;
+    this.isPaused = true;
   }
 
   async start() {
+    if (this.allLessons == undefined || this.handler == undefined)
+      throw new Error('Make sure all lessons and handler were initialized before executing this function.');
+
     this.isStarted = true;
 
     if (this.timeout) {
@@ -37,11 +53,14 @@ export class TimelyShowService implements OnDestroy {
       return;
     }
 
+    this.isRunning = true;
+    
     this.lessons = [];
 
     await this.execLesson(0);
 
     this.endOfLesson.next(false);
+    
     this.startOrRestartFrom(1);
   }
 
@@ -54,9 +73,11 @@ export class TimelyShowService implements OnDestroy {
   async restart(fromIdx: number) {
     clearInterval(this.timeout);
 
+    this.isStopped = false;
+    this.isRunning = true;
     this.timeout = setInterval(async () => {
       this.lessons = this.allLessons.slice(0, fromIdx + 1);
-      if (!this.isLessoning) {
+      if (!this.isLessoning && this.isRunning) {
         this.isLessoning = true;
         await this.execLesson(fromIdx);
         this.startOrRestartFrom(fromIdx + 1);
@@ -67,9 +88,9 @@ export class TimelyShowService implements OnDestroy {
 
   execOnlyLesson(idx: number) {
     clearInterval(this.timeout);
-
+    this.isRunning = true;
     const timeout = setInterval(async () => {
-      if (!this.isLessoning) {
+      if (!this.isLessoning && this.isRunning) {
         this.isLessoning = true;
 
         const lesson = this.allLessons[idx];
@@ -92,7 +113,6 @@ export class TimelyShowService implements OnDestroy {
       throw new Error('Make sure lessons and handler were initialized before executing this function.');
 
     let i = idx;
-    this.isRunning = true;
 
     this.timeout = setInterval(async () => {
       if (!this.isLessoning && this.isRunning && i < this.allLessons.length) {
@@ -120,4 +140,6 @@ export class TimelyShowService implements OnDestroy {
   }
 
   getIsStarted = () => this.isStarted;
+
+  getState = () => ( { isPaused: this.isPaused, isStarted: this.isStarted })
 }

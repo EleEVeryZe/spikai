@@ -7,7 +7,7 @@
 Este documento descreve a proposta de um aplicativo móvel para **aprendizagem de idiomas**. O sistema foi desenhado para guiar o usuário por uma jornada de estudos personalizada, combinando avaliações, aulas em vídeo e o suporte de inteligência artificial para otimizar o aprendizado de vocabulário e gramática.
 
 ---
-
+  
 ### 2. Funcionalidades Principais
 
 * **Cadastro e Login:** Permite que novos usuários se registrem com informações detalhadas e que usuários existentes façam login facilmente.

@@ -15,6 +15,10 @@ import { AI_TUTOR_TOKEN } from '../../ports/AITutor.token';
 import { SharedUiService } from '../../services/shared-ui.service';
 import { TemasService } from '../../services/temas.service';
 import { UiUtilsService } from '../../services/ui.utils.service';
+import { VoiceControlComponent } from "../../smallcomponents/voice-control/voice-control.component";
+import { PreviousNextBtnComponent } from "../../smallcomponents/previous-next-btn/previous-next-btn.component";
+import { VoiceControlPort } from '../../ports/voice-control.port';
+import { VOICE_CONTROL_TOKEN } from '../../ports/voice-control.token';
 
 interface Question {
   id: number;
@@ -48,7 +52,9 @@ interface QuestionProgress {
     MatProgressBarModule,
     MatIconModule,
     MatProgressSpinnerModule,
-  ],
+    VoiceControlComponent,
+    PreviousNextBtnComponent
+],
   templateUrl: './quizz-ia.component.html',
   styleUrl: './quizz-ia.component.scss',
 })
@@ -73,6 +79,11 @@ export class QuizzIaComponent {
 
   quizJaFeito: boolean = false;
 
+  disablePrevious = true;
+  disableNext = false;
+
+  isStarted = false;
+
   questionsLeft = computed(() => this.quizData().length - this.currentQuestionIndex());
   isLastQuestion = computed(() => this.currentQuestionIndex() === this.quizData().length - 1);
   progressPercent = computed(() => Math.min(100, ((this.currentQuestionIndex() + 1) / this.quizData().length) * 100));
@@ -92,6 +103,7 @@ export class QuizzIaComponent {
   });
 
   constructor(
+    @Inject(VOICE_CONTROL_TOKEN) readonly voiceControlService: VoiceControlPort,
     private router: Router,
     private readonly uiUtils: UiUtilsService,
     private readonly sharedUi: SharedUiService,
@@ -335,23 +347,16 @@ Output (JSON only):
     this.isLoading.set(false);
   }
 
-  speak(text: string): void {
-    if (!('speechSynthesis' in window)) {
-      console.warn('Text-to-speech not supported in this browser.');
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text.replaceAll('_', ''));
-    utterance.lang = 'en-US'; //'pt-BR'
-    utterance.rate = 0.5; // speed (0.1–10)
-    utterance.pitch = 1; // tone (0–2)
-    utterance.volume = 1; // 0–1
-
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
+  async speak(text: string): Promise<void> {
+    await this.voiceControlService.toggleSpeech(text);
   }
 
   stopSpeaking(): void {
-    speechSynthesis.cancel();
+    this.voiceControlService.stopSpeech();
+  }
+
+  start(): void {
+    this.isStarted = true;
+    this.speak(this.currentQuestion().sentence.replace('___', '______'));
   }
 }

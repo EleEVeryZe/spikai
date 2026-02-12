@@ -1,13 +1,25 @@
-@if (isLoading()) {
-<div class="app-container loading-container">
-  <mat-card class="quiz-card loading-card">
-    <div class="spinner-wrapper ">
-      <mat-spinner diameter="50" color="primary"></mat-spinner>
-      <p class="loading-text">Carregando Quiz...</p>
-    </div>
-  </mat-card>
+
+
+<div class="start-wrapper" *ngIf="!isStarted">
+  <button 
+    class="magic-button" 
+    (click)="start()"
+    [disabled]="!this.userVocabulary"
+    [class.loading]="!this.userVocabulary">
+    
+    <ng-container *ngIf="!this.userVocabulary">
+      <span class="spinner"></span>
+      <span>Loading...</span>
+    </ng-container>
+
+    <ng-container *ngIf="this.userVocabulary">
+      <span>Start</span>
+    </ng-container>
+
+    <span class="ripple"></span>
+  </button>
 </div>
-} @else {
+
 <div class="app-container">
   <mat-card class="quiz-card">
     <mat-card-header class="quiz-header">
@@ -33,7 +45,8 @@
           " @for (word of currentQuestion().sentence.split(' '); track word) { @if (word.includes('___')) {
           <span class="word-placeholder">{{ word.replace("___", "_______") }}</span>
           } @else {
-          <span class="word-dotted" (click)="obterContextoPalavra(word, currentQuestion().sentence)">{{ word + " " }}</span>
+          <span class="word-dotted" (click)="obterContextoPalavra(word, currentQuestion().sentence)">{{ word + " "
+            }}</span>
           }
           <span> </span>
           } "
@@ -54,11 +67,12 @@
           <mat-icon class="icon-error">cancel</mat-icon>
           Incorrect Answer.
         </p>
-        <p *ngIf="!ehGrupoControle" class="feedback-text-italic"><span class="feedback-label">Tutoring:</span> {{ feedbackText() }}</p>
+        <p *ngIf="!ehGrupoControle" class="feedback-text-italic"><span class="feedback-label">Tutoring:</span> {{
+          feedbackText() }}</p>
         }
       </div>
-      } 
-      
+      }
+
       @if (geminiResponse() || isLoadingUserQuestion) {
       <mat-card class="gemini-response-card">
         <mat-card-content>
@@ -69,13 +83,8 @@
           @if (geminiResponse()) {
           <p class="response-text">{{ geminiResponse() }}</p>
           }
-          <mat-progress-spinner
-            *ngIf="isLoadingUserQuestion"
-            diameter="20"
-            mode="indeterminate"
-            color="accent"
-            class="spinner"
-          ></mat-progress-spinner>
+          <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent"
+            class="spinner"></mat-progress-spinner>
         </mat-card-content>
       </mat-card>
       }
@@ -94,60 +103,24 @@
       <div class="doubts-container" *ngIf="!ehGrupoControle && currentProgress() as progress">
         <mat-form-field class="doubts-input-field" appearance="outline">
           <mat-label>Tire suas dúvidas com tutor IA</mat-label>
-          <textarea matInput [ngModel]="progress.userDoubts" (ngModelChange)="updateUserDoubts($event)" rows="2"></textarea>
+          <textarea matInput [ngModel]="progress.userDoubts" (ngModelChange)="updateUserDoubts($event)"
+            rows="2"></textarea>
         </mat-form-field>
 
-        <button
-          mat-mini-fab
-          color="primary"
-          (click)="askDeepSeekUserQuestion()"
-          [disabled]="isGeminiLoading() || !progress.userDoubts"
-          class="gemini-button"
-        >
-          <mat-progress-spinner
-            *ngIf="isLoadingUserQuestion"
-            diameter="20"
-            mode="indeterminate"
-            color="accent"
-            class="spinner"
-          ></mat-progress-spinner>
+        <button mat-mini-fab color="primary" (click)="askDeepSeekUserQuestion()"
+          [disabled]="isGeminiLoading() || !progress.userDoubts" class="gemini-button">
+          <mat-progress-spinner *ngIf="isLoadingUserQuestion" diameter="20" mode="indeterminate" color="accent"
+            class="spinner"></mat-progress-spinner>
           <mat-icon class="gemini-icon" *ngIf="!isLoadingUserQuestion">send</mat-icon>
         </button>
       </div>
     </mat-card-content>
 
     <!-- Actions -->
-    @if (currentQuestionIndex() !== quizData().length) {
-    <mat-card-actions class="quiz-actions">
-      <button mat-stroked-button (click)="previousQuestion()" [disabled]="currentQuestionIndex() === 0" class="action-button-prev">
-        <mat-icon>arrow_back</mat-icon> Previous
-      </button>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="nextQuestion()"
-        [disabled]="userSelection() === null && currentQuestionIndex() < quizData().length"
-        class="action-button-next"
-      >
-        @if (isLastQuestion()) { Finish Quiz <mat-icon>done_all</mat-icon> } @else { Next Question <mat-icon>arrow_forward</mat-icon>
-        }
-      </button>
-    </mat-card-actions>
-    } @if (currentQuestionIndex() === quizData().length) {
-    <div class="quiz-complete-message">
-      <p class="completion-title">🎉 Quiz Finalizado! 🎉</p>
-      <p class="completion-subtitle">Você concluiu todas as {{ quizData().length }} perguntas. Revise o seu progresso!</p>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="fecharQuizz()"
-        class="action-button-next"
-      >
-        Fechar Quizz
-        
-      </button>
+    <div class="app-voice-control-div">
+      <app-previous-next-btn [totalSteps]="3" (previous)="previousQuestion()" (next)="nextQuestion()"
+        [disablePrevious]="disablePrevious" [disableNext]="disableNext"></app-previous-next-btn>
+      <app-voice-control></app-voice-control>
     </div>
-    }
   </mat-card>
 </div>
-}

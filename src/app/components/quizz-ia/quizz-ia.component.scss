@@ -294,3 +294,89 @@
   flex-direction: column;
   align-items: center;
 }
+
+
+
+.start-wrapper {
+   position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  z-index: 9999;
+}
+
+
+/* Enhanced Magic Button */
+.magic-button {
+  position: relative;
+  padding: 18px 48px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  /* Vibrant Gradient */
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  box-shadow: 0 10px 25px rgba(37, 117, 252, 0.4);
+  
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Subtle "Pulse" animation to draw attention */
+@keyframes button-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(106, 17, 203, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); }
+}
+
+.magic-button:not(.loading) {
+  animation: button-pulse 2s infinite;
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Loading State Styling */
+.magic-button.loading {
+  opacity: 0.8;
+  cursor: wait;
+  background: linear-gradient(135deg, #8e9eab, #606c88);
+  animation: none;
+}
+
+.magic-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 15px 30px rgba(37, 117, 252, 0.5);
+}
+
+.magic-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+}

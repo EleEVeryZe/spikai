@@ -15,7 +15,7 @@ Este documento descreve a proposta de um aplicativo móvel para **aprendizagem d
 * **Acompanhamento de Progresso:** Para cada jornada, o usuário pode ver o status de conclusão de cada etapa, resultados de testes, datas e a opção de refazer as avaliações.
 * **Integração com IA:** A inteligência artificial atua como um tutor, fornecendo **explicações detalhadas** sobre as respostas incorretas durante os questionários.
 
----
+---  
 
 ### 3. Jornada de Aprendizagem do Usuário
 

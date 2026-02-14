@@ -17,6 +17,7 @@ export const handler: Handler = async (event: any, context: Context) => {
     const nestApp = await NestFactory.create(AppModule);
 
     nestApp.setGlobalPrefix('userModule'); 
+      
     
     nestApp.enableCors();
     await nestApp.init();

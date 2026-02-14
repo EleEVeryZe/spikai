@@ -1,0 +1,67 @@
+name: Deploy Lambda and Website
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'front/**'
+      - 'function/user-module/**'
+
+jobs:
+  deploy-website:
+    runs-on: ubuntu-latest
+    outputs:
+      any_changed: ${{ steps.changed-files.outputs.any_changed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Check for front-end changes
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: front/**
+
+      - name: Build and Sync to S3
+        if: steps.changed-files.outputs.any_changed == 'true' || contains(github.event.head_commit.message, 'all:')
+        working-directory: front
+        run: |
+          npm i --legacy-peer-deps
+          npm run build
+          aws s3 sync ./front/dist/stock-marquetim/browser s3://spikai/ --delete --exclude "resource/*" --exclude "resource"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+  deploy-lambda-usuario:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for lambda changes
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: function/user-module/**
+
+      - name: Deploy to AWS Lambda
+        if: steps.changed-files.outputs.any_changed == 'true' || contains(github.event.head_commit.message, 'all:')
+        working-directory: function/user-module
+        run: |
+          npm install --production
+          npm prune --production
+          zip -r lambda-user-module.zip dist node_modules package.json
+          aws lambda update-function-code \
+            --function-name user-module \
+            --zip-file fileb://lambda-user-module.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}

@@ -4,26 +4,33 @@ import { AppModule } from './app.module';
 import { Context, Handler } from 'aws-lambda';
 
 let cachedServer: Handler;
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.enableCors();
+  await app.init();
+
+  return serverlessExpress({
+    app: app.getHttpAdapter().getInstance(),
+  });
+}
+
 export const handler: Handler = async (event: any, context: Context) => {
-  if (event.rawPath && event.rawPath.startsWith('/default')) {
-    event.rawPath = event.rawPath.replace('/default', '');
-  }
-  
-  if (event.requestContext?.http?.path?.startsWith('/default')) {
-    event.requestContext.http.path = event.requestContext.http.path.replace('/default', '');
-  }
+ console.log("EVENT RECEIVED3:", JSON.stringify(event, null, 2));
 
   if (!cachedServer) {
-    const nestApp = await NestFactory.create(AppModule);
+    cachedServer = await bootstrap();
+  }
 
-    nestApp.setGlobalPrefix('userModule'); 
-      
-    
-    nestApp.enableCors();
-    await nestApp.init();
-    
-    const expressApp = nestApp.getHttpAdapter().getInstance();
-    cachedServer = serverlessExpress({ app: expressApp });
+  const stage = event.requestContext?.stage;
+
+  if (stage && event.rawPath?.startsWith(`/${stage}`)) {
+    event.rawPath = event.rawPath.slice(stage.length + 1) || '/';
+  }
+
+  if (stage && event.requestContext?.http?.path?.startsWith(`/${stage}`)) {
+    event.requestContext.http.path =
+      event.requestContext.http.path.slice(stage.length + 1) || '/';
   }
 
   return cachedServer(event, context, () => {}); 

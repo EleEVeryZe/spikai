@@ -16,8 +16,6 @@ async function bootstrap() {
 }
 
 export const handler: Handler = async (event: any, context: Context) => {
- console.log("EVENT RECEIVED3:", JSON.stringify(event, null, 2));
-
   if (!cachedServer) {
     cachedServer = await bootstrap();
   }

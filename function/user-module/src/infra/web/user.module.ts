@@ -1,8 +1,17 @@
 import { Module } from "@nestjs/common";
 import { UserResolver } from "./user.resolver";
-import { UserService } from "./user.service";
+import { IUser } from "./persistence/interfaces/user.service";
+import { UserService } from "./persistence/rodsDb/user.service";
 
 @Module({
-  providers: [UserResolver, UserService],
+  providers: [
+    UserResolver, 
+    UserService,
+    {
+      provide: IUser,
+      useClass: UserService
+    }
+  ],
+
 })
 export class UserModule {}

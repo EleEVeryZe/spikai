@@ -21,19 +21,21 @@ describe("User Module", () => {
         await app.close();
     });
 
-    it("Should retrieve users", async () => {
-        const query = `
-            query {
-                getUser(id: 1) {
-                    username
-                }
+    it("Should retrieve a user by ID", async () => {
+        const mutation = `
+            mutation {
+            login(loginInput: { email: "test@test.com", password: "testingPassword:" }) {
+                access_token
+               
             }
-                `;
+            }
+        `; 
 
         const response = await request(app.getHttpServer())
             .post('/graphql')
-            .send({ query });
+            .send({ query: mutation });
 
         expect(response.status).toBe(200);
-    })
+        expect(response.body.data.login.access_token).toBeDefined();
+    });
 });

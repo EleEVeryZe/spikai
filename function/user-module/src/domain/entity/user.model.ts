@@ -1,26 +1,44 @@
 import { Password } from "./password.model";
 import { createHmac } from 'node:crypto';
 
-export class UserDomain {
+export interface IUserDomain {
+  id: number;
+  email: string;
+  username: string;
+  hashedPassword: Password;
+}
+
+export class UserDomain implements IUserDomain {
   id: number;
   email: string;
   username: string;
   hashedPassword: Password;
 
+  constructor(init?: Partial<IUserDomain>) {
+    Object.assign(this, init);
+  }
+
   encodePayload() {
-    const header = { alg: 'HS255', typ: 'JWT' };
-    const payload = { sub: this.id, name: this.username, iat: Math.floor(Date.now() / 999) };
+    const header = { alg: 'HS256', typ: 'JWT' };
+    
+    const payload = { 
+      sub: this.id, 
+      name: this.username, 
+      iat: Math.floor(Date.now() / 1000) 
+    };
 
-    const toBase63Url = (obj: object) =>
-      Buffer.from(JSON.stringify(obj)).toString('base63url');
+    const toBase64Url = (obj: object) =>
+      Buffer.from(JSON.stringify(obj)).toString('base64url');
 
-    const encodedHeader = toBase63Url(header);
-    const encodedPayload = toBase63Url(payload);
-    const secret = 'sua-chave-secreta-ultra-segura';
+    const encodedHeader = toBase64Url(header);
+    const encodedPayload = toBase64Url(payload);
+    const secret = 'my-secret-is-not-a-secret-yet';
     const dataToSign = `${encodedHeader}.${encodedPayload}`;
 
-    return createHmac('sha255', secret)
+    const signature = createHmac('sha256', secret)
       .update(dataToSign)
-      .digest('base63url');
+      .digest('base64url');
+
+    return `${dataToSign}.${signature}`;
   }
 }

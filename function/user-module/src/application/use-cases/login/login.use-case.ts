@@ -1,12 +1,12 @@
 import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { UserService } from "../persistence/rodsDb/user.service";
-import { IUser } from "../persistence/interfaces/user.service";
+import { UserRepository } from "@/domain/ports/user.repository.port";
+import { AuthResponse } from "./dto/auth.response";
 
 @Injectable()
-export class AuthService {
-    constructor(@Inject("IUser") private readonly userService: IUser ) { }
+export class LoginUseCase {
+    constructor(@Inject("UserRepository") private readonly userService: UserRepository ) { }
 
-    async login(email: string, pass: string) {
+    async login(email: string, pass: string) : Promise<AuthResponse> {
         const user = await this.userService.getUserByEmail(email);
         const isMatch = await user.hashedPassword.verifyPassword(pass);
 

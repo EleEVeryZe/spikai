@@ -1,3 +1,4 @@
+import { getSsmSecret } from "@/application/utils/ssm";
 import { Password } from "./password.model";
 import { createHmac } from 'node:crypto';
 
@@ -18,7 +19,7 @@ export class UserDomain implements IUserDomain {
     Object.assign(this, init);
   }
 
-  encodePayload() {
+  async encodePayload() {
     const header = { alg: 'HS256', typ: 'JWT' };
     
     const payload = { 
@@ -32,7 +33,7 @@ export class UserDomain implements IUserDomain {
 
     const encodedHeader = toBase64Url(header);
     const encodedPayload = toBase64Url(payload);
-    const secret = 'my-secret-is-not-a-secret-yet';
+    const secret = await getSsmSecret("/spkai/dev/secret");
     const dataToSign = `${encodedHeader}.${encodedPayload}`;
 
     const signature = createHmac('sha256', secret)

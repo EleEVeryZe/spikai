@@ -8,12 +8,17 @@ export class LoginUseCase {
 
     async login(email: string, pass: string) : Promise<AuthResponse> {
         const user = await this.userService.getUserByEmail(email);
-        const isMatch = await user.hashedPassword.verifyPassword(pass);
+        
+        console.log(user);
+        const isMatch = await user?.hashedPassword.verifyPassword(pass);
 
         if (!isMatch) throw new UnauthorizedException('Credenciais inválidas');
-
+        const at = await user?.encodePayload();
+        
+        if (!at) throw new UnauthorizedException('Credenciais inválidas');
+        
         return {
-            access_token: await user.encodePayload()
+            access_token: at //TODO: change sneak-case to camelCase
         };
     }
 }

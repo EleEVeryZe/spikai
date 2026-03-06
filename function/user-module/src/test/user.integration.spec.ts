@@ -24,7 +24,7 @@ describe("User Module", () => {
     it("Should retrieve a user by ID", async () => {
         const mutation = `
             mutation {
-            login(loginInput: { email: "test@test.com", password: "testingPassword:" }) {
+            login(loginInput: { email: "dev@spikai.com", password: "testingPassword:" }) {
                 access_token
                
             }

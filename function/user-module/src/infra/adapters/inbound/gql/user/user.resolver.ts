@@ -11,7 +11,7 @@ export class UserResolver {
   @Mutation(() => AuthResponse)
   async login(@Args('loginInput') loginInput: LoginInput) {
     return this.loginUseCase.login(loginInput.email, loginInput.password);
-  }
+  }  
 
   @Query(() => String)
   healthCheck() {

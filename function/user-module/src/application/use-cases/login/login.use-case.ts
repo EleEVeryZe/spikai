@@ -8,8 +8,7 @@ export class LoginUseCase {
 
     async login(email: string, pass: string) : Promise<AuthResponse> {
         const user = await this.userService.getUserByEmail(email);
-        
-        console.log(user);
+       
         const isMatch = await user?.hashedPassword.verifyPassword(pass);
 
         if (!isMatch) throw new UnauthorizedException('Credenciais inválidas');

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './infra/adapters/inbound/gql/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { getSsmSecret } from './application/utils/ssm';
+import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { getSsmSecret } from './application/utils/ssm';
       },
     }),
     UserModule,
+    AIModule, //TODO: Refactor this part so when a queue is starting the app, only loads the specific of what It needs
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,

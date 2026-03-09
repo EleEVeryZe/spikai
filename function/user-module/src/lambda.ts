@@ -2,47 +2,60 @@ import { configure as serverlessExpress } from '@vendia/serverless-express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Context, Handler } from 'aws-lambda';
-import { AiMessageQueue } from './infra/adapters/outbound/queue/sqs/AiMessageQueue';
-import { IMessageQueue } from './domain/ports/message.queue.port';
+import { IEnqueueServicePort } from './domain/ports/enqueue-service.port';
+import { INestApplication } from '@nestjs/common';
 
 let cachedServer: Handler;
+let cachedApp: INestApplication;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   await app.init();
 
+  cachedApp = app; 
+
   return serverlessExpress({
     app: app.getHttpAdapter().getInstance(),
   });
 }
 
-//TODO: REDUCE COMPLEXITY OF FUNCTION
 export const handler: Handler = async (event: any, context: Context) => {
   if (!cachedServer) {
     cachedServer = await bootstrap();
   }
 
-  if (event.Records && event.Records[0].eventSource === 'aws:sqs') {
-    const app = await NestFactory.createApplicationContext(AppModule);
-    const aiService = app.get(IMessageQueue); 
+  console.log("Event Received:", JSON.stringify(event));
+  let records = event.Records;
 
-    for (const record of event.Records)
-      await aiService.processAiTask(JSON.parse(record.body)); 
+  if (!records && event.body) {
+    try {
+      const parsedBody = JSON.parse(event.body);
+      if (parsedBody.Records) records = parsedBody.Records;
+    } catch (e) {
+    }
+  }
+
+  if (records && records[0]?.eventSource === 'aws:sqs') {
+    console.log("Entering SQS Processing Logic...");
     
-    return cachedServer;
-  } 
+    const aiService = cachedApp.get(IEnqueueServicePort);
+
+    for (const record of records) {
+      const payload = typeof record.body === 'string' ? JSON.parse(record.body) : record.body;
+      await aiService.processAiTask(payload);
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'SQS Task Processed Successfully' }),
+    };
+  }
 
   const stage = event.requestContext?.stage;
-
   if (stage && event.rawPath?.startsWith(`/${stage}`)) {
     event.rawPath = event.rawPath.slice(stage.length + 1) || '/';
   }
 
-  if (stage && event.requestContext?.http?.path?.startsWith(`/${stage}`)) {
-    event.requestContext.http.path =
-      event.requestContext.http.path.slice(stage.length + 1) || '/';
-  }
-
-  return cachedServer(event, context, () => { });
+  return cachedServer(event, context, () => {});
 };

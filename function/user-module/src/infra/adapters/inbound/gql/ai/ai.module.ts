@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common";
 import { AIResolver } from "./ai.resolver";
-import { AIUseCase } from "@/application/use-cases/ai/ai.use-case";
-import { AiMessageQueue } from "@/infra/adapters/outbound/queue/sqs/AiMessageQueue";
-import { IMessageQueue } from "@/domain/ports/message.queue.port";
+import { EnqueueUseCase } from "@/application/use-cases/queue/enqueue.use-case";
+import { EnqueueMessage } from "@/infra/adapters/outbound/queue/sqs/EnqueueMessage";
+import { IEnqueueServicePort } from "@/domain/ports/enqueue-service.port";
 
 @Module({
   providers: [
     AIResolver, 
-    AIUseCase,
+    EnqueueUseCase,
     {
-      provide: IMessageQueue,
-      useClass: AiMessageQueue 
+      provide: IEnqueueServicePort,
+      useClass: EnqueueMessage 
     }
   ],
-  exports: [IMessageQueue]
+  exports: [IEnqueueServicePort]
 })
 export class AIModule {}

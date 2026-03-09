@@ -2,7 +2,7 @@ import { configure as serverlessExpress } from '@vendia/serverless-express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Context, Handler } from 'aws-lambda';
-import { IMessageQueue } from './domain/ports/message.queue.port';
+import { IEnqueueServicePort } from './domain/ports/enqueue-service.port';
 import { INestApplication } from '@nestjs/common';
 
 let cachedServer: Handler;
@@ -13,7 +13,7 @@ async function bootstrap() {
   app.enableCors();
   await app.init();
 
-  cachedApp = app; // Cache the Nest instance for DI access
+  cachedApp = app; 
 
   return serverlessExpress({
     app: app.getHttpAdapter().getInstance(),
@@ -39,7 +39,7 @@ export const handler: Handler = async (event: any, context: Context) => {
   if (records && records[0]?.eventSource === 'aws:sqs') {
     console.log("Entering SQS Processing Logic...");
     
-    const aiService = cachedApp.get(IMessageQueue);
+    const aiService = cachedApp.get(IEnqueueServicePort);
 
     for (const record of records) {
       const payload = typeof record.body === 'string' ? JSON.parse(record.body) : record.body;

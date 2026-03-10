@@ -19,7 +19,6 @@ export abstract class IDequeueServicePort {
             throw error;
         }
         throw new Error("Method not implemented."); 
-
   }
 
   private async saveResult(jobId: string, body: any) {

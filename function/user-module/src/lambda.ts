@@ -2,8 +2,8 @@ import { configure as serverlessExpress } from '@vendia/serverless-express';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Context, Handler } from 'aws-lambda';
-import { IEnqueueServicePort } from './domain/ports/enqueue-service.port';
 import { INestApplication } from '@nestjs/common';
+import { IDequeueServicePort } from './domain/ports/dequeue-service.port';
 
 let cachedServer: Handler;
 let cachedApp: INestApplication;
@@ -37,18 +37,26 @@ export const handler: Handler = async (event: any, context: Context) => {
   }
 
   if (records && records[0]?.eventSource === 'aws:sqs') {
-    console.log("Entering SQS Processing Logic...");
-    
-    const aiService = cachedApp.get(IEnqueueServicePort);
+    const aiService = cachedApp.get(IDequeueServicePort);
 
     for (const record of records) {
-      const payload = typeof record.body === 'string' ? JSON.parse(record.body) : record.body;
-      await aiService.processAiTask(payload);
+      console.log("Entering SQS job", record.body);
+      const sqsBody = typeof record.body === 'string' ? JSON.parse(record.body) : record.body;
+
+      let finalPayload;
+
+      if (sqsBody.Type === 'Notification' && sqsBody.Message) {
+        finalPayload = typeof sqsBody.Message === 'string' ? JSON.parse(sqsBody.Message) : sqsBody.Message;
+      } else {
+        finalPayload = sqsBody;
+      }
+
+      await aiService.dequeue(finalPayload.jobId, finalPayload);
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'SQS Task Processed Successfully' }),
+      body: JSON.stringify({ message: 'Task Processed Successfully' }),
     };
   }
 

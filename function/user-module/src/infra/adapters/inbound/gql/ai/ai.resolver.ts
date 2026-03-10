@@ -1,15 +1,16 @@
 import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
 import { AuthResponse } from '@/application/use-cases/login/dto/auth.response';
 import { EnqueueUseCase } from '@/application/use-cases/queue/enqueue.use-case';
+import { PromptResponse } from './dto/promptResponse';
 
 @Resolver(() => AuthResponse)
 export class AIResolver {
 
     constructor(private readonly aiUseCase: EnqueueUseCase) { }
 
-    @Mutation(() => String, { name: 'prompt' })
+    @Mutation(() => PromptResponse, { name: 'prompt' })
     async prompt(@Args("prompt") prompt: string) {
-        return this.aiUseCase.execute(prompt);
+        return (await this.aiUseCase.execute(prompt)) as PromptResponse;
     }
     
     @Query(() => String)

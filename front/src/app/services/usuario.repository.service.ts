@@ -3,9 +3,11 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Usuario } from '../model/user.model';
- const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-  });
+import { environment } from '../../environments/environment';
+
+const headers = new HttpHeaders({
+  'Content-Type': 'application/json',
+});
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +22,7 @@ export class UsuarioRepositoryService {
   postCadastro(userInfo: any) {
     return this.httpClient
    .post(
-      'https://tjikhik5sh.execute-api.sa-east-1.amazonaws.com/default/cadastro',
+      environment.api.cadastro,
       JSON.stringify(userInfo),
       { headers }
     );
@@ -29,14 +31,26 @@ export class UsuarioRepositoryService {
   updateUser(userInfo: any) {
     return this.httpClient
    .post(
-      'https://tjikhik5sh.execute-api.sa-east-1.amazonaws.com/default/cadastro',
+      environment.api.cadastro,
       JSON.stringify({ ...userInfo, isEdit: true }),
       { headers }
     );
   }
 
   onLogin(email: string, password: string) {
-    return this.httpClient.post('https://ql0yknlu2l.execute-api.sa-east-1.amazonaws.com/default/login', JSON.stringify({ email, password }));
+    const query = `
+      mutation {
+        login(loginInput: { email: "${email}", password: "${password}" }) {
+          access_token
+        }
+      }
+    `;
+    
+    return this.httpClient.post<any>(
+      environment.api.graphql,
+      JSON.stringify({ query }),
+      { headers }
+    );
   }
 
   getUserEmail = () => this.authService.loadUserState().email;
@@ -63,7 +77,7 @@ export class UsuarioRepositoryService {
 
     return this.httpClient
     .post<any>(
-      "https://0xaywrm14h.execute-api.sa-east-1.amazonaws.com/default/usuario",
+      environment.api.usuario,
       { email: userEmail?.toLocaleLowerCase() }
     )
     .pipe(map(data => new Usuario(data)));

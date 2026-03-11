@@ -8,16 +8,86 @@ import { IDequeueServicePort } from './domain/ports/dequeue-service.port';
 let cachedServer: Handler;
 let cachedApp: INestApplication;
 
-async function bootstrap() {
+async function bootstrap(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+    allowedHeaders: 'Content-Type, Authorization, apollo-require-preflight, x-apollo-operation-name',
+  });
   await app.init();
 
-  cachedApp = app; 
+  cachedApp = app;
 
   return serverlessExpress({
     app: app.getHttpAdapter().getInstance(),
   });
+}
+
+function isCorsPreflightRequest(event) {
+    const method = event.httpMethod || event.requestContext?.http?.method || event.requestContext?.method;
+    return method === 'OPTIONS';
+}
+
+function createCorsResponse() {
+  return {
+    statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    },
+    body: '',
+  };
+}
+
+function extractSqsRecords(event: any): any[] | null {
+  if (event.Records) return event.Records;
+
+  if (event.body) {
+    try {
+      const parsedBody = JSON.parse(event.body);
+      return parsedBody.Records || null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+function isSqsEvent(records: any[]): boolean {
+  return records && records.length > 0 && records[0]?.eventSource === 'aws:sqs';
+}
+
+function extractSqsPayload(record: any): any {
+  const sqsBody = typeof record.body === 'string' ? JSON.parse(record.body) : record.body;
+
+  if (sqsBody.Type === 'Notification' && sqsBody.Message) {
+    return typeof sqsBody.Message === 'string' ? JSON.parse(sqsBody.Message) : sqsBody.Message;
+  }
+
+  return sqsBody;
+}
+
+async function processSqsMessages(records: any[], aiService: any): Promise<{ statusCode: number; body: string }> {
+  for (const record of records) {
+    console.log("Processing SQS job", record.body);
+    const payload = extractSqsPayload(record);
+    await aiService.dequeue(payload.jobId, payload);
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: 'Task Processed Successfully' }),
+  };
+}
+
+function normalizeApiGatewayPath(event: any): void {
+  const stage = event.requestContext?.stage;
+  if (stage && event.rawPath?.startsWith(`/${stage}`)) {
+    event.rawPath = event.rawPath.slice(stage.length + 1) || '/';
+  }
 }
 
 export const handler: Handler = async (event: any, context: Context) => {
@@ -26,44 +96,18 @@ export const handler: Handler = async (event: any, context: Context) => {
   }
 
   console.log("Event Received:", JSON.stringify(event));
-  let records = event.Records;
 
-  if (!records && event.body) {
-    try {
-      const parsedBody = JSON.parse(event.body);
-      if (parsedBody.Records) records = parsedBody.Records;
-    } catch (e) {
-    }
+  if (isCorsPreflightRequest(event)) {
+    return createCorsResponse();
   }
-
-  if (records && records[0]?.eventSource === 'aws:sqs') {
+  
+  const sqsRecords = extractSqsRecords(event);
+  if (sqsRecords && isSqsEvent(sqsRecords)) {
     const aiService = cachedApp.get(IDequeueServicePort);
-
-    for (const record of records) {
-      console.log("Entering SQS job", record.body);
-      const sqsBody = typeof record.body === 'string' ? JSON.parse(record.body) : record.body;
-
-      let finalPayload;
-
-      if (sqsBody.Type === 'Notification' && sqsBody.Message) {
-        finalPayload = typeof sqsBody.Message === 'string' ? JSON.parse(sqsBody.Message) : sqsBody.Message;
-      } else {
-        finalPayload = sqsBody;
-      }
-
-      await aiService.dequeue(finalPayload.jobId, finalPayload);
-    }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Task Processed Successfully' }),
-    };
+    return await processSqsMessages(sqsRecords, aiService);
   }
 
-  const stage = event.requestContext?.stage;
-  if (stage && event.rawPath?.startsWith(`/${stage}`)) {
-    event.rawPath = event.rawPath.slice(stage.length + 1) || '/';
-  }
+  normalizeApiGatewayPath(event);
 
-  return cachedServer(event, context, () => {});
+  return cachedServer(event, context, () => { });
 };

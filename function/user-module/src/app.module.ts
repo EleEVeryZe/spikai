@@ -17,10 +17,10 @@ import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
     TypeOrmModule.forRootAsync({
       useFactory: async () => {
         return {
-          type: 'postgres', 
+          type: 'postgres',
           url: await getSsmSecret("/spkai/db/supabase"),
           autoLoadEntities: true,
-          synchronize: false, 
+          synchronize: false,
         };
       },
     }),
@@ -29,6 +29,7 @@ import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      path: '/graphql',
     }),
   ],
   controllers: [AppController],

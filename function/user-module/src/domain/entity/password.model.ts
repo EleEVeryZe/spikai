@@ -7,9 +7,9 @@ export class Password {
         return this.password;
     }
 
-    hashPassword(password: string) {
+    hashPassword() {
         const salt = randomBytes(16).toString('hex');
-        const hash = scryptSync(password, salt, 64).toString('hex');
+        const hash = scryptSync(this.password, salt, 64).toString('hex');
         return `${salt}:${hash}`;
     }
 

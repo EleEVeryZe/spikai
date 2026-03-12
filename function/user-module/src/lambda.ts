@@ -24,23 +24,6 @@ async function bootstrap(): Promise<Handler> {
   });
 }
 
-function isCorsPreflightRequest(event) {
-    const method = event.httpMethod || event.requestContext?.http?.method || event.requestContext?.method;
-    return method === 'OPTIONS';
-}
-
-function createCorsResponse() {
-  return {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-    },
-    body: '',
-  };
-}
-
 function extractSqsRecords(event: any): any[] | null {
   if (event.Records) return event.Records;
 
@@ -90,17 +73,21 @@ function normalizeApiGatewayPath(event: any): void {
   }
 }
 
+function isCorsPreflightRequest(event) {
+    const method = event.httpMethod || event.requestContext?.http?.method || event.requestContext?.method;
+    return method === 'OPTIONS';
+}
+
 export const handler: Handler = async (event: any, context: Context) => {
   if (!cachedServer) {
     cachedServer = await bootstrap();
   }
 
   console.log("Event Received:", JSON.stringify(event));
-
   if (isCorsPreflightRequest(event)) {
-    return createCorsResponse();
+    return;
   }
-  
+
   const sqsRecords = extractSqsRecords(event);
   if (sqsRecords && isSqsEvent(sqsRecords)) {
     const aiService = cachedApp.get(IDequeueServicePort);

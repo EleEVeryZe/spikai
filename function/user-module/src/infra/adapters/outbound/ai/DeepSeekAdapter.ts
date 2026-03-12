@@ -6,11 +6,11 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 export class DeepSeekAdapter implements AiServicePort {
   private readonly API_URL = 'https://api.deepseek.com/v1/chat/completions';
   private cachedAPIKey = "";
-  
+
   async generateResponse(prompt: string) {
 
-    if (!this.cachedAPIKey) 
-        this.cachedAPIKey = await getSsmSecret("/spkai/ai/deepseek");
+    if (!this.cachedAPIKey)
+      this.cachedAPIKey = await getSsmSecret("/spkai/ai/deepseek");
 
     const response = await fetch(this.API_URL, {
       method: 'POST',
@@ -26,7 +26,16 @@ export class DeepSeekAdapter implements AiServicePort {
     });
 
     if (!response.ok) {
-      throw new HttpException('DeepSeek API Failure', HttpStatus.BAD_GATEWAY);
+      const errorBody = await response.text(); 
+
+      console.error(`[DeepSeekAdapter] API Error:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorBody,
+        prompt: prompt.substring(0, 50) + '...',
+      });
+
+      throw new Error('DeepSeek API Failure');
     }
 
     const data = await response.json();

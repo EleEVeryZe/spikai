@@ -6,16 +6,17 @@ import { AiServicePort } from "@/domain/ports/ai-service.port";
 @Injectable()
 export class PromptAiJob extends IDequeueServicePort {
     constructor(@Inject(AiServicePort)
-        private readonly aiServicePort: AiServicePort){
-            super();
+    private readonly aiServicePort: AiServicePort) {
+        super();
     }
 
     protected async execute(jobId: string, body: any): Promise<QueueStatus> {
-        await this.aiServicePort.generateResponse(body.prompt);
+        const llmAnswer = await this.aiServicePort.generateResponse(body.data);
         return {
             jobId,
             status: "Finished",
-            message: "Done!" 
+            message: "Done!",
+            body: llmAnswer
         }
     }
 }

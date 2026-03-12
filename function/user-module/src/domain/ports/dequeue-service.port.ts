@@ -14,15 +14,16 @@ export abstract class IDequeueServicePort {
             await this.saveResult(jobId, result);
 
             this.logger.log(`Finished Job: ${jobId}`);
+            return result; // return the successful outcome
         } catch (error) {
             this.logger.error(`Failed Job: ${jobId}`, error.stack);
             throw error;
         }
-        throw new Error("Method not implemented."); 
   }
 
-  private async saveResult(jobId: string, body: any) {
-    console.log("Function Not Implemented Yet!!!") // TODO: implement this function
+  private async saveResult(jobId: string, result: QueueStatus) {
+    // TODO: persist queue result to a database or other storage
+    this.logger.log(`Result for job ${jobId}: ${JSON.stringify(result)}`);
   }
 
 }

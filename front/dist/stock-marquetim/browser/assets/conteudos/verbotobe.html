@@ -1,0 +1,274 @@
+<style>
+  .lesson {
+    --primary: #2a4d8f;
+    --light-bg: #f9fafb;
+    --card-bg: #fff;
+    --example-bg: #eef3ff;
+    --text-color: #333;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+    background-color: var(--light-bg);
+    color: var(--text-color);
+    padding: 1.5rem;
+  }
+
+  .lesson h1,
+  .lesson h2 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+  }
+
+  .lesson .section {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 1.2rem auto;
+    padding: 1.5rem;
+    max-width: 850px;
+  }
+
+  .lesson table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+
+  .lesson th,
+  .lesson td {
+    border: 1px solid #ddd;
+    padding: 0.6rem;
+    text-align: center;
+  }
+
+  .lesson th {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .lesson .example {
+    background-color: var(--example-bg);
+    padding: 1rem;
+    border-left: 4px solid var(--primary);
+    margin: 1rem 0;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+
+  .lesson .highlight {
+    color: var(--primary);
+    font-weight: bold;
+  }
+
+  .lesson p {
+    margin: 0.4rem 0;
+  }
+
+  .lesson .footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #777;
+    font-size: 0.9rem;
+  }
+
+  /* 📱 Mobile adjustments */
+  @media (max-width: 600px) {
+    .lesson {
+      padding: 1rem;
+      font-size: 1rem;
+    }
+
+    .lesson h1 {
+      font-size: 1.6rem;
+    }
+
+    .lesson h2 {
+      font-size: 1.2rem;
+    }
+
+    .lesson table,
+    .lesson thead,
+    .lesson tbody,
+    .lesson th,
+    .lesson td,
+    .lesson tr {
+      display: block;
+    }
+
+    .lesson thead {
+      display: none;
+    }
+
+    .lesson tr {
+      margin-bottom: 1rem;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 0.6rem;
+    }
+
+    .lesson td {
+      border: none;
+      text-align: left;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .lesson td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: block;
+      color: var(--primary);
+    }
+  }
+</style>
+<div class="lesson">
+  <div class="section">
+    <h2>1. O que significa “to be”?</h2>
+    <p>
+      O verbo <span class="highlight">to be</span> significa <em>ser</em> ou <em>estar</em>.
+      Ele é um dos verbos mais importantes do inglês e é usado para descrever pessoas, objetos e situações — ou seja,
+      para dizer como algo <strong>é</strong> ou <strong>está</strong>.
+    </p>
+    <p>
+      Em português usamos “ser” e “estar” separadamente, mas em inglês usamos o mesmo verbo (<strong>to be</strong>)
+      para os dois!
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>2. Formas do verbo “To Be”</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Sujeito</th>
+          <th>Presente</th>
+          <th>Passado</th>
+          <th>Tradução</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Sujeito">I</td>
+          <td data-label="Presente">am</td>
+          <td data-label="Passado">was</td>
+          <td data-label="Tradução">eu sou / estou</td>
+        </tr>
+        <tr>
+          <td data-label="Sujeito">You</td>
+          <td data-label="Presente">are</td>
+          <td data-label="Passado">were</td>
+          <td data-label="Tradução">você é / está</td>
+        </tr>
+        <tr>
+          <td data-label="Sujeito">He / She / It</td>
+          <td data-label="Presente">is</td>
+          <td data-label="Passado">was</td>
+          <td data-label="Tradução">ele(a) é / está</td>
+        </tr>
+        <tr>
+          <td data-label="Sujeito">We</td>
+          <td data-label="Presente">are</td>
+          <td data-label="Passado">were</td>
+          <td data-label="Tradução">nós somos / estamos</td>
+        </tr>
+        <tr>
+          <td data-label="Sujeito">They</td>
+          <td data-label="Presente">are</td>
+          <td data-label="Passado">were</td>
+          <td data-label="Tradução">eles(as) são / estão</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>3. Exemplos no Presente</h2>
+    <div class="example">
+      <p><span class="highlight">I am</span> a student. → <em>Eu sou um estudante.</em></p>
+      <p><span class="highlight">You are</span> very kind. → <em>Você é muito gentil.</em></p>
+      <p><span class="highlight">He is</span> a teacher. → <em>Ele é um professor.</em></p>
+      <p><span class="highlight">We are</span> friends. → <em>Nós somos amigos.</em></p>
+      <p><span class="highlight">They are</span> from Brazil. → <em>Eles são do Brasil.</em></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>4. Forma Negativa</h2>
+    <p>Para fazer a forma negativa, basta adicionar <span class="highlight">not</span> depois do verbo “to be”.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Afirmação</th>
+          <th>Negativa</th>
+          <th>Tradução</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Afirmação">I am happy.</td>
+          <td data-label="Negativa">I <span class="highlight">am not</span> happy.</td>
+          <td data-label="Tradução">Eu não estou feliz.</td>
+        </tr>
+        <tr>
+          <td data-label="Afirmação">You are late.</td>
+          <td data-label="Negativa">You <span class="highlight">are not</span> late.</td>
+          <td data-label="Tradução">Você não está atrasado.</td>
+        </tr>
+        <tr>
+          <td data-label="Afirmação">He is tall.</td>
+          <td data-label="Negativa">He <span class="highlight">is not</span> tall.</td>
+          <td data-label="Tradução">Ele não é alto.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Contrações:</strong> isn’t = is not, aren’t = are not</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Perguntas com “To Be”</h2>
+    <p>Para fazer perguntas, inverta a ordem: o verbo “to be” vem antes do sujeito.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Afirmação</th>
+          <th>Pergunta</th>
+          <th>Tradução</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-label="Afirmação">You are a doctor.</td>
+          <td data-label="Pergunta"><span class="highlight">Are you</span> a doctor?</td>
+          <td data-label="Tradução">Você é médico?</td>
+        </tr>
+        <tr>
+          <td data-label="Afirmação">He is your friend.</td>
+          <td data-label="Pergunta"><span class="highlight">Is he</span> your friend?</td>
+          <td data-label="Tradução">Ele é seu amigo?</td>
+        </tr>
+        <tr>
+          <td data-label="Afirmação">They are ready.</td>
+          <td data-label="Pergunta"><span class="highlight">Are they</span> ready?</td>
+          <td data-label="Tradução">Eles estão prontos?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>6. Exemplos do Dia a Dia</h2>
+    <div class="example">
+      <p>Hi! <span class="highlight">I’m</span> Sarah, and this <span class="highlight">is</span> my cat,
+        Luna.<br><em>Oi! Eu sou a Sarah, e essa é minha gata, Luna.</em></p>
+      <p><span class="highlight">We’re</span> from Canada.<br><em>Nós somos do Canadá.</em></p>
+      <p>Luna <span class="highlight">is</span> small, but she <span class="highlight">is</span> very
+        playful!<br><em>Luna é pequena, mas é muito brincalhona!</em></p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>© 2025 Material de Inglês — Explicação do Verbo “To Be”</p>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Usuario } from '../model/user.model';
 import { environment } from '../../environments/environment';
@@ -19,37 +19,108 @@ export class UsuarioRepositoryService {
     this.httpClient = httpClient;
   }
 
-  postCadastro(userInfo: any) {
-    return this.httpClient
-   .post(
-      environment.api.cadastro,
-      JSON.stringify(userInfo),
-      { headers }
+  private executeGraphQLMutation<T>(query: string, variables: any, rootField: string) {
+    return this.httpClient.post<any>(environment.api.graphql, JSON.stringify({ query, variables }), { headers }).pipe(
+      map((resp: any) => {
+        if (resp?.errors?.length) {
+          const firstError = resp.errors[0];
+          const message = firstError?.message || 'Erro de GraphQL';
+          throw { error: { message }, graphQLErrors: resp.errors };
+        }
+
+        const data = resp?.data?.[rootField];
+        if (data === undefined || data === null) {
+          throw { error: { message: `Retorno inválido para ${rootField}` }, response: resp };
+        }
+
+        return data as T;
+      }),
+      catchError((err) => {
+        if (err?.error?.message) {
+          return throwError(() => err);
+        }
+        return throwError(() => ({ error: { message: err?.message || 'Erro ao executar GraphQL' }, originalError: err }));
+      })
     );
   }
 
+  private normalizeCreateUserInput(userInfo: any) {
+    const email = userInfo.email?.toLowerCase?.();
+    const username = userInfo.username || userInfo.name || (email ? email.split('@')[0] : undefined);
+    const password = userInfo.password;
+
+    if (!email || !username || !password) {
+      throw new Error('createUser requires email, username and password');
+    }
+
+    return {
+      email,
+      username,
+      password,
+    };
+  }
+
+  private normalizeUpdateUserInput(userInfo: any) {
+    if (userInfo.id === undefined || userInfo.id === null) {
+      throw new Error('updateUser requires id field');
+    }
+
+    const input: any = { id: Number(userInfo.id) };
+    if (userInfo.email) input.email = String(userInfo.email).toLowerCase();
+    if (userInfo.username) input.username = userInfo.username;
+    else if (userInfo.name) input.username = userInfo.name;
+    if (userInfo.password) input.password = userInfo.password;
+
+    return input;
+  }
+
+  postCadastro(userInfo: any) {
+    const mutationInput = this.normalizeCreateUserInput(userInfo);
+    const query = `
+      mutation CreateUser($input: CreateUserInput!) {
+        createUser(createUserInput: $input) {
+          id
+          email
+          username
+        }
+      }
+    `;
+
+    return this.executeGraphQLMutation<any>(query, { input: mutationInput }, 'createUser');
+  }
+
   updateUser(userInfo: any) {
-    return this.httpClient
-   .post(
-      environment.api.cadastro,
-      JSON.stringify({ ...userInfo, isEdit: true }),
-      { headers }
-    );
+    const mutationInput = this.normalizeUpdateUserInput(userInfo);
+    const query = `
+      mutation UpdateUser($input: UpdateUserInput!) {
+        updateUser(updateUserInput: $input) {
+          id
+          email
+          username
+        }
+      }
+    `;
+
+    return this.executeGraphQLMutation<any>(query, { input: mutationInput }, 'updateUser');
   }
 
   onLogin(email: string, password: string) {
     const query = `
-      mutation {
-        login(loginInput: { email: "${email}", password: "${password}" }) {
+      mutation Login($input: LoginInput!) {
+        login(loginInput: $input) {
           access_token
         }
       }
     `;
-    
-    return this.httpClient.post<any>(
-      environment.api.graphql,
-      JSON.stringify({ query }),
-      { headers }
+
+    return this.executeGraphQLMutation<{ access_token: string | undefined }>(query, { input: { email, password } }, 'login').pipe(
+      map((loginData) => {
+        const token = loginData?.access_token;
+        if (!token) {
+          throw { error: { message: 'token não retornado no login' }, response: loginData };
+        }
+        return { token };
+      })
     );
   }
 

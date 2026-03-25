@@ -1,0 +1,585 @@
+{
+  "name": "pos@pos",
+  "email": "pos@pos",
+  "age": 17,
+  "gender": "male",
+  "education": "Ensino Superior Completo",
+  "password": "",
+  "vocabulary": "Tecnologia",
+  "IAVocabulary": "Tools and machines",
+  "ehGrupoControle": false,
+  "cursos": [
+    {
+      "id": "7cf00315-225c-4217-82e7-7badd5681eee",
+      "nome": "to-be",
+      "titulo": "To Be",
+      "concluido": 25,
+      "atividades": [
+        {
+          "nome": "Pré-teste",
+          "perguntas": [
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I .......................... a teacher.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "You ...................... a great student.",
+              "opcoes": ["am", "is", "are", "do"],
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "He ........................... a chef.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3,
+              "opcaoSelecionada": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "She ........................... a police officer.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3,
+              "opcaoSelecionada": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "It ...................... a good tool for my job.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3,
+              "opcaoSelecionada": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "We ............... engineers.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "They ..................... doctors.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My sister and I ...................... lawyers.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My cousin .......................... a firefighter.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The boss and the secretary .................................... in the meeting.",
+              "opcoes": ["am", "do", "is", "are"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The client ........................ waiting outside.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I .......................... working as a journalist.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "She ........................... the new manager.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "You and he ......................... marketing specialists.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            }
+          ],
+          "concluida": true,
+          "dataConclusao": "2025-11-11T14:43:27.887Z"
+        },
+        {
+          "nome": "Conteúdo",
+          "conteudoASerImportado": "conteudos/verbotobe.html",
+          "videos": [
+            {
+              "videoId": "verbotobe.mp4"
+            }
+          ],
+          "concluida": false
+        },
+        {
+          "nome": "Quizz",
+          "concluida": false,
+          "perguntas": [
+            {
+              "id": 1,
+              "sentence": "I ___ a student.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "am",
+              "tutoringText": "O pronome 'I' usa sempre a forma 'am' no presente do verbo 'to be'."
+            },
+            {
+              "id": 2,
+              "sentence": "Barbara ___ not at home.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "'Barbara' (singular, She) usa 'is not' ou 'isn't'."
+            },
+            {
+              "id": 3,
+              "sentence": "___ you happy?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Are",
+              "tutoringText": "Na forma interrogativa, 'you' usa 'Are'."
+            },
+            {
+              "id": 4,
+              "sentence": "Josh and Ricky ___ teachers.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'Josh and Ricky' (plural, They) usa 'are' no presente afirmativo."
+            },
+            {
+              "id": 5,
+              "sentence": "We ___ not witches.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "Na negativa, 'we' usa 'are not' ou 'aren't'."
+            },
+            {
+              "id": 6,
+              "sentence": "___ Alan an accountant?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Is",
+              "tutoringText": "'Alan' (singular, He) usa 'Is' na forma interrogativa."
+            },
+            {
+              "id": 7,
+              "sentence": "I ___ not a vampire.",
+              "options": ["is", "am", "are", "be"],
+              "correctAnswer": "am",
+              "tutoringText": "'I' na negativa usa 'am not'."
+            },
+            {
+              "id": 8,
+              "sentence": "You ___ a witch.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'You' no presente afirmativo usa 'are'."
+            },
+            {
+              "id": 9,
+              "sentence": "___ they vampires?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Are",
+              "tutoringText": "Na forma interrogativa, 'they' usa 'Are'."
+            },
+            {
+              "id": 10,
+              "sentence": "Kevin ___ not a doctor.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "'Kevin' (singular, He) usa 'is not' ou 'isn't' na negativa."
+            },
+            {
+              "id": 11,
+              "sentence": "My friends ___ brothers and sisters.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'My parents' (plural, They) usa 'are' no presente afirmativo."
+            },
+            {
+              "id": 12,
+              "sentence": "___ I human?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Am",
+              "tutoringText": "Na forma interrogativa, 'I' usa 'Am'."
+            },
+            {
+              "id": 13,
+              "sentence": "Laura ___ a nurse.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "'Laura' (singular, She) no afirmativo usa 'is'."
+            },
+            {
+              "id": 14,
+              "sentence": "You ___ not my friend.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'You' na forma negativa usa 'are not' ou 'aren't'."
+            },
+            {
+              "id": 15,
+              "sentence": "___ Paul a doctor or an engineer?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Is",
+              "tutoringText": "'Paul' (singular, He) usa 'Is' na forma interrogativa."
+            },
+            {
+              "id": 16,
+              "sentence": "The paiting ___ a beautiful landscape.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "'The meeting' (singular, It) usa a forma 'is' no presente."
+            },
+            {
+              "id": 17,
+              "sentence": "We ___ in the office right now.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'We' usa 'are' para indicar a localização no presente."
+            },
+            {
+              "id": 18,
+              "sentence": "Our colleagues ___ not ready for the exam.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'Our colleagues' (plural, They) usa 'are not' ou 'aren't' na negativa."
+            },
+            {
+              "id": 19,
+              "sentence": "___ Martha a lawyer?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Is",
+              "tutoringText": "'Martha' (singular, She) usa 'Is' na forma interrogativa."
+            },
+            {
+              "id": 20,
+              "sentence": "I ___ hungry.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "am",
+              "tutoringText": ""
+            }
+          ],
+          "dataConclusao": ""
+        },
+        {
+          "nome": "Texto",
+          "concluida": false,
+          "texto": "",
+          "perguntas": [
+            {
+              "descricao": "Ana é programadora de computador",
+              "correta": false
+            }
+          ]
+        },
+        {
+          "nome": "Pós-teste",
+          "concluida": false,
+          "perguntas": [
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I .......................... a teacher.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "You ...................... a great student.",
+              "opcoes": ["am", "is", "are", "do"],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "He ........................... a chef.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "She ........................... a police officer.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "It ...................... a good tool for my job.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "We ............... engineers.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "They ..................... doctors.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My sister and I ...................... lawyers.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My cousin .......................... a firefighter.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The boss and the secretary .................................... in the meeting.",
+              "opcoes": ["am", "do", "is", "are"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The client ........................ waiting outside.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I .......................... working as a journalist.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "She ........................... the new manager.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "You and he ......................... marketing specialists.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            }
+          ],
+          "dataConclusao": ""
+        }
+      ],
+      "completo": false
+    },
+    {
+      "id": "7cf00315-225c-4217-82e7-7badd5682eee",
+      "nome": "simple-present",
+      "titulo": "Simple Present",
+      "concluido": 25,
+      "atividades": [
+        {
+          "nome": "Pré-teste",
+          "perguntas": [
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "She __________ to school every day.",
+              "opcoes": ["go", "goes", "going", "gone"],
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I __________ like coffee.",
+              "opcoes": ["don’t", "doesn’t", "not", "isn’t"],
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "__________ they play soccer on weekends?",
+              "opcoes": ["Do", "Does", "Are", "Did"],
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "He __________ in an office.",
+              "opcoes": ["work", "works", "working", "worked"],
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "We __________ study English on Mondays.",
+              "opcoes": ["does", "do", "is", "are"],
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 0
+            }
+          ],
+          "concluida": true,
+          "dataConclusao": "2025-11-05T22:17:49.989Z"
+        },
+        {
+          "nome": "Conteúdo",
+          "videos": [
+            {
+              "videoId": "simplepresent.mp4"
+            }
+          ],
+          "concluida": false
+        },
+        {
+          "nome": "Quizz",
+          "concluida": false,
+          "perguntas": [
+            {
+              "id": 1,
+              "sentence": "He usually ___ to the gym after work.",
+              "options": ["go", "goes", "going", "gone"],
+              "correctAnswer": "goes",
+              "tutoringText": "No Simple Present, verbos com 'he/she/it' recebem 's' no final."
+            },
+            {
+              "id": 2,
+              "sentence": "I ___ like watching movies.",
+              "options": ["doesn't", "don’t", "not", "am not"],
+              "correctAnswer": "don’t",
+              "tutoringText": "'I' usa 'don’t' (do not) na negativa, nunca 'doesn’t'."
+            },
+            {
+              "id": 3,
+              "sentence": "She ___ breakfast at 7 a.m.",
+              "options": ["eat", "eats", "eating", "ate"],
+              "correctAnswer": "eats",
+              "tutoringText": "Na 3ª pessoa, o verbo ganha 's' no Simple Present: 'She eats'."
+            },
+            {
+              "id": 4,
+              "sentence": "___ they work on weekends?",
+              "options": ["Do", "Does", "Are", "Did"],
+              "correctAnswer": "Do",
+              "tutoringText": "Com 'they', usamos 'Do' para perguntas."
+            },
+            {
+              "id": 5,
+              "sentence": "My parents ___ live in Brazil.",
+              "options": ["doesn’t", "don’t", "isn’t", "aren’t"],
+              "correctAnswer": "don’t",
+              "tutoringText": "'My parents' (plural) usa 'don’t' na forma negativa."
+            },
+            {
+              "id": 6,
+              "sentence": "It ___ rains a lot here in July.",
+              "options": ["don’t", "doesn’t", "not", "isn’t"],
+              "correctAnswer": "doesn’t",
+              "tutoringText": "Com 'it', usamos 'doesn’t' na negativa."
+            },
+            {
+              "id": 7,
+              "sentence": "What time ___ you wake up?",
+              "options": ["do", "does", "are", "is"],
+              "correctAnswer": "do",
+              "tutoringText": "Usamos 'do' com 'you' em perguntas."
+            },
+            {
+              "id": 8,
+              "sentence": "My brother ___ tennis every Sunday.",
+              "options": ["play", "plays", "playing", "played"],
+              "correctAnswer": "plays",
+              "tutoringText": "Verbos com 'he/she/it' ganham 's' no Simple Present."
+            },
+            {
+              "id": 9,
+              "sentence": "They ___ like spicy food.",
+              "options": ["doesn’t", "don’t", "isn’t", "aren’t"],
+              "correctAnswer": "don’t",
+              "tutoringText": "Com 'they', usamos 'don’t' na negativa."
+            },
+            {
+              "id": 10,
+              "sentence": "Does she ___ in a hospital?",
+              "options": ["work", "works", "working", "worked"],
+              "correctAnswer": "work",
+              "tutoringText": "Após 'does' na pergunta, o verbo volta à forma base (sem 's')."
+            }
+          ],
+          "dataConclusao": ""
+        },
+        {
+          "nome": "Pós-teste",
+          "concluida": false,
+          "perguntas": [
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "He __________ breakfast at 8 o’clock.",
+              "opcoes": ["eat", "eats", "eating", "ate"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "We __________ go to the park on Sundays.",
+              "opcoes": ["does", "do", "is", "are"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "__________ your sister study English?",
+              "opcoes": ["Do", "Does", "Is", "Did"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I __________ play football very well.",
+              "opcoes": ["don’t", "doesn’t", "not", "isn’t"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "They __________ like pizza.",
+              "opcoes": ["doesn’t", "don’t", "isn’t", "aren’t"],
+              "opcaoCorreta": 1
+            }
+          ],
+          "dataConclusao": ""
+        },
+        {
+          "nome": "Memorização",
+          "concluida": false
+        }
+      ],
+      "completo": false
+    },
+    {
+      "id": "7cf00315-225c-4217-82e7-7badd5683eee",
+      "nome": "simple-past",
+      "titulo": "Present Continuous",
+      "concluido": 0,
+      "atividades": [
+        {
+          "nome": "Pré-teste",
+          "concluida": false,
+          "dataConclusao": ""
+        },
+        {
+          "nome": "Conteúdo",
+          "concluida": false
+        },
+        {
+          "nome": "Quizz",
+          "concluida": false
+        },
+        {
+          "nome": "Pós-teste",
+          "concluida": false
+        }
+      ],
+      "completo": false
+    }
+  ],
+  "ultimaAtualizacao": "2025-11-11T14:43:27.887Z"
+}

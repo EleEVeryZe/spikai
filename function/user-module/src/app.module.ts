@@ -29,7 +29,7 @@ import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
-      path: '/graphql',
+      path: '/default/graphql',
     }),
   ],
   controllers: [AppController],

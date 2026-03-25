@@ -62,13 +62,13 @@ export class CadastroComponent {
   registrationForm: FormGroup;
   ages: number[] = [];
   isEditMode = false;
+  editUserId: number | null = null;
 
   hasVocabularyChanged = false;
 
   separatorKeysCodes: number[] = [13, 188];
   areaCtrl = new FormControl();
 
-  // ATENÇÃO: areasSelecionadas é a lista de chips que o usuário vê.
   areasSelecionadas: string[] = [];
 
   todasAsAreas: string[] = [
@@ -154,16 +154,14 @@ export class CadastroComponent {
       gender: ['', Validators.required],
       education: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      // MANTENHA AQUI PARA ARMAZENAR O VALOR FINAL (string separada por ;)
       vocabulary: [
-        '', // Valor inicial vazio
+        '', 
         requiredChipListValidator(this.areasSelecionadas), // <--- VALIDADOR APLICADO
       ],
     });
 
     for (let i = 5; i <= 100; i++) this.ages.push(i);
 
-    // Inicialize o Observable de filtro aqui ou no ngOnInit
     this.areasFiltradas = this.areaCtrl.valueChanges.pipe(
       startWith(null),
       map((area: string | null) => (area ? this._filter(area) : this._filterAreasParaSugestao()))
@@ -176,7 +174,8 @@ export class CadastroComponent {
       this.isEditMode = !!userId;
 
       if (this.isEditMode && userId) {
-        // Remove password requirement in edit mode and disable email
+        this.editUserId = Number(userId);
+
         this.registrationForm.get('password')?.clearValidators();
         this.registrationForm.get('password')?.updateValueAndValidity();
         this.registrationForm.get('email')?.disable();
@@ -184,7 +183,6 @@ export class CadastroComponent {
         this.usuarioRepositoryService.getUserState(userId).subscribe({
           next: (user) => {
             if (user) {
-              // CONVERSÃO: 'vocabulary' (string com ;) para 'areasSelecionadas' (string[])
               if (user.vocabulary) {
                 this.areasSelecionadas = user.vocabulary.split(';').filter((a) => a.trim() !== '');
               } else {
@@ -243,7 +241,6 @@ Output:`;
       return;
     }
 
-    // PASSO CHAVE: Converte areasSelecionadas (string[]) para a string 'vocabulary' (string com ;)
     const vocabularyString = this.areasSelecionadas.join(';').trim();
     this.registrationForm.get('vocabulary')?.setValue(vocabularyString);
 
@@ -253,22 +250,24 @@ Output:`;
     try {
       let userData;
       if (this.hasVocabularyChanged && vocabularyString) {
-        // Só chama a IA se o vocabulário mudou E não estiver vazio
         const IAVocabulary = await this.improveVocabularyOfInterest(formData);
         userData = { ...formData, IAVocabulary };
       } else {
-        // Se não mudou OU está vazio, usa o valor do formulário (que agora tem o 'vocabulary' correto)
         userData = formData;
       }
 
       if (this.isEditMode) {
-        // Update existing user
         const email = this.usuarioRepositoryService.getUserEmail(); // Assume que este método retorna o email correto do usuário logado
-        // Se estiver em modo de edição, o email está desabilitado, então precisamos pegar o valor do controle desabilitado
         const formEmail = this.registrationForm.get('email')?.value || email;
 
+        const updatePayload = {
+          ...userData,
+          email: formEmail,
+          ...(this.editUserId != null ? { id: this.editUserId } : {}),
+        };
+
         this.usuarioRepositoryService
-          .updateUser({ ...userData, email: formEmail }) // Certifica-se de usar o email correto
+          .updateUser(updatePayload)
           .pipe(finalize(() => (this.isLoading = false)))
           .subscribe({
             next: () => {
@@ -282,7 +281,6 @@ Output:`;
             },
           });
       } else {
-        // Register new user
         this.usuarioRepositoryService
           .postCadastro(userData)
           .pipe(finalize(() => (this.isLoading = false)))
@@ -308,22 +306,24 @@ Output:`;
   }
 
   private submitWithFallbackVocabulary(): void {
-    // PASSO CHAVE: Converte areasSelecionadas (string[]) para a string 'vocabulary' (string com ;) para o fallback
     const vocabularyString = this.areasSelecionadas.join(';').trim();
     this.registrationForm.get('vocabulary')?.setValue(vocabularyString);
 
     const formData = this.registrationForm.value;
-    // Se estiver em modo de edição, o email está desabilitado, então precisamos pegar o valor do controle desabilitado
     const formEmail = this.registrationForm.get('email')?.value;
 
     let userData = { ...formData };
     if (this.isEditMode && formEmail) {
-      userData.email = formEmail; // Adiciona o email correto no modo de edição
+      userData.email = formEmail; 
     }
 
+    const payload = this.isEditMode
+      ? { ...userData, ...(this.editUserId != null ? { id: this.editUserId } : {}) }
+      : userData;
+
     const submitMethod = this.isEditMode
-      ? this.usuarioRepositoryService.updateUser(userData)
-      : this.usuarioRepositoryService.postCadastro(userData);
+      ? this.usuarioRepositoryService.updateUser(payload)
+      : this.usuarioRepositoryService.postCadastro(payload);
 
     submitMethod.subscribe({
       next: () => {
@@ -341,15 +341,12 @@ Output:`;
     Object.keys(this.registrationForm.controls).forEach((key) => this.registrationForm.get(key)?.markAsTouched());
   }
 
-  // Filtro que verifica se a área digitada é substring de alguma sugestão
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    // Filtra apenas as áreas que ainda não foram selecionadas
     return this._filterAreasParaSugestao().filter((area) => area.toLowerCase().includes(filterValue));
   }
 
-  // Retorna a lista de áreas que *ainda não* estão nos chips
   private _filterAreasParaSugestao(): string[] {
     return this.todasAsAreas.filter((area) => !this.areasSelecionadas.includes(area));
   }
@@ -357,43 +354,36 @@ Output:`;
   private updateVocabularyAndValidate(): void {
     const vocabularyControl = this.registrationForm.get('vocabulary');
 
-    // 1. Atualiza o valor do controle (string separada por ;)
     const vocabularyString = this.areasSelecionadas.join(';');
     vocabularyControl?.setValue(vocabularyString, { emitEvent: false });
 
-    // 2. Força a revalidação (necessário pois a validação depende de uma variável externa)
     vocabularyControl?.markAsTouched();
     vocabularyControl?.updateValueAndValidity();
   }
 
-  // Adicionar um novo Chip (ao pressionar Enter ou Vírgula)
   addArea(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
 
-    // Adiciona apenas se o valor não estiver vazio e não for repetido
     if (value && !this.areasSelecionadas.includes(value)) {
       this.areasSelecionadas.push(value);
       this.setVocabularyAsChanged();
-      this.updateVocabularyAndValidate(); // <--- CHAMADA ADICIONADA
+      this.updateVocabularyAndValidate(); 
     }
 
-    // Limpa o input
     event.chipInput!.clear();
     this.areaCtrl.setValue(null);
   }
 
-  // Remover um Chip
   removeArea(area: string): void {
     const index = this.areasSelecionadas.indexOf(area);
 
     if (index >= 0) {
       this.areasSelecionadas.splice(index, 1);
       this.setVocabularyAsChanged();
-      this.updateVocabularyAndValidate(); // <--- CHAMADA ADICIONADA
+      this.updateVocabularyAndValidate(); 
     }
   }
 
-  // Selecionar uma sugestão do Autocomplete
   selectedArea(event: MatAutocompleteSelectedEvent): void {
     const area = event.option.viewValue;
 

@@ -32,7 +32,7 @@ describe("User Module", () => {
         `; 
 
         const response = await request(app.getHttpServer())
-            .post('/default/graphql')
+            .post('/graphql')
             .send({ query: mutation });
 
         expect(response.status).toBe(200);

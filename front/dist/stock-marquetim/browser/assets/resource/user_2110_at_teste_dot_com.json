@@ -1,0 +1,417 @@
+{
+  "name": "Teste",
+  "email": "2110@teste.com",
+  "age": 32,
+  "gender": "male",
+  "education": "Ensino Superior Incompleto",
+  "password": "",
+  "vocabulary": "Psicologia",
+  "IAVocabulary": "The study of the mind and feelings",
+  "ehGrupoControle": true,
+  "cursos": [
+    {
+      "id": "7cf00315-225c-4217-82e7-7badd5681eee",
+      "nome": "to-be",
+      "titulo": "To Be",
+      "concluido": 100,
+      "atividades": [
+        {
+          "nome": "Pré-teste",
+          "perguntas": [
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My room ..........................clean.",
+              "opcoes": ["am", "is", "are", "will"],
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The cat ......................in the tree.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "David and Robert ...........................boys.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My grandmother ...........................sick.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "Anna ......................my sister",
+              "opcoes": ["am", "is", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The chair ...............short.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The dog .....................under the table.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I ......................under the table.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Qual das opções abaixo está NEGANDO a frase abaixo",
+              "descricao": "They are in my Office.",
+              "opcoes": [
+                "They are in my Office not.",
+                "They not are in my Office.",
+                "They are not in my Office.",
+                "They are in my not Office."
+              ],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I ..........................from Spain.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
+              "descricao": "He is a good teacher.",
+              "opcoes": ["He is a good teacher?", "is he a good teacher?", "good teacher he is.", "good teacher a is he."],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "dica": "Book está no plural",
+              "descricao": "The books .................................on the table",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
+              "descricao": "It is my pen.",
+              "opcoes": ["is it my pen?", "am it my pen?", "are it my pen?", "do it my pen?"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "Tony and Jake ....................................a student.",
+              "opcoes": ["am", "do", "is", "are"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Qual das opções abaixo está NEGANDO a frase abaixo",
+              "descricao": "They are students.",
+              "opcoes": ["They not are students.", "They are students not.", "students they are not.", "They are not students."],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
+              "descricao": "We are brazillians.",
+              "opcoes": ["Are we brazillians?", "we are brazillians?", "do we be brazillians?", "be we brazillians?"],
+              "opcaoCorreta": 0
+            }
+          ],
+          "concluida": true,
+          "dataConclusao": "2025-10-21T20:09:57.142Z"
+        },
+        { "nome": "Conteúdo", "videos": [{ "videoId": "verbotobe.mp4" }], "concluida": false, "dataConclusao": "2025-10-21T20:18:06.308Z" },
+        {
+          "nome": "Quizz",
+          "concluida": true,
+          "perguntas": [
+            {
+              "id": 1,
+              "sentence": "I ___ a student.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "am",
+              "tutoringText": "O pronome 'I' usa sempre a forma 'am' no presente do verbo 'to be'.",
+              "selectedAnswer": "be",
+              "isCorrect": null
+            },
+            {
+              "id": 2,
+              "sentence": "She ___ not at home.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "Na forma negativa, 'she' usa 'is not' ou 'isn't'.",
+              "selectedAnswer": "am",
+              "isCorrect": null
+            },
+            {
+              "id": 3,
+              "sentence": "___ you happy?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Are",
+              "tutoringText": "Na forma interrogativa, 'you' usa 'Are'.",
+              "selectedAnswer": "Is",
+              "isCorrect": null
+            },
+            {
+              "id": 4,
+              "sentence": "They ___ teachers.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'They' usa 'are' no presente afirmativo.",
+              "selectedAnswer": "am",
+              "isCorrect": null
+            },
+            {
+              "id": 5,
+              "sentence": "We ___ not tired.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "Na negativa, 'we' usa 'are not' ou 'aren't'.",
+              "selectedAnswer": "be",
+              "isCorrect": null
+            },
+            {
+              "id": 6,
+              "sentence": "___ he your brother?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Is",
+              "tutoringText": "'He' usa 'Is' na forma interrogativa.",
+              "selectedAnswer": "Is",
+              "isCorrect": null
+            },
+            {
+              "id": 7,
+              "sentence": "I ___ not hungry.",
+              "options": ["is", "am", "are", "be"],
+              "correctAnswer": "am",
+              "tutoringText": "'I' na negativa usa 'am not'.",
+              "selectedAnswer": "am",
+              "isCorrect": null
+            },
+            {
+              "id": 8,
+              "sentence": "You ___ very kind.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'You' no presente afirmativo usa 'are'.",
+              "selectedAnswer": "is",
+              "isCorrect": null
+            },
+            {
+              "id": 9,
+              "sentence": "___ they at school?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Are",
+              "tutoringText": "Na forma interrogativa, 'they' usa 'Are'.",
+              "selectedAnswer": "Am",
+              "isCorrect": null
+            },
+            {
+              "id": 10,
+              "sentence": "He ___ not a doctor.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "Na negativa, 'he' usa 'is not' ou 'isn't'.",
+              "selectedAnswer": "be",
+              "isCorrect": null
+            },
+            {
+              "id": 11,
+              "sentence": "We ___ ready for the test.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'We' usa 'are' no presente afirmativo.",
+              "selectedAnswer": "are",
+              "isCorrect": null
+            },
+            {
+              "id": 12,
+              "sentence": "___ I late?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Am",
+              "tutoringText": "Na forma interrogativa, 'I' usa 'Am'.",
+              "selectedAnswer": "Am",
+              "isCorrect": null
+            },
+            {
+              "id": 13,
+              "sentence": "She ___ very busy today.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "is",
+              "tutoringText": "'She' no afirmativo usa 'is'.",
+              "selectedAnswer": "is",
+              "isCorrect": null
+            },
+            {
+              "id": 14,
+              "sentence": "You ___ not my friend.",
+              "options": ["is", "are", "am", "be"],
+              "correctAnswer": "are",
+              "tutoringText": "'You' na forma negativa usa 'are not' ou 'aren't'.",
+              "selectedAnswer": "are",
+              "isCorrect": null
+            },
+            {
+              "id": 15,
+              "sentence": "___ he at the party?",
+              "options": ["Is", "Are", "Am", "Be"],
+              "correctAnswer": "Is",
+              "tutoringText": "Na forma interrogativa, 'he' usa 'Is'.",
+              "selectedAnswer": "Is",
+              "isCorrect": null
+            }
+          ],
+          "dataConclusao": "2025-10-21T20:23:12.405Z"
+        },
+        {
+          "nome": "Pós-teste",
+          "concluida": true,
+          "perguntas": [
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My room ..........................clean.",
+              "opcoes": ["am", "is", "are", "will"],
+              "opcaoCorreta": 1,
+              "opcaoSelecionada": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The cat ......................in the tree.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 0,
+              "opcaoSelecionada": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "David and Robert ...........................boys.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2,
+              "opcaoSelecionada": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "My grandmother ...........................sick.",
+              "opcoes": ["am", "are", "do", "is"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "Anna ......................my sister",
+              "opcoes": ["am", "is", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The chair ...............short.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "The dog .....................under the table.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I ......................under the table.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Qual das opções abaixo está NEGANDO a frase abaixo",
+              "descricao": "They are in my Office.",
+              "opcoes": [
+                "They are in my Office not.",
+                "They not are in my Office.",
+                "They are not in my Office.",
+                "They are in my not Office."
+              ],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "I ..........................from Spain.",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
+              "descricao": "He is a good teacher.",
+              "opcoes": ["He is a good teacher?", "is he a good teacher?", "good teacher He is.", "good teacher a is he."],
+              "opcaoCorreta": 1
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "dica": "Book está no plural",
+              "descricao": "The books .................................on the table",
+              "opcoes": ["is", "am", "are", "do"],
+              "opcaoCorreta": 2
+            },
+            {
+              "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
+              "descricao": "It is my pen.",
+              "opcoes": ["is it my pen?", "am it my pen?", "are it my pen?", "do it my pen?"],
+              "opcaoCorreta": 0
+            },
+            {
+              "titulo": "Escolha a resposta correta:",
+              "descricao": "Tony and Jake ....................................a student.",
+              "opcoes": ["am", "do", "is", "are"],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Qual das opções abaixo está NEGANDO a frase abaixo",
+              "descricao": "They are students.",
+              "opcoes": ["They not are students.", "They are students not.", "students They are not.", "They are not students."],
+              "opcaoCorreta": 3
+            },
+            {
+              "titulo": "Qual das opções abaixo está PERGUNTANDO corretamente",
+              "descricao": "We are brazillians.",
+              "opcoes": ["Are we brazillians?", "we are brazillians?", "do we be brazillians?", "be we brazillians?"],
+              "opcaoCorreta": 0
+            }
+          ],
+          "dataConclusao": "2025-10-21T20:23:29.123Z"
+        },
+        { "nome": "Memorização", "concluida": false }
+      ],
+      "completo": false
+    },
+    {
+      "id": "7cf00315-225c-4217-82e7-7badd5682eee",
+      "nome": "present-continuous",
+      "titulo": "Present Continuous",
+      "concluido": 5,
+      "atividades": [
+        { "nome": "Pré-teste", "concluida": true, "dataConclusao": "2025-09-10T10:00:00.000Z" },
+        { "nome": "Conteúdo", "concluida": true },
+        { "nome": "Quizz", "concluida": true },
+        { "nome": "Pós-teste", "concluida": false }
+      ],
+      "completo": false
+    },
+    {
+      "id": "7cf00315-225c-4217-82e7-7badd5683eee",
+      "nome": "simple-past",
+      "titulo": "Simple Past",
+      "concluido": 0,
+      "atividades": [
+        { "nome": "Pré-teste", "concluida": true, "dataConclusao": "2025-09-10T10:00:00.000Z" },
+        { "nome": "Conteúdo", "concluida": true },
+        { "nome": "Quizz", "concluida": true },
+        { "nome": "Pós-teste", "concluida": false }
+      ],
+      "completo": false
+    }
+  ],
+  "ultimaAtualizacao": "2025-10-21T20:23:29.123Z"
+}

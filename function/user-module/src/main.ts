@@ -7,6 +7,7 @@ async function bootstrap() {
     origin: '*', 
     credentials: true,
   });
+  console.log("User-module is listening on port " + (process.env.PORT ?? 3000));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

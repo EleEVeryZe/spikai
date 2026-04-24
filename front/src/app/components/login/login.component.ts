@@ -79,7 +79,6 @@ export class LoginComponent {
       this.isLoading = true;
       this.usuarioRepositoryService.onLogin(this.loginForm.value.email.toLowerCase(), this.loginForm.value.password).subscribe({
         next: (res: any) => {
-          console.log('Login successful:', res);
           this.auth.login(res.token, this.loginForm.value.email);
           this.router.navigate(['/']);
         },

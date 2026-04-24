@@ -15,7 +15,7 @@ const headers = new HttpHeaders({
 export class UsuarioRepositoryService {
 
   httpClient: HttpClient;
-  constructor(httpClient: HttpClient, private authService: AuthService) { 
+  constructor(httpClient: HttpClient, private authService: AuthService) {
     this.httpClient = httpClient;
   }
 
@@ -128,7 +128,7 @@ export class UsuarioRepositoryService {
 
   getUserBucketName(userEmail?: string) {
     if (!userEmail)
-        userEmail = this.authService.loadUserState().email;
+      userEmail = this.authService.loadUserState().email;
 
     const sanitizedEmail = userEmail?.replace(/@/g, '_at_').replace(/\./g, '_dot_');
     const hostname = window.location.hostname;
@@ -138,24 +138,37 @@ export class UsuarioRepositoryService {
     return `resource/user_${sanitizedEmail}.json`;
   }
 
-  getUserState(userEmail?: string) : Observable<Usuario> {
+  getUserState(userEmail?: string): Observable<Usuario> {
     if (!userEmail)
-        userEmail = this.authService.loadUserState().email;
+      userEmail = this.authService.loadUserState().email;
 
     const hostname = window.location.hostname;
     if (hostname === '!localhost')
       return this.getUserStateStat(userEmail);
 
-    return this.httpClient
-    .post<any>(
-      environment.api.usuario,
-      { email: userEmail?.toLocaleLowerCase() }
-    )
-    .pipe(map(data => new Usuario(data)));
+    const graphqlQuery = {
+      query: `
+    query GetUser($email: String!) {
+      userData(email: $email) {
+        id
+        nome
+      }
+    }`,
+      variables: {
+        email: userEmail?.toLowerCase()
+      }
+    };
+
+    return this.httpClient.post<any>(environment.api.usuario, graphqlQuery).pipe(
+      map(res => {
+        const data = res.data?.userData;
+        return new Usuario(data);
+      })
+    );
   }
 
-  
-  getUserStateStat(userEmail?: string) : Observable<Usuario> {
+
+  getUserStateStat(userEmail?: string): Observable<Usuario> {
     const filename = this.getUserBucketName(userEmail?.toLowerCase());
     return this.httpClient.get<Usuario>(filename.toLocaleLowerCase().toLowerCase());
   }
@@ -163,9 +176,9 @@ export class UsuarioRepositoryService {
   getAllUser() {
     let path = "";
     const hostname = window.location.hostname;
-    if (hostname === 'localhost') 
+    if (hostname === 'localhost')
       path = `assets/resource/usuarios.json`;
-    else 
+    else
       path = `resource/usuarios.json`;
 
     return this.httpClient.get<any[]>(path);

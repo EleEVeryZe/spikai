@@ -17,6 +17,11 @@ export class UserResolver {
     private readonly updateUserUseCase: UpdateUserUseCase
   ) { }
 
+  @Query(() => String )
+  async getUserData(@Args('email') email: string) {
+    return {userData: {id: 123, nome: "blabla"}}
+  }
+
   @Mutation(() => AuthResponse)
   async login(@Args('loginInput') loginInput: LoginInput) {
     return this.loginUseCase.execute(loginInput.email, loginInput.password);

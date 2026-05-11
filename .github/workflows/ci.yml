@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - feat#*
     paths:
       - 'front/**'
       - 'function/user-module/**'
@@ -11,6 +12,7 @@ on:
   pull_request:
     branches:
       - master
+      - feat#*
     paths:
       - 'front/**'
       - 'function/user-module/**'

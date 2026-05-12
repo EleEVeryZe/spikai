@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { getSsmSecret } from './application/utils/ssm';
 import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
+import { IntencaoCompraModule } from './infra/adapters/inbound/gql/intencao-compra/intencao-compra.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
       useFactory: async () => {
         return {
           type: 'postgres',
-          url: await getSsmSecret("/spkai/db/supabase"),
+          url: await getSsmSecret('/spkai/db/supabase'),
           autoLoadEntities: true,
           synchronize: false,
         };
@@ -26,6 +27,7 @@ import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
     }),
     UserModule,
     AIModule, //TODO: Refactor this part so when a queue is starting the app, only loads the specific of what It needs
+    IntencaoCompraModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
@@ -35,4 +37,4 @@ import { AIModule } from './infra/adapters/inbound/gql/ai/ai.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { LoginInput } from './dto/logininput';
 import { CreateUserInput } from './dto/createuserinput';
 import { UpdateUserInput } from './dto/updateuserinput';
@@ -10,12 +10,11 @@ import { UserResponse } from '@/application/use-cases/user/dto/user.response';
 
 @Resolver()
 export class UserResolver {
-
   constructor(
     private readonly loginUseCase: LoginUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
-    private readonly updateUserUseCase: UpdateUserUseCase
-  ) { }
+    private readonly updateUserUseCase: UpdateUserUseCase,
+  ) {}
 
   @Mutation(() => AuthResponse)
   async login(@Args('loginInput') loginInput: LoginInput) {
@@ -27,7 +26,7 @@ export class UserResolver {
     return this.createUserUseCase.execute(
       createUserInput.email,
       createUserInput.username,
-      createUserInput.password
+      createUserInput.password,
     );
   }
 
@@ -37,7 +36,7 @@ export class UserResolver {
       updateUserInput.id,
       updateUserInput.email,
       updateUserInput.username,
-      updateUserInput.password
+      updateUserInput.password,
     );
   }
 
